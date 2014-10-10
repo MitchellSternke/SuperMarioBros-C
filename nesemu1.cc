@@ -69,8 +69,8 @@ namespace IO
 			"SDL_app",
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
-			256,
-			240,
+			256 * 3,
+			240 * 3,
 			0
 		);
 
