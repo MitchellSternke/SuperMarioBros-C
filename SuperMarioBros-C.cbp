@@ -29,8 +29,15 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 		</Compiler>
+		<Linker>
+			<Add library="mingw32" />
+			<Add library="SDL2main" />
+			<Add library="SDL2" />
+		</Linker>
+		<Unit filename="nesemu1.cc" />
 		<Extensions>
 			<code_completion />
 			<envvars />
