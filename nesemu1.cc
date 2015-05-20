@@ -12,6 +12,9 @@
 #include <SDL2/SDL.h>
 #include <vector>
 
+#include "nesemu1.hh"
+#include "SMB.hpp"
+
 // This file has been modified from it's original form
 // The original copyright is as follows.
 // Most of this shouldn't be needed after everything has been translated
@@ -22,6 +25,7 @@
 static const char* inputfn = "input.fmv";
 
 static const char* romFileName = "Super Mario Bros. (JU) (PRG0) [!].nes";
+//static const char* romFileName = "docs/smbdisHL/smb.nes";
 
 // Integer types
 typedef uint_least32_t u32;
@@ -1012,12 +1016,78 @@ int main(int/*argc*/, char** argv)
 	for(unsigned a=0; a<0x800; ++a)
 		CPU::RAM[a] = (a&4) ? 0xFF : 0x00;
 
+	printf("vectors:\nnmi:%04x\nreset:%04x\nirq:%04x\n",
+		(u32)CPU::RB(0xfffa) + ((u32)CPU::RB(0xfffb) << 8),
+		(u32)CPU::RB(0xfffc) + ((u32)CPU::RB(0xfffd) << 8),
+		(u32)CPU::RB(0xfffe) + ((u32)CPU::RB(0xffff) << 8)
+	);
+	SMB_Init();
+
 	// Run the CPU until the program is killed.
-	for(;;) CPU::Op();
+	for(;;)
+	{
+		// Check if we have to redirect the current program counter address to C++ code
+		if( SMB_TranslationTable[CPU::PC] != nullptr )
+		{
+			// Call the translated function
+			SMB_TranslationTable[CPU::PC]();
+
+			// Execute an RTS instruction
+			// Pull the top two bytes off the stack
+			u16 nextInstruction = (u16)CPU::Pop() + ((u16)CPU::Pop() << 8) + 1;
+
+			// Set the PC to that plus one
+			CPU::PC = nextInstruction;
+			printf("Returning to %04x\n", (u32)nextInstruction);
+		}
+		else
+		{
+			//printf("%04x\n", (u32)CPU::PC);
+			CPU::Op();
+		}
+	}
 
 	return 0;
 }
 
+// Implementation of nesemu1.hh
 
+byte readMemory( int address )
+{
+	return CPU::RB(address);
+}
 
+void writeMemory( int address, byte value )
+{
+	CPU::WB(address, value);
+}
 
+byte readA()
+{
+	return CPU::A;
+}
+
+byte readX()
+{
+	return CPU::X;
+}
+
+byte readY()
+{
+	return CPU::Y;
+}
+
+void writeA( byte value )
+{
+	CPU::A = value;
+}
+
+void writeX( byte value )
+{
+	CPU::X = value;
+}
+
+void writeY( byte value )
+{
+	CPU::Y = value;
+}

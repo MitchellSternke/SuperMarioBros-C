@@ -37,7 +37,11 @@
 			<Add library="SDL2main" />
 			<Add library="SDL2" />
 		</Linker>
+		<Unit filename="SMB.cpp" />
+		<Unit filename="SMB.hpp" />
+		<Unit filename="Types.hpp" />
 		<Unit filename="nesemu1.cc" />
+		<Unit filename="nesemu1.hh" />
 		<Extensions>
 			<code_completion />
 			<envvars />
