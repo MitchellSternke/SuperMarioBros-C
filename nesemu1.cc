@@ -1038,7 +1038,7 @@ int main(int/*argc*/, char** argv)
 
 			// Set the PC to that plus one
 			CPU::PC = nextInstruction;
-			printf("Returning to %04x\n", (u32)nextInstruction);
+			//printf("Returning to %04x\n", (u32)nextInstruction);
 		}
 		else
 		{
