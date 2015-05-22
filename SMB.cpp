@@ -46,6 +46,9 @@ static void MoveAllSpritesOffscreen();
 static void MoveSpritesOffscreen();
 static void MoveSpritesOffscreenRoutine(byte);
 
+/**
+ * Adds DigitModifier to DisplayDigits offset by the value stored in Y.
+ */
 void DigitsMathRoutine()
 {
 	printf("Doing digits math\n");
