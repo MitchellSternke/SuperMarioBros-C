@@ -5,6 +5,8 @@ An attempt to manually translate the original Super Mario Bros. for the NES to r
 
 I've taken the `smbdis.asm` disassembly of Super Mario Bros. and successfully converted it to C++ using an automated codegen program I wrote (which you can be found in the `Decompiler/` subdirectory of the repo). Right now, it looks very similar to the original disassembly and is fairly dense code, but it works! Check out `Decompiled.cpp` in the root of the repo if you're curious.
 
+Many thanks to doppelganger (doppelheathen@gmail.com), who wrote the original comprehensive Super Mario Bros. disassembly. This can be found in the `docs/` folder of the repo.
+
 Building
 --------
 
