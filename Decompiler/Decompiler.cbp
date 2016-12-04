@@ -32,7 +32,12 @@
 			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="Ast.cpp" />
+		<Unit filename="Ast.hpp" />
 		<Unit filename="Main.cpp" />
+		<Unit filename="Token.hpp" />
+		<Unit filename="Translator.cpp" />
+		<Unit filename="Translator.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

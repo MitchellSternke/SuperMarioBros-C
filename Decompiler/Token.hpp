@@ -1,0 +1,110 @@
+#ifndef TOKEN_HPP
+#define TOKEN_HPP
+
+enum TokenType
+{
+    TOKEN_ERROR,
+
+    TOKEN_WHITESPACE,
+    TOKEN_NEWLINE,
+    TOKEN_COMMENT,
+
+    TOKEN_DIRECTIVE,
+    TOKEN_LABEL,
+
+    TOKEN_X,
+    TOKEN_Y,
+
+    TOKEN_LDA,
+    TOKEN_LDX,
+    TOKEN_LDY,
+    TOKEN_STA,
+    TOKEN_STX,
+    TOKEN_STY,
+
+    TOKEN_TAX,
+    TOKEN_TAY,
+    TOKEN_TXA,
+    TOKEN_TYA,
+
+    TOKEN_TSX,
+    TOKEN_TXS,
+    TOKEN_PHA,
+    TOKEN_PHP,
+    TOKEN_PLA,
+    TOKEN_PLP,
+
+    TOKEN_AND,
+    TOKEN_EOR,
+    TOKEN_ORA,
+    TOKEN_BIT,
+
+    TOKEN_ADC,
+    TOKEN_SBC,
+    TOKEN_CMP,
+    TOKEN_CPX,
+    TOKEN_CPY,
+
+    TOKEN_INC,
+    TOKEN_INX,
+    TOKEN_INY,
+    TOKEN_DEC,
+    TOKEN_DEX,
+    TOKEN_DEY,
+
+    TOKEN_ASL,
+    TOKEN_LSR,
+    TOKEN_ROL,
+    TOKEN_ROR,
+
+    TOKEN_JMP,
+    TOKEN_JSR,
+    TOKEN_RTS,
+
+    TOKEN_BCC,
+    TOKEN_BCS,
+    TOKEN_BEQ,
+    TOKEN_BMI,
+    TOKEN_BNE,
+    TOKEN_BPL,
+    TOKEN_BVC,
+    TOKEN_BVS,
+
+    TOKEN_CLC,
+    TOKEN_CLD,
+    TOKEN_CLI,
+    TOKEN_CLV,
+    TOKEN_SEC,
+    TOKEN_SED,
+    TOKEN_SEI,
+
+    TOKEN_BRK,
+    TOKEN_NOP,
+    TOKEN_RTI,
+
+    TOKEN_NAME,
+
+    TOKEN_HEX_CONSTANT,
+    TOKEN_BIN_CONSTANT,
+    TOKEN_DEC_CONSTANT,
+
+    TOKEN_EQUALS,
+    TOKEN_PLUS,
+    TOKEN_MINUS,
+    TOKEN_LESS,
+    TOKEN_GREATER,
+    TOKEN_POUND,
+    TOKEN_COMMA,
+    TOKEN_LEFT_PAREN,
+    TOKEN_RIGHT_PAREN,
+
+    NUM_TOKEN_TYPES
+};
+
+struct Token
+{
+    TokenType type;
+    std::string text;
+};
+
+#endif // TOKEN_HPP
