@@ -16,23 +16,33 @@ static SDL_Window* window;
 static SDL_Renderer* renderer;
 static SDL_Texture* texture;
 
+/**
+ * Get a pointer to the CHR data in the ROM image.
+ */
 uint8_t* getChr()
 {
+    // Location: Header (16 bytes) + 2 PRG pages (16k each)
     return (romImage + 16 + (16384 * 2));
 }
 
+/**
+ * Load the Super Mario Bros. ROM image.
+ */
 static bool loadRomImage()
 {
+    // TODO: this should be configurable
     FILE* file = fopen("Super Mario Bros. (JU) (PRG0) [!].nes", "r");
     if (file == NULL)
     {
         return false;
     }
 
+    // Find the size of the file
     fseek(file, 0L, SEEK_END);
     size_t fileSize = ftell(file);
     fseek(file, 0L, SEEK_SET);
 
+    // Read the entire file into a buffer
     romImage = new uint8_t[fileSize];
     fread(romImage, sizeof(uint8_t), fileSize, file);
     fclose(file);
@@ -40,13 +50,18 @@ static bool loadRomImage()
     return true;
 }
 
+/**
+ * Initialize libraries for use.
+ */
 static bool initialize()
 {
+    // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
         return false;
     }
 
+    // Create the window
     window = SDL_CreateWindow("Super Mario Bros.",
                               SDL_WINDOWPOS_UNDEFINED,
                               SDL_WINDOWPOS_UNDEFINED,
@@ -55,10 +70,12 @@ static bool initialize()
                               0
     );
 
+    // Setup the renderer and texture buffer
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH, RENDER_HEIGHT);
     texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RENDER_WIDTH, RENDER_HEIGHT);
 
+    // Initialize audio
     SDL_AudioSpec desiredSpec;
     desiredSpec.freq = FREQUENCY;
     desiredSpec.format = AUDIO_S8;
@@ -76,6 +93,9 @@ static bool initialize()
     return true;
 }
 
+/**
+ * Shutdown libraries for exit.
+ */
 static void shutdown()
 {
     SDL_CloseAudio();

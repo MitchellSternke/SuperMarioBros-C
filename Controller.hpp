@@ -19,7 +19,7 @@ enum ControllerButton
 };
 
 /**
- * Represents a controller/joystick input device.
+ * Emulates an NES game controller device.
  */
 class Controller
 {

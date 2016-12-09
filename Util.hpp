@@ -14,8 +14,8 @@
 
 // Macros:
 #define JSR(subroutine, index) pushReturnIndex(index); goto subroutine; Return_ ## index:
-#define HIBYTE(v) ((v >> 8) & 0xff)
-#define LOBYTE(v) (v & 0xff)
+#define HIBYTE(v) ((v >> 8) & 0xff) // High/upper byte of a 16-bit integer
+#define LOBYTE(v) (v & 0xff)        // Low byte of a 16-bit integer
 
 // NES-related flags:
 extern bool c; /**< Carry flag. */
@@ -249,8 +249,14 @@ MemoryAccess getMemory(uint16_t address);
  */
 uint16_t getMemoryWord(uint8_t address);
 
+/**
+ * Read and access a byte from emulated memory.
+ */
 #define M(addr) getMemory(addr)
 
+/**
+ * Read a word from emulated memory (in little-endian format).
+ */
 #define W(addr) getMemoryWord(addr)
 
 /**
@@ -265,6 +271,7 @@ uint32_t* render();
 
 void audioCallback(void* userdata, uint8_t* stream, int len);
 
+// Emulated controllers:
 extern Controller controller1;
 extern Controller controller2;
 
