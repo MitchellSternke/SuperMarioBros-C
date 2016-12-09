@@ -26,7 +26,7 @@ void printTabs(int depth)
 {
     for( int i = 0; i < depth; i++ )
     {
-        std::cout << "\t";
+        std::cout << TAB;
     }
 }
 

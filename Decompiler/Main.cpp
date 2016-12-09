@@ -22,7 +22,7 @@ static std::string translateBranch(std::vector<Token>& tokens, size_t& index, co
 {
     Token t = tokens[++index];
 
-    std::string result = "\tif(" + branchFunction + "())\n\t\tgoto ";
+    std::string result = std::string(TAB) + "if(" + branchFunction + "())\n" + TAB + TAB + "goto ";
     switch(t.type)
     {
     case TOKEN_NAME:

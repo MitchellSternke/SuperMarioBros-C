@@ -67,7 +67,7 @@ void translateAst(AstRootNode* ast, const std::string& outputFilename)
         sprintf(addressAsHex, "0x%x", address);
         outputFile << "#define " << l->name << " " << addressAsHex << std::endl;
 
-        dataLoadCode << "\twriteData(" << l->name << ", " << l->name << "__data" << ", " << bytes << ");\n";
+        dataLoadCode << TAB << "writeData(" << l->name << ", " << l->name << "__data" << ", " << bytes << ");\n";
 
         address += bytes;
     }
@@ -99,7 +99,7 @@ void translateAst(AstRootNode* ast, const std::string& outputFilename)
             }
             firstLine = false;
 
-            outputFile << "\t";
+            outputFile << TAB;
             bool firstItem = true;
             for( auto& dataItem : d->data )
             {
@@ -121,7 +121,7 @@ void translateAst(AstRootNode* ast, const std::string& outputFilename)
     outputFile << dataLoadCode.str() << std::endl;
 
     // Translate code labels
-    outputFile << "void code(int mode)\n{\n\tswitch(mode)\n\t{\n\tcase 0:\n\t\tloadConstantData();\n\t\tgoto Start;\n\tcase 1:\n\t\tgoto NonMaskableInterrupt;\n\t}\n";
+    outputFile << "void code(int mode)\n{\n" << TAB << "switch(mode)\n" << TAB << "{\n" << TAB << "case 0:\n" << TAB << TAB << "loadConstantData();\n" << TAB << TAB << "goto Start;\n" << TAB << "case 1:\n" << TAB << TAB << "goto NonMaskableInterrupt;\n" << TAB << "}\n";
     for( auto& l : codeLabels )
     {
         if( l->name.compare("JumpEngine") == 0 )
@@ -138,14 +138,14 @@ void translateAst(AstRootNode* ast, const std::string& outputFilename)
     }
 
     // Generate a switch for return labels
-    outputFile << "Return: // Return Handler\n\tswitch(popReturnIndex())\n\t{\n";
+    outputFile << "Return: // Return Handler\n" << TAB << "switch(popReturnIndex())\n" << TAB << "{\n";
     for( int i = 0; i < AstCodeNode::returnLabelIndex; i++ )
     {
         char indexStr[8];
         sprintf(indexStr, "%d", i);
-        outputFile << std::string("\tcase ") + indexStr + ":\n\t\tgoto Return_" + indexStr + ";\n";
+        outputFile << std::string(TAB) + "case " + indexStr + ":\n" + TAB + TAB + "goto Return_" + indexStr + ";\n";
     }
-    outputFile << "\t}\n";
+    outputFile << TAB << "}\n";
 
     // Code is complete
     outputFile << "}\n";

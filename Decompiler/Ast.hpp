@@ -8,6 +8,9 @@
 
 #include "Token.hpp"
 
+// Use spaces for tabs
+#define TAB "    "
+
 extern std::set<unsigned> dataLabelNameHashes;
 unsigned int hash(const std::string& str);
 
@@ -257,7 +260,7 @@ struct AstDataNode : public AstNode
                         skipNextInstruction = true;
                         char indexStr[8];
                         sprintf(indexStr, "%d", skipNextInstructionIndex);
-                        return std::string("\tgoto Skip_") + indexStr + ";\n";
+                        return std::string(TAB) + "goto Skip_" + indexStr + ";\n";
                     }
                 }
             }
@@ -492,7 +495,7 @@ struct AstCodeNode : public AstNode
 
     std::string translateHelper(TranslationParams* params) const
     {
-        std::string result = "\t";
+        std::string result = TAB;
         if( instruction.compare("lda") == 0 )
         {
             result += "a = " + operand->translateAsOperand(params);
@@ -651,27 +654,27 @@ struct AstCodeNode : public AstNode
         }
         else if( instruction.compare("bcc") == 0 )
         {
-            result += std::string("if( !c )\n\t\tgoto ") + static_cast<AstNameNode*>(operand)->text;
+            result += std::string("if (!c)\n") + TAB + TAB + "goto " + static_cast<AstNameNode*>(operand)->text;
         }
         else if( instruction.compare("bcs") == 0 )
         {
-            result += std::string("if( c )\n\t\tgoto ") + static_cast<AstNameNode*>(operand)->text;
+            result += std::string("if (c)\n") + TAB + TAB + "goto " + static_cast<AstNameNode*>(operand)->text;
         }
         else if( instruction.compare("bpl") == 0 )
         {
-            result += std::string("if( !n )\n\t\tgoto ") + static_cast<AstNameNode*>(operand)->text;
+            result += std::string("if (!n)\n") + TAB + TAB + "goto " + static_cast<AstNameNode*>(operand)->text;
         }
         else if( instruction.compare("bmi") == 0 )
         {
-            result += std::string("if( n )\n\t\tgoto ") + static_cast<AstNameNode*>(operand)->text;
+            result += std::string("if (n)\n") + TAB + TAB + "goto " + static_cast<AstNameNode*>(operand)->text;
         }
         else if( instruction.compare("beq") == 0 )
         {
-            result += std::string("if( z )\n\t\tgoto ") + static_cast<AstNameNode*>(operand)->text;
+            result += std::string("if (z)\n") + TAB + TAB + "goto " + static_cast<AstNameNode*>(operand)->text;
         }
         else if( instruction.compare("bne") == 0 )
         {
-            result += std::string("if( !z )\n\t\tgoto ") + static_cast<AstNameNode*>(operand)->text;
+            result += std::string("if (!z)\n") + TAB + TAB + "goto " + static_cast<AstNameNode*>(operand)->text;
         }
         else if( instruction.compare("sec") == 0 )
         {
@@ -709,7 +712,7 @@ struct AstCodeNode : public AstNode
             if( name->text.compare("JumpEngine") == 0 )
             {
                 // Special case. Create a jump table
-                result += "switch(a)\n\t{\n";
+                result += std::string("switch(a)\n") + TAB + TAB + "{\n";
 
                 AstLabelNode* parentLabel = static_cast<AstLabelNode*>(parent);
                 bool foundSelf = false;
@@ -727,10 +730,10 @@ struct AstCodeNode : public AstNode
                         AstNameNode* dataName = static_cast<AstNameNode*>(d->data.front());
                         char indexStr[4];
                         sprintf(indexStr, "%d", index++);
-                        result += std::string("\tcase ") + indexStr + ":\n\t\tgoto " + dataName->text + ";\n";
+                        result += std::string(TAB) + "case " + indexStr + ":\n" + TAB + TAB + "goto " + dataName->text + ";\n";
                     }
                 }
-                result += "\t}\n";
+                result += std::string(TAB) + "}\n";
                 return result;
             }
             else
