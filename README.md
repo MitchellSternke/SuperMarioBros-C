@@ -7,6 +7,10 @@ I've taken the `smbdis.asm` disassembly of Super Mario Bros. and successfully co
 
 Many thanks to doppelganger (doppelheathen@gmail.com), who wrote the original comprehensive Super Mario Bros. disassembly. This can be found in the `docs/` folder of the repo.
 
+![Demo gif](https://github.com/MitchellSternke/SuperMarioBros-C/raw/master/demo.gif)
+
+*looks and plays just like the original*
+
 Building
 --------
 
