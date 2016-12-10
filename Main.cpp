@@ -203,6 +203,12 @@ int main(int argc, char** argv)
             // Reset
             code(0);
         }
+        if (keys[SDL_SCANCODE_ESCAPE])
+        {
+            // quit
+            running = false;
+            break;
+        }
 
         code(1);
 
