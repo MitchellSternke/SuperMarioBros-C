@@ -1,5 +1,6 @@
 #include "PPU.hpp"
 #include "SMBEngine.hpp"
+#include "Video.hpp"
 
 static const uint8_t nametableMirrorLookup[][4] = {
     {0, 0, 1, 1}, // Vertical
@@ -9,7 +10,7 @@ static const uint8_t nametableMirrorLookup[][4] = {
 /**
  * RGB representation of the NES palette.
  */
-static const uint32_t paletteRGB[] = {
+const uint32_t paletteRGB[64] = {
     0x7c7c7c,
     0x0000fc,
     0x0000bc,
@@ -225,169 +226,178 @@ void PPU::render(uint32_t* buffer)
     }
 
     // Draw sprites behind the backround
-    for( int i = 0; i < 64; i++ )
+    if (ppuMask & (1 << 4)) // Are sprites enabled?
     {
-        // Read OAM for the sprite
-        uint8_t y          = oam[i * 4];
-        uint8_t index      = oam[i * 4 + 1];
-        uint8_t attributes = oam[i * 4 + 2];
-        uint8_t x          = oam[i * 4 + 3];
-
-        // Check if the sprite has the correct priority
-        if (!(attributes & (1 << 5)))
+        for( int i = 0; i < 64; i++ )
         {
-            continue;
-        }
+            // Read OAM for the sprite
+            uint8_t y          = oam[i * 4];
+            uint8_t index      = oam[i * 4 + 1];
+            uint8_t attributes = oam[i * 4 + 2];
+            uint8_t x          = oam[i * 4 + 3];
 
-        // Check if the sprite is visible
-        if( y >= 0xef || x >= 0xf9 )
-        {
-            continue;
-        }
-
-        // Determine the tile to use
-        uint16_t tile = index + (ppuCtrl & (1 << 3) ? 256 : 0);
-        bool flipX = attributes & (1 << 6);
-        bool flipY = attributes & (1 << 7);
-
-        // Copy pixels to the framebuffer
-        for( int row = 0; row < 8; row++ )
-        {
-            uint8_t plane1 = readCHR(tile * 16 + row);
-            uint8_t plane2 = readCHR(tile * 16 + row + 8);
-
-            for( int column = 0; column < 8; column++ )
+            // Check if the sprite has the correct priority
+            if (!(attributes & (1 << 5)))
             {
-                uint8_t paletteIndex = (((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0));
-                uint8_t colorIndex = palette[0x10 + (attributes & 0x03) * 4 + paletteIndex];
-                if( paletteIndex == 0 )
-                {
-                    // Skip transparent pixels
-                    continue;
-                }
-                uint32_t pixel = 0xff000000 | paletteRGB[colorIndex];
+                continue;
+            }
 
-                int xOffset = 7 - column;
-                if( flipX )
-                {
-                    xOffset = column;
-                }
-                int yOffset = row;
-                if( flipY )
-                {
-                    yOffset = 7 - row;
-                }
+            // Check if the sprite is visible
+            if( y >= 0xef || x >= 0xf9 )
+            {
+                continue;
+            }
 
-                int xPixel = (int)x + xOffset;
-                int yPixel = (int)y + yOffset;
-                if (xPixel < 0 || xPixel >= 256 || yPixel < 0 || yPixel >= 240)
-                {
-                    continue;
-                }
+            // Determine the tile to use
+            uint16_t tile = index + (ppuCtrl & (1 << 3) ? 256 : 0);
+            bool flipX = attributes & (1 << 6);
+            bool flipY = attributes & (1 << 7);
 
-                buffer[yPixel * 256 + xPixel] = pixel;
+            // Copy pixels to the framebuffer
+            for( int row = 0; row < 8; row++ )
+            {
+                uint8_t plane1 = readCHR(tile * 16 + row);
+                uint8_t plane2 = readCHR(tile * 16 + row + 8);
+
+                for( int column = 0; column < 8; column++ )
+                {
+                    uint8_t paletteIndex = (((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0));
+                    uint8_t colorIndex = palette[0x10 + (attributes & 0x03) * 4 + paletteIndex];
+                    if( paletteIndex == 0 )
+                    {
+                        // Skip transparent pixels
+                        continue;
+                    }
+                    uint32_t pixel = 0xff000000 | paletteRGB[colorIndex];
+
+                    int xOffset = 7 - column;
+                    if( flipX )
+                    {
+                        xOffset = column;
+                    }
+                    int yOffset = row;
+                    if( flipY )
+                    {
+                        yOffset = 7 - row;
+                    }
+
+                    int xPixel = (int)x + xOffset;
+                    int yPixel = (int)y + yOffset;
+                    if (xPixel < 0 || xPixel >= 256 || yPixel < 0 || yPixel >= 240)
+                    {
+                        continue;
+                    }
+
+                    buffer[yPixel * 256 + xPixel] = pixel;
+                }
             }
         }
     }
 
     // Draw the background (nametable)
-    int scrollX = (int)ppuScrollX + ((ppuCtrl & (1 << 0)) ? 256 : 0);
-    int xMin = scrollX / 8;
-    int xMax = ((int)scrollX + 256) / 8;
-    for (int x = 0; x < 32; x++)
+    if (ppuMask & (1 << 3)) // Is the background enabled?
     {
-        for (int y = 0; y < 4; y++)
+        int scrollX = (int)ppuScrollX + ((ppuCtrl & (1 << 0)) ? 256 : 0);
+        int xMin = scrollX / 8;
+        int xMax = ((int)scrollX + 256) / 8;
+        for (int x = 0; x < 32; x++)
         {
-            // Render the status bar in the same position (it doesn't scroll)
-            renderTile(buffer, 0x2000 + 32 * y + x, x * 8, y * 8);
+            for (int y = 0; y < 4; y++)
+            {
+                // Render the status bar in the same position (it doesn't scroll)
+                renderTile(buffer, 0x2000 + 32 * y + x, x * 8, y * 8);
+            }
         }
-    }
-    for (int x = xMin; x <= xMax; x++)
-    {
-        for (int y = 4; y < 30; y++)
+        for (int x = xMin; x <= xMax; x++)
         {
-            // Determine the index of the tile to render
-            int index;
-            if (x < 32)
+            for (int y = 4; y < 30; y++)
             {
-                index = 0x2000 + 32 * y + x;
-            }
-            else if (x < 64)
-            {
-                index = 0x2400 + 32 * y + (x - 32);
-            }
-            else
-            {
-                index = 0x2800 + 32 * y + (x - 64);
-            }
+                // Determine the index of the tile to render
+                int index;
+                if (x < 32)
+                {
+                    index = 0x2000 + 32 * y + x;
+                }
+                else if (x < 64)
+                {
+                    index = 0x2400 + 32 * y + (x - 32);
+                }
+                else
+                {
+                    index = 0x2800 + 32 * y + (x - 64);
+                }
 
-            // Render the tile
-            renderTile(buffer, index, (x * 8) - (int)scrollX, (y * 8));
+                // Render the tile
+                renderTile(buffer, index, (x * 8) - (int)scrollX, (y * 8));
+            }
         }
     }
 
     // Draw sprites in front of the background
-    for( int i = 0; i < 64; i++ )
+    if (ppuMask & (1 << 4))
     {
-        // Read OAM for the sprite
-        uint8_t y          = oam[i * 4];
-        uint8_t index      = oam[i * 4 + 1];
-        uint8_t attributes = oam[i * 4 + 2];
-        uint8_t x          = oam[i * 4 + 3];
-
-        // Check if the sprite has the correct priority
-        if (attributes & (1 << 5))
+        for( int i = 0; i < 64; i++ )
         {
-            continue;
-        }
+            // Read OAM for the sprite
+            uint8_t y          = oam[i * 4];
+            uint8_t index      = oam[i * 4 + 1];
+            uint8_t attributes = oam[i * 4 + 2];
+            uint8_t x          = oam[i * 4 + 3];
 
-        // Check if the sprite is visible
-        if( y >= 0xef || x >= 0xf9 )
-        {
-            continue;
-        }
-
-        // Determine the tile to use
-        uint16_t tile = index + (ppuCtrl & (1 << 3) ? 256 : 0);
-        bool flipX = attributes & (1 << 6);
-        bool flipY = attributes & (1 << 7);
-
-        // Copy pixels to the framebuffer
-        for( int row = 0; row < 8; row++ )
-        {
-            uint8_t plane1 = readCHR(tile * 16 + row);
-            uint8_t plane2 = readCHR(tile * 16 + row + 8);
-
-            for( int column = 0; column < 8; column++ )
+            // Check if the sprite has the correct priority
+            if (attributes & (1 << 5))
             {
-                uint8_t paletteIndex = (((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0));
-                uint8_t colorIndex = palette[0x10 + (attributes & 0x03) * 4 + paletteIndex];
-                if( paletteIndex == 0 )
-                {
-                    // Skip transparent pixels
-                    continue;
-                }
-                uint32_t pixel = 0xff000000 | paletteRGB[colorIndex];
+                continue;
+            }
 
-                int xOffset = 7 - column;
-                if( flipX )
-                {
-                    xOffset = column;
-                }
-                int yOffset = row;
-                if( flipY )
-                {
-                    yOffset = 7 - row;
-                }
+            // Check if the sprite is visible
+            if( y >= 0xef || x >= 0xf9 )
+            {
+                continue;
+            }
 
-                int xPixel = (int)x + xOffset;
-                int yPixel = (int)y + yOffset;
-                if (xPixel < 0 || xPixel >= 256 || yPixel < 0 || yPixel >= 240)
-                {
-                    continue;
-                }
+            // Determine the tile to use
+            uint16_t tile = index + (ppuCtrl & (1 << 3) ? 256 : 0);
+            bool flipX = attributes & (1 << 6);
+            bool flipY = attributes & (1 << 7);
 
-                buffer[yPixel * 256 + xPixel] = pixel;
+            // Copy pixels to the framebuffer
+            for( int row = 0; row < 8; row++ )
+            {
+                uint8_t plane1 = readCHR(tile * 16 + row);
+                uint8_t plane2 = readCHR(tile * 16 + row + 8);
+
+                for( int column = 0; column < 8; column++ )
+                {
+                    uint8_t paletteIndex = (((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0));
+                    uint8_t colorIndex = palette[0x10 + (attributes & 0x03) * 4 + paletteIndex];
+                    if( paletteIndex == 0 )
+                    {
+                        // Skip transparent pixels
+                        continue;
+                    }
+                    uint32_t pixel = 0xff000000 | paletteRGB[colorIndex];
+
+                    int xOffset = 7 - column;
+                    if( flipX )
+                    {
+                        xOffset = column;
+                    }
+                    int yOffset = row;
+                    if( flipY )
+                    {
+                        yOffset = 7 - row;
+                    }
+
+                    int xPixel = (int)x + xOffset;
+                    int yPixel = (int)y + yOffset;
+                    if (xPixel < 0 || xPixel >= 256 || yPixel < 0 || yPixel >= 240)
+                    {
+                        continue;
+                    }
+
+                    buffer[yPixel * 256 + xPixel] = pixel;
+                }
             }
         }
     }
@@ -465,6 +475,10 @@ void PPU::writeRegister(uint16_t address, uint8_t value)
     // PPUCTRL
     case 0x2000:
         ppuCtrl = value;
+        break;
+    // PPUMASK
+    case 0x2001:
+        ppuMask = value;
         break;
     // OAMADDR
     case 0x2003:
