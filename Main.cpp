@@ -15,6 +15,7 @@ static uint8_t* romImage;
 static SDL_Window* window;
 static SDL_Renderer* renderer;
 static SDL_Texture* texture;
+static SDL_Texture* scanlineTexture;
 
 /**
  * Get a pointer to the CHR data in the ROM image.
@@ -51,6 +52,45 @@ static bool loadRomImage()
 }
 
 /**
+ * Generate a texture for a scanline overlay effect.
+ */
+static void generateScanlineTexture()
+{
+    // Create a scanline texture for 3x rendering
+    scanlineTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, RENDER_WIDTH * 3, RENDER_HEIGHT * 3);
+    uint32_t* scanlineTextureBuffer = new uint32_t[RENDER_WIDTH * RENDER_HEIGHT * 3 * 3];
+    for (int y = 0; y < RENDER_HEIGHT; y++)
+    {
+        for (int x = 0; x < RENDER_WIDTH; x++)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    uint32_t color = 0xff000000;
+                    switch (j)
+                    {
+                    case 0:
+                        color |= 0xfdd6c7;
+                        break;
+                    case 1:
+                        color |= 0xbef5e1;
+                        break;
+                    case 2:
+                        color |= 0xcfe2ff;
+                        break;
+                    }
+                    scanlineTextureBuffer[((y * 3) + i) * (RENDER_WIDTH * 3) + (x * 3) + j] = color;
+                }
+            }
+        }
+    }
+    SDL_SetTextureBlendMode(scanlineTexture, SDL_BLENDMODE_MOD);
+    SDL_UpdateTexture(scanlineTexture, NULL, scanlineTextureBuffer, sizeof(uint32_t) * RENDER_WIDTH * 3);
+    delete [] scanlineTextureBuffer;
+}
+
+/**
  * Initialize libraries for use.
  */
 static bool initialize()
@@ -74,6 +114,8 @@ static bool initialize()
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH, RENDER_HEIGHT);
     texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RENDER_WIDTH, RENDER_HEIGHT);
+
+    generateScanlineTexture();
 
     // Initialize audio
     SDL_AudioSpec desiredSpec;
@@ -100,6 +142,7 @@ static void shutdown()
 {
     SDL_CloseAudio();
 
+    SDL_DestroyTexture(scanlineTexture);
     SDL_DestroyTexture(texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -166,7 +209,10 @@ int main(int argc, char** argv)
         SDL_UpdateTexture(texture, NULL, render(), sizeof(uint32_t) * RENDER_WIDTH);
 
         SDL_RenderClear(renderer);
+        SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH, RENDER_HEIGHT);
         SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH * 3, RENDER_HEIGHT * 3);
+        SDL_RenderCopy(renderer, scanlineTexture, NULL, NULL);
         SDL_RenderPresent(renderer);
     }
 
