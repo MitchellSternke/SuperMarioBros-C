@@ -2,8 +2,8 @@
 
 #include <SDL2/SDL.h>
 
-#include "Decompiled.hpp"
-#include "Util.hpp"
+#include "Controller.hpp"
+#include "SMBEngine.hpp"
 
 #define RENDER_WIDTH 256
 #define RENDER_HEIGHT 240
@@ -16,6 +16,8 @@ static SDL_Window* window;
 static SDL_Renderer* renderer;
 static SDL_Texture* texture;
 static SDL_Texture* scanlineTexture;
+static SMBEngine* smbEngine = nullptr;
+static uint32_t renderBuffer[256 * 240];
 
 /**
  * Get a pointer to the CHR data in the ROM image.
@@ -91,6 +93,17 @@ static void generateScanlineTexture()
 }
 
 /**
+ * SDL Audio callback function.
+ */
+static void audioCallback(void* userdata, uint8_t* buffer, int len)
+{
+    if (smbEngine != nullptr)
+    {
+        smbEngine->audioCallback(buffer, len);
+    }
+}
+
+/**
  * Initialize libraries for use.
  */
 static bool initialize()
@@ -150,19 +163,12 @@ static void shutdown()
     SDL_Quit();
 }
 
-int main(int argc, char** argv)
+static void mainLoop()
 {
-    if (!loadRomImage())
-    {
-        return -1;
-    }
+    SMBEngine engine(romImage);
+    smbEngine = &engine;
+    engine.reset();
 
-    if (!initialize())
-    {
-        return -1;
-    }
-
-    code(0);
     bool running = true;
     while (running)
     {
@@ -189,6 +195,7 @@ int main(int argc, char** argv)
         }
 
         const Uint8* keys = SDL_GetKeyboardState(NULL);
+        Controller& controller1 = engine.getController1();
         controller1.setButtonState(BUTTON_A, keys[SDL_SCANCODE_X]);
         controller1.setButtonState(BUTTON_B, keys[SDL_SCANCODE_Z]);
         controller1.setButtonState(BUTTON_SELECT, keys[SDL_SCANCODE_BACKSPACE]);
@@ -201,7 +208,7 @@ int main(int argc, char** argv)
         if (keys[SDL_SCANCODE_R])
         {
             // Reset
-            code(0);
+            engine.reset();
         }
         if (keys[SDL_SCANCODE_ESCAPE])
         {
@@ -210,9 +217,10 @@ int main(int argc, char** argv)
             break;
         }
 
-        code(1);
+        engine.update();
+        engine.render(renderBuffer);
 
-        SDL_UpdateTexture(texture, NULL, render(), sizeof(uint32_t) * RENDER_WIDTH);
+        SDL_UpdateTexture(texture, NULL, renderBuffer, sizeof(uint32_t) * RENDER_WIDTH);
 
         SDL_RenderClear(renderer);
         SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH, RENDER_HEIGHT);
@@ -221,6 +229,21 @@ int main(int argc, char** argv)
         SDL_RenderCopy(renderer, scanlineTexture, NULL, NULL);
         SDL_RenderPresent(renderer);
     }
+}
+
+int main(int argc, char** argv)
+{
+    if (!loadRomImage())
+    {
+        return -1;
+    }
+
+    if (!initialize())
+    {
+        return -1;
+    }
+
+    mainLoop();
 
     shutdown();
 

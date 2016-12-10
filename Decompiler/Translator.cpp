@@ -7,7 +7,7 @@ void translateAst(AstRootNode* ast, const std::string& outputFilename)
 {
     std::ofstream outputFile(outputFilename);
 
-    outputFile << "#include \"Decompiled.hpp\"\n#include \"Util.hpp\"\n\n";
+    outputFile << "#include \"Decompiled.hpp\"\n\n";
 
     // First, translate all constants
     outputFile << "// Constants\n";
@@ -50,7 +50,7 @@ void translateAst(AstRootNode* ast, const std::string& outputFilename)
     outputFile << "// Generated Data Addresses\n";
     int address = 0x8000;
     std::stringstream dataLoadCode;
-    dataLoadCode << "static void loadConstantData()\n{\n";
+    dataLoadCode << "void SMBEngine::loadConstantData()\n{\n";
     for( auto& l : dataLabels )
     {
         int bytes = 0;
@@ -121,7 +121,7 @@ void translateAst(AstRootNode* ast, const std::string& outputFilename)
     outputFile << dataLoadCode.str() << std::endl;
 
     // Translate code labels
-    outputFile << "void code(int mode)\n{\n" << TAB << "switch(mode)\n" << TAB << "{\n" << TAB << "case 0:\n" << TAB << TAB << "loadConstantData();\n" << TAB << TAB << "goto Start;\n" << TAB << "case 1:\n" << TAB << TAB << "goto NonMaskableInterrupt;\n" << TAB << "}\n";
+    outputFile << "void SMBEngine::code(int mode)\n{\n" << TAB << "switch(mode)\n" << TAB << "{\n" << TAB << "case 0:\n" << TAB << TAB << "loadConstantData();\n" << TAB << TAB << "goto Start;\n" << TAB << "case 1:\n" << TAB << TAB << "goto NonMaskableInterrupt;\n" << TAB << "}\n";
     for( auto& l : codeLabels )
     {
         if( l->name.compare("JumpEngine") == 0 )

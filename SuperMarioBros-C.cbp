@@ -44,10 +44,12 @@
 		<Unit filename="Decompiled.cpp" />
 		<Unit filename="Decompiled.hpp" />
 		<Unit filename="Main.cpp" />
+		<Unit filename="MemoryAccess.cpp" />
+		<Unit filename="MemoryAccess.hpp" />
 		<Unit filename="PPU.cpp" />
 		<Unit filename="PPU.hpp" />
-		<Unit filename="Util.cpp" />
-		<Unit filename="Util.hpp" />
+		<Unit filename="SMBEngine.cpp" />
+		<Unit filename="SMBEngine.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

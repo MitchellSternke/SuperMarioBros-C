@@ -1,10 +1,5 @@
 #include "PPU.hpp"
-#include "Util.hpp"
-
-/**
- * Storage for the framebuffer used for rendering.
- */
-static uint32_t buffer[256 * 240];
+#include "SMBEngine.hpp"
 
 static const uint8_t nametableMirrorLookup[][4] = {
     {0, 0, 1, 1}, // Vertical
@@ -81,19 +76,8 @@ static const uint32_t paletteRGB[] = {
     0x000000
 };
 
-static uint8_t readChr(int index)
-{
-    if (index < 0x2000)
-    {
-        return getChr()[index];
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-PPU::PPU()
+PPU::PPU(SMBEngine& engine) :
+    engine(engine)
 {
     currentAddress = 0;
     writeToggle = false;
@@ -134,7 +118,7 @@ uint8_t PPU::readByte(uint16_t address)
     if (address < 0x2000)
     {
         // CHR
-        return getChr()[address];
+        return engine.getCHR()[address];
     }
     else if (address < 0x3f00)
     {
@@ -143,6 +127,18 @@ uint8_t PPU::readByte(uint16_t address)
     }
 
     return 0;
+}
+
+uint8_t PPU::readCHR(int index)
+{
+    if (index < 0x2000)
+    {
+        return engine.getCHR()[index];
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 uint8_t PPU::readDataRegister()
@@ -184,7 +180,7 @@ uint8_t PPU::readRegister(uint16_t address)
     return 0;
 }
 
-void PPU::renderTile(int index, int xOffset, int yOffset)
+void PPU::renderTile(uint32_t* buffer, int index, int xOffset, int yOffset)
 {
     // Lookup the pattern table entry
     uint16_t tile = readByte(index) + (ppuCtrl & (1 << 4) ? 256 : 0);
@@ -193,8 +189,8 @@ void PPU::renderTile(int index, int xOffset, int yOffset)
     // Read the pixels of the tile
     for( int row = 0; row < 8; row++ )
     {
-        uint8_t plane1 = readByte(tile * 16 + row);
-        uint8_t plane2 = readByte(tile * 16 + row + 8);
+        uint8_t plane1 = readCHR(tile * 16 + row);
+        uint8_t plane2 = readCHR(tile * 16 + row + 8);
 
         for( int column = 0; column < 8; column++ )
         {
@@ -220,7 +216,7 @@ void PPU::renderTile(int index, int xOffset, int yOffset)
 
 }
 
-uint32_t* PPU::render()
+void PPU::render(uint32_t* buffer)
 {
     // Clear the buffer with the background color
     for (int index = 0; index < 256 * 240; index++)
@@ -257,8 +253,8 @@ uint32_t* PPU::render()
         // Copy pixels to the framebuffer
         for( int row = 0; row < 8; row++ )
         {
-            uint8_t plane1 = readChr(tile * 16 + row);
-            uint8_t plane2 = readChr(tile * 16 + row + 8);
+            uint8_t plane1 = readCHR(tile * 16 + row);
+            uint8_t plane2 = readCHR(tile * 16 + row + 8);
 
             for( int column = 0; column < 8; column++ )
             {
@@ -303,7 +299,7 @@ uint32_t* PPU::render()
         for (int y = 0; y < 4; y++)
         {
             // Render the status bar in the same position (it doesn't scroll)
-            renderTile(0x2000 + 32 * y + x, x * 8, y * 8);
+            renderTile(buffer, 0x2000 + 32 * y + x, x * 8, y * 8);
         }
     }
     for (int x = xMin; x <= xMax; x++)
@@ -326,7 +322,7 @@ uint32_t* PPU::render()
             }
 
             // Render the tile
-            renderTile(index, (x * 8) - (int)scrollX, (y * 8));
+            renderTile(buffer, index, (x * 8) - (int)scrollX, (y * 8));
         }
     }
 
@@ -359,8 +355,8 @@ uint32_t* PPU::render()
         // Copy pixels to the framebuffer
         for( int row = 0; row < 8; row++ )
         {
-            uint8_t plane1 = readChr(tile * 16 + row);
-            uint8_t plane2 = readChr(tile * 16 + row + 8);
+            uint8_t plane1 = readCHR(tile * 16 + row);
+            uint8_t plane2 = readCHR(tile * 16 + row + 8);
 
             for( int column = 0; column < 8; column++ )
             {
@@ -395,8 +391,6 @@ uint32_t* PPU::render()
             }
         }
     }
-
-    return buffer;
 }
 
 void PPU::writeAddressRegister(uint8_t value)
@@ -458,7 +452,7 @@ void PPU::writeDMA(uint8_t page)
     uint16_t address = (uint16_t)page << 8;
     for (int i = 0; i < 256; i++)
     {
-        oam[oamAddress] = readData(address);
+        oam[oamAddress] = engine.readData(address);
         address++;
         oamAddress++;
     }

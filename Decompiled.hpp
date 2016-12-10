@@ -1,11 +1,37 @@
 #ifndef DECOMPILED_HPP
 #define DECOMPILED_HPP
 
+#include <boost/utility/binary.hpp>
+
+#include "SMBEngine.hpp"
+
+//---------------------------------------------------------------------
+// Macros:
+//---------------------------------------------------------------------
+
 /**
- * Run the decompiled code for the game.
- *
- * @param mode the mode to run. 0 runs initialization routines, 1 runs the logic for frames.
+ * Read and access a byte from emulated memory.
  */
-void code(int mode);
+#define M(addr) getMemory(addr)
+
+/**
+ * Read a word from emulated memory (in little-endian format).
+ */
+#define W(addr) getMemoryWord(addr)
+
+/**
+ * Call a subroutine stored in a goto label.
+ */
+#define JSR(subroutine, index) pushReturnIndex(index); goto subroutine; Return_ ## index:
+
+/**
+ * High/upper byte of a 16-bit integer.
+ */
+#define HIBYTE(v) ((v >> 8) & 0xff)
+
+/**
+ * Low byte of a 16-bit integer.
+ */
+#define LOBYTE(v) (v & 0xff)
 
 #endif // DECOMPILED_HPP

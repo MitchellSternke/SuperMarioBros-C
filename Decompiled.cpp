@@ -1,5 +1,4 @@
 #include "Decompiled.hpp"
-#include "Util.hpp"
 
 // Constants
 #define PPU_CTRL_REG1 0x2000
@@ -3432,7 +3431,7 @@ static const uint8_t BrickShatterEnvData__data[] = {
     0x1a, 0x1a, 0x1c, 0x1d, 0x1d, 0x1e, 0x1e, 0x1f
 };
 
-static void loadConstantData()
+void SMBEngine::loadConstantData()
 {
     writeData(VRAM_AddrTable_Low, VRAM_AddrTable_Low__data, 19);
     writeData(VRAM_AddrTable_High, VRAM_AddrTable_High__data, 19);
@@ -3785,7 +3784,7 @@ static void loadConstantData()
     writeData(BrickShatterEnvData, BrickShatterEnvData__data, 19);
 }
 
-void code(int mode)
+void SMBEngine::code(int mode)
 {
     switch(mode)
     {

@@ -3,26 +3,30 @@
 
 #include <cstdint>
 
+class SMBEngine;
+
 /**
  * Emulates the NES Picture Processing Unit.
  */
 class PPU
 {
 public:
-    PPU();
+    PPU(SMBEngine& engine);
 
     uint8_t readRegister(uint16_t address);
 
     /**
-     * Get the rendered frame buffer.
+     * Render to a frame buffer.
      */
-    uint32_t* render();
+    void render(uint32_t* buffer);
 
     void writeDMA(uint8_t page);
 
     void writeRegister(uint16_t address, uint8_t value);
 
 private:
+    SMBEngine& engine;
+
     uint8_t ppuCtrl; /**< $2000 */
     uint8_t ppuMask; /**< $2001 */
     uint8_t ppuStatus; /**< 2002 */
@@ -42,8 +46,9 @@ private:
     uint8_t getAttributeTableValue(uint16_t nametableAddress);
     uint16_t getNametableIndex(uint16_t address);
     uint8_t readByte(uint16_t address);
+    uint8_t readCHR(int index);
     uint8_t readDataRegister();
-    void renderTile(int index, int xOffset, int yOffset);
+    void renderTile(uint32_t* buffer, int index, int xOffset, int yOffset);
     void writeAddressRegister(uint8_t value);
     void writeByte(uint16_t address, uint8_t value);
     void writeDataRegister(uint8_t value);
