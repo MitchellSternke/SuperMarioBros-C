@@ -4,6 +4,7 @@
 
 #include "Controller.hpp"
 #include "SMBEngine.hpp"
+#include "Video.hpp"
 
 #define RENDER_WIDTH 256
 #define RENDER_HEIGHT 240
@@ -11,22 +12,13 @@
 
 #define FREQUENCY 44100
 
-static uint8_t* romImage;
+uint8_t* romImage;
 static SDL_Window* window;
 static SDL_Renderer* renderer;
 static SDL_Texture* texture;
 static SDL_Texture* scanlineTexture;
 static SMBEngine* smbEngine = nullptr;
 static uint32_t renderBuffer[256 * 240];
-
-/**
- * Get a pointer to the CHR data in the ROM image.
- */
-uint8_t* getChr()
-{
-    // Location: Header (16 bytes) + 2 PRG pages (16k each)
-    return (romImage + 16 + (16384 * 2));
-}
 
 /**
  * Load the Super Mario Bros. ROM image.
@@ -223,10 +215,15 @@ static void mainLoop()
         SDL_UpdateTexture(texture, NULL, renderBuffer, sizeof(uint32_t) * RENDER_WIDTH);
 
         SDL_RenderClear(renderer);
+
+        // Render the screen
         SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH, RENDER_HEIGHT);
         SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+        // Render scanlines
         SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH * 3, RENDER_HEIGHT * 3);
         SDL_RenderCopy(renderer, scanlineTexture, NULL, NULL);
+
         SDL_RenderPresent(renderer);
     }
 }

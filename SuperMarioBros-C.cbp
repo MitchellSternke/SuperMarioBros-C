@@ -50,6 +50,8 @@
 		<Unit filename="PPU.hpp" />
 		<Unit filename="SMBEngine.cpp" />
 		<Unit filename="SMBEngine.hpp" />
+		<Unit filename="Video.cpp" />
+		<Unit filename="Video.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
