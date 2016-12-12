@@ -67,7 +67,10 @@ void translateAst(AstRootNode* ast, const std::string& outputFilename)
         sprintf(addressAsHex, "0x%x", address);
         outputFile << "#define " << l->name << " " << addressAsHex << std::endl;
 
-        dataLoadCode << TAB << "writeData(" << l->name << ", " << l->name << "__data" << ", " << bytes << ");\n";
+        if (bytes > 0)
+        {
+            dataLoadCode << TAB << "writeData(" << l->name << ", " << l->name << "__data" << ", sizeof(" << l->name << "__data));\n";
+        }
 
         address += bytes;
     }
