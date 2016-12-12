@@ -2,9 +2,9 @@
 
 #include <SDL2/SDL.h>
 
-#include "Controller.hpp"
-#include "SMBEngine.hpp"
-#include "Video.hpp"
+#include "Emulation/Controller.hpp"
+#include "SMB/SMBEngine.hpp"
+#include "Util/Video.hpp"
 
 #define RENDER_WIDTH 256
 #define RENDER_HEIGHT 240

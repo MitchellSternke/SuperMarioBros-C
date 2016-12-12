@@ -1,6 +1,7 @@
+#include "../SMB/SMBEngine.hpp"
+#include "../Util/Video.hpp"
+
 #include "PPU.hpp"
-#include "SMBEngine.hpp"
-#include "Video.hpp"
 
 static const uint8_t nametableMirrorLookup[][4] = {
     {0, 0, 1, 1}, // Vertical

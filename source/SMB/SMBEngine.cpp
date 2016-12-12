@@ -1,8 +1,9 @@
 #include <cstring>
 
-#include "APU.hpp"
-#include "Controller.hpp"
-#include "PPU.hpp"
+#include "../Emulation/APU.hpp"
+#include "../Emulation/Controller.hpp"
+#include "../Emulation/PPU.hpp"
+
 #include "SMBEngine.hpp"
 
 #define DATA_STORAGE_OFFSET 0x8000 // Starting address for storing constant data

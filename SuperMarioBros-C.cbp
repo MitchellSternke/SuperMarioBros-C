@@ -37,21 +37,21 @@
 			<Add library="SDL2main" />
 			<Add library="SDL2" />
 		</Linker>
-		<Unit filename="APU.cpp" />
-		<Unit filename="APU.hpp" />
-		<Unit filename="Controller.cpp" />
-		<Unit filename="Controller.hpp" />
-		<Unit filename="Decompiled.cpp" />
-		<Unit filename="Decompiled.hpp" />
-		<Unit filename="Main.cpp" />
-		<Unit filename="MemoryAccess.cpp" />
-		<Unit filename="MemoryAccess.hpp" />
-		<Unit filename="PPU.cpp" />
-		<Unit filename="PPU.hpp" />
-		<Unit filename="SMBEngine.cpp" />
-		<Unit filename="SMBEngine.hpp" />
-		<Unit filename="Video.cpp" />
-		<Unit filename="Video.hpp" />
+		<Unit filename="source/Emulation/APU.cpp" />
+		<Unit filename="source/Emulation/APU.hpp" />
+		<Unit filename="source/Emulation/Controller.cpp" />
+		<Unit filename="source/Emulation/Controller.hpp" />
+		<Unit filename="source/Emulation/MemoryAccess.cpp" />
+		<Unit filename="source/Emulation/MemoryAccess.hpp" />
+		<Unit filename="source/Emulation/PPU.cpp" />
+		<Unit filename="source/Emulation/PPU.hpp" />
+		<Unit filename="source/Main.cpp" />
+		<Unit filename="source/SMB/Decompiled.cpp" />
+		<Unit filename="source/SMB/Decompiled.hpp" />
+		<Unit filename="source/SMB/SMBEngine.cpp" />
+		<Unit filename="source/SMB/SMBEngine.hpp" />
+		<Unit filename="source/Util/Video.cpp" />
+		<Unit filename="source/Util/Video.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

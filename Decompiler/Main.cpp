@@ -402,7 +402,7 @@ int main()
     // Parse tokens into an AST
     AstRootNode* root = generateAst(tokens);
     //root->print(0);
-    translateAst(root, "../Decompiled.cpp");
+    translateAst(root, "../source/SMB/Decompiled.cpp");
 
     // Analyze AST structure and create optimized output tree
     return 0;

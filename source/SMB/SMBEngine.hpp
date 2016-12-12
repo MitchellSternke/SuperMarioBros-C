@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "MemoryAccess.hpp"
+#include "../Emulation/MemoryAccess.hpp"
 
 class APU;
 class Controller;

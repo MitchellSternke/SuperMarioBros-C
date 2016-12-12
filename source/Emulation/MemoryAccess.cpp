@@ -1,5 +1,6 @@
+#include "../SMB/SMBEngine.hpp"
+
 #include "MemoryAccess.hpp"
-#include "SMBEngine.hpp"
 
 MemoryAccess::MemoryAccess(SMBEngine& engine, uint8_t* value) :
     engine(engine)
