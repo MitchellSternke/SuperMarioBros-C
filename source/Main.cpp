@@ -6,11 +6,7 @@
 #include "SMB/SMBEngine.hpp"
 #include "Util/Video.hpp"
 
-#define RENDER_WIDTH 256
-#define RENDER_HEIGHT 240
-#define SCALE 3
-
-#define FREQUENCY 44100
+#include "Constants.hpp"
 
 uint8_t* romImage;
 static SDL_Window* window;
@@ -18,7 +14,7 @@ static SDL_Renderer* renderer;
 static SDL_Texture* texture;
 static SDL_Texture* scanlineTexture;
 static SMBEngine* smbEngine = nullptr;
-static uint32_t renderBuffer[256 * 240];
+static uint32_t renderBuffer[RENDER_WIDTH * RENDER_HEIGHT];
 
 /**
  * Load the Super Mario Bros. ROM image.
@@ -26,7 +22,7 @@ static uint32_t renderBuffer[256 * 240];
 static bool loadRomImage()
 {
     // TODO: this should be configurable
-    FILE* file = fopen("Super Mario Bros. (JU) (PRG0) [!].nes", "r");
+    FILE* file = fopen(ROM_FILENAME, "r");
     if (file == NULL)
     {
         return false;
@@ -46,45 +42,6 @@ static bool loadRomImage()
 }
 
 /**
- * Generate a texture for a scanline overlay effect.
- */
-static void generateScanlineTexture()
-{
-    // Create a scanline texture for 3x rendering
-    scanlineTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, RENDER_WIDTH * 3, RENDER_HEIGHT * 3);
-    uint32_t* scanlineTextureBuffer = new uint32_t[RENDER_WIDTH * RENDER_HEIGHT * 3 * 3];
-    for (int y = 0; y < RENDER_HEIGHT; y++)
-    {
-        for (int x = 0; x < RENDER_WIDTH; x++)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    uint32_t color = 0xff000000;
-                    switch (j)
-                    {
-                    case 0:
-                        color |= 0xfdd6c7;
-                        break;
-                    case 1:
-                        color |= 0xbef5e1;
-                        break;
-                    case 2:
-                        color |= 0xcfe2ff;
-                        break;
-                    }
-                    scanlineTextureBuffer[((y * 3) + i) * (RENDER_WIDTH * 3) + (x * 3) + j] = color;
-                }
-            }
-        }
-    }
-    SDL_SetTextureBlendMode(scanlineTexture, SDL_BLENDMODE_MOD);
-    SDL_UpdateTexture(scanlineTexture, NULL, scanlineTextureBuffer, sizeof(uint32_t) * RENDER_WIDTH * 3);
-    delete [] scanlineTextureBuffer;
-}
-
-/**
  * SDL Audio callback function.
  */
 static void audioCallback(void* userdata, uint8_t* buffer, int len)
@@ -100,6 +57,12 @@ static void audioCallback(void* userdata, uint8_t* buffer, int len)
  */
 static bool initialize()
 {
+    // Load the SMB ROM image
+    if (!loadRomImage())
+    {
+        return false;
+    }
+
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
@@ -107,11 +70,11 @@ static bool initialize()
     }
 
     // Create the window
-    window = SDL_CreateWindow("Super Mario Bros.",
+    window = SDL_CreateWindow(APP_TITLE,
                               SDL_WINDOWPOS_UNDEFINED,
                               SDL_WINDOWPOS_UNDEFINED,
-                              RENDER_WIDTH * SCALE,
-                              RENDER_HEIGHT * SCALE,
+                              RENDER_WIDTH * RENDER_SCALE,
+                              RENDER_HEIGHT * RENDER_SCALE,
                               0
     );
 
@@ -120,11 +83,11 @@ static bool initialize()
     SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH, RENDER_HEIGHT);
     texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RENDER_WIDTH, RENDER_HEIGHT);
 
-    generateScanlineTexture();
+    scanlineTexture = generateScanlineTexture(renderer);
 
     // Initialize audio
     SDL_AudioSpec desiredSpec;
-    desiredSpec.freq = FREQUENCY;
+    desiredSpec.freq = AUDIO_FREQUENCY_HZ;
     desiredSpec.format = AUDIO_S8;
     desiredSpec.channels = 1;
     desiredSpec.samples = 2048;
@@ -208,6 +171,10 @@ static void mainLoop()
             running = false;
             break;
         }
+        if (keys[SDL_SCANCODE_F])
+        {
+            SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        }
 
         engine.update();
         engine.render(renderBuffer);
@@ -230,11 +197,6 @@ static void mainLoop()
 
 int main(int argc, char** argv)
 {
-    if (!loadRomImage())
-    {
-        return -1;
-    }
-
     if (!initialize())
     {
         return -1;

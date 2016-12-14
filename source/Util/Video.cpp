@@ -1,3 +1,5 @@
+#include "../Constants.hpp"
+
 #include "Video.hpp"
 
 void drawBox(uint32_t* buffer, int xOffset, int yOffset, int width, int height, uint32_t palette)
@@ -132,4 +134,42 @@ void drawText(uint32_t* buffer, int xOffset, int yOffset, const std::string& tex
         }
         drawCHRTile(buffer, xOffset + i * 8, yOffset, tile, palette);
     }
+}
+
+SDL_Texture* generateScanlineTexture(SDL_Renderer* renderer)
+{
+    // Create a scanline texture for 3x rendering
+    SDL_Texture* scanlineTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, RENDER_WIDTH * 3, RENDER_HEIGHT * 3);
+    uint32_t* scanlineTextureBuffer = new uint32_t[RENDER_WIDTH * RENDER_HEIGHT * 3 * 3];
+    for (int y = 0; y < RENDER_HEIGHT; y++)
+    {
+        for (int x = 0; x < RENDER_WIDTH; x++)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    uint32_t color = 0xff000000;
+                    switch (j)
+                    {
+                    case 0:
+                        color |= 0xfdd6c7;
+                        break;
+                    case 1:
+                        color |= 0xbef5e1;
+                        break;
+                    case 2:
+                        color |= 0xcfe2ff;
+                        break;
+                    }
+                    scanlineTextureBuffer[((y * 3) + i) * (RENDER_WIDTH * 3) + (x * 3) + j] = color;
+                }
+            }
+        }
+    }
+    SDL_SetTextureBlendMode(scanlineTexture, SDL_BLENDMODE_MOD);
+    SDL_UpdateTexture(scanlineTexture, NULL, scanlineTextureBuffer, sizeof(uint32_t) * RENDER_WIDTH * 3);
+    delete [] scanlineTextureBuffer;
+
+    return scanlineTexture;
 }
