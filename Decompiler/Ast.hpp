@@ -712,7 +712,7 @@ struct AstCodeNode : public AstNode
             if( name->text.compare("JumpEngine") == 0 )
             {
                 // Special case. Create a jump table
-                result += std::string("switch(a)\n") + TAB + TAB + "{\n";
+                result += std::string("switch(a)\n") + TAB + "{\n";
 
                 AstLabelNode* parentLabel = static_cast<AstLabelNode*>(parent);
                 bool foundSelf = false;

@@ -4088,7 +4088,7 @@ SetMiscOffset:
 OperModeExecutionTree:
     a = M(OperMode);
     switch(a)
-        {
+    {
     case 0:
         goto TitleScreenMode;
     case 1:
@@ -4120,7 +4120,7 @@ SprInitLoop:
 TitleScreenMode:
     a = M(OperMode_Task);
     switch(a)
-        {
+    {
     case 0:
         goto InitializeGame;
     case 1:
@@ -4315,7 +4315,7 @@ AutoPlayer:
 VictoryModeSubroutines:
     a = M(OperMode_Task);
     switch(a)
-        {
+    {
     case 0:
         goto BridgeCollapse;
     case 1:
@@ -4593,7 +4593,7 @@ SetupNumSpr:
 ScreenRoutines:
     a = M(ScreenRoutineTask);
     switch(a)
-        {
+    {
     case 0:
         goto InitScreen;
     case 1:
@@ -5927,7 +5927,7 @@ SetHalfway:
 GameOverMode:
     a = M(OperMode_Task);
     switch(a)
-        {
+    {
     case 0:
         goto SetupGameOver;
     case 1:
@@ -6048,7 +6048,7 @@ SkipATRender:
 
 AreaParserTasks:
     switch(a)
-        {
+    {
     case 0:
         goto IncrementColumnPos;
     case 1:
@@ -6503,7 +6503,7 @@ RunAObj:
     c = 0;
     a += M(0x07);
     switch(a)
-        {
+    {
     case 0:
         goto VerticalPipe;
     case 1:
@@ -6700,7 +6700,7 @@ ExitAFrenzy:
 AreaStyleObject:
     a = M(AreaStyle);
     switch(a)
-        {
+    {
     case 0:
         goto TreeLedge;
     case 1:
@@ -7518,7 +7518,7 @@ StoreStyle:
 GameMode:
     a = M(OperMode_Task);
     switch(a)
-        {
+    {
     case 0:
         goto InitializeArea;
     case 1:
@@ -7731,7 +7731,7 @@ GetScreenPosition:
 GameRoutines:
     a = M(GameEngineSubroutine);
     switch(a)
-        {
+    {
     case 0:
         goto Entrance_GameTimerSetup;
     case 1:
@@ -8255,7 +8255,7 @@ ProcMove:
     writeData(ClimbSideTimer, y);
 MoveSubs:
     switch(a)
-        {
+    {
     case 0:
         goto OnGroundStateSub;
     case 1:
@@ -9857,7 +9857,7 @@ BumpBlock:
     a -= 0x05;
 BlockCode:
     switch(a)
-        {
+    {
     case 0:
         goto MushFlowerBlock;
     case 1:
@@ -10651,7 +10651,7 @@ CheckpointEnemyID:
     a = y;
 InitEnemyRoutines:
     switch(a)
-        {
+    {
     case 0:
         goto InitNormalEnemy;
     case 1:
@@ -11466,7 +11466,7 @@ InitEnemyFrenzy:
     c = 1;
     a -= 0x12;
     switch(a)
-        {
+    {
     case 0:
         goto LakituAndSpinyHandler;
     case 1:
@@ -11636,7 +11636,7 @@ RunEnemyObjectsCore:
     a -= 0x14;
 JmpEO:
     switch(a)
-        {
+    {
     case 0:
         goto RunNormalEnemies;
     case 1:
@@ -11734,7 +11734,7 @@ SkipMove:
 EnemyMovementSubs:
     a = M(Enemy_ID + x);
     switch(a)
-        {
+    {
     case 0:
         goto MoveNormalEnemy;
     case 1:
@@ -11820,7 +11820,7 @@ LargePlatformSubroutines:
     c = 1;
     a -= 0x24;
     switch(a)
-        {
+    {
     case 0:
         goto BalancePlatform;
     case 1:
@@ -13281,7 +13281,7 @@ RunStarFlagObj:
     if (c)
         goto StarFlagExit;
     switch(a)
-        {
+    {
     case 0:
         goto StarFlagExit;
     case 1:
