@@ -4098,6 +4098,9 @@ OperModeExecutionTree:
     case 3:
         goto GameOverMode;
     }
+
+//---------------------------------------------------------------------
+
 MoveAllSpritesOffscreen:
     y = 0x00;
     goto Skip_0;
@@ -4130,6 +4133,9 @@ TitleScreenMode:
     case 3:
         goto GameMenuRoutine;
     }
+
+//---------------------------------------------------------------------
+
 GameMenuRoutine:
     y = 0x00;
     a = M(SavedJoypad1Bits);
@@ -4327,6 +4333,9 @@ VictoryModeSubroutines:
     case 4:
         goto PlayerEndWorld;
     }
+
+//---------------------------------------------------------------------
+
 SetupVictoryMode:
     x = M(ScreenRight_PageLoc);
     ++x;
@@ -4625,6 +4634,9 @@ ScreenRoutines:
     case 14:
         goto WriteTopScore;
     }
+
+//---------------------------------------------------------------------
+
 InitScreen:
     JSR(MoveAllSpritesOffscreen, 29)
     JSR(InitializeNameTables, 30)
@@ -5935,6 +5947,9 @@ GameOverMode:
     case 2:
         goto RunGameOver;
     }
+
+//---------------------------------------------------------------------
+
 SetupGameOver:
     a = 0x00;
     writeData(ScreenRoutineTask, a);
@@ -6066,6 +6081,9 @@ AreaParserTasks:
     case 7:
         goto AreaParserCore;
     }
+
+//---------------------------------------------------------------------
+
 IncrementColumnPos:
     ++M(CurrentColumnPos);
     a = M(CurrentColumnPos);
@@ -6599,6 +6617,9 @@ RunAObj:
     case 46:
         goto AlterAreaAttributes;
     }
+
+//---------------------------------------------------------------------
+
 AlterAreaAttributes:
     y = M(AreaObjOffsetBuffer + x);
     ++y;
@@ -6708,6 +6729,9 @@ AreaStyleObject:
     case 2:
         goto BulletBillCannon;
     }
+
+//---------------------------------------------------------------------
+
 TreeLedge:
     JSR(GetLrgObjAttrib, 76)
     a = M(AreaObjectLength + x);
@@ -7528,6 +7552,9 @@ GameMode:
     case 3:
         goto GameCoreRoutine;
     }
+
+//---------------------------------------------------------------------
+
 GameCoreRoutine:
     x = M(CurrentPlayer);
     a = M(SavedJoypadBits + x);
@@ -7759,6 +7786,9 @@ GameRoutines:
     case 12:
         goto PlayerFireFlower;
     }
+
+//---------------------------------------------------------------------
+
 PlayerEntrance:
     a = M(AltEntranceControl);
     compare(a, 0x02);
@@ -8265,6 +8295,9 @@ MoveSubs:
     case 3:
         goto ClimbingSub;
     }
+
+//---------------------------------------------------------------------
+
 NoMoveSub:
     goto Return;
 
@@ -9877,6 +9910,9 @@ BlockCode:
     case 8:
         goto ExtraLifeMushBlock;
     }
+
+//---------------------------------------------------------------------
+
 MushFlowerBlock:
     a = 0x00;
     goto Skip_4;
@@ -10763,6 +10799,9 @@ InitEnemyRoutines:
     case 54:
         goto EndOfEnemyInitCode;
     }
+
+//---------------------------------------------------------------------
+
 NoInitCode:
     goto Return;
 
@@ -11480,6 +11519,9 @@ InitEnemyFrenzy:
     case 5:
         goto BulletBillCheepCheep;
     }
+
+//---------------------------------------------------------------------
+
 NoFrenzyCode:
     goto Return;
 
@@ -11706,6 +11748,9 @@ JmpEO:
     case 33:
         goto RunRetainerObj;
     }
+
+//---------------------------------------------------------------------
+
 NoRunCode:
     goto Return;
 
@@ -11778,6 +11823,9 @@ EnemyMovementSubs:
     case 20:
         goto MoveFlyingCheepCheep;
     }
+
+//---------------------------------------------------------------------
+
 NoMoveCode:
     goto Return;
 
@@ -11836,6 +11884,9 @@ LargePlatformSubroutines:
     case 6:
         goto RightPlatform;
     }
+
+//---------------------------------------------------------------------
+
 EraseEnemyObject:
     a = 0x00;
     writeData(Enemy_Flag + x, a);
@@ -13293,6 +13344,9 @@ RunStarFlagObj:
     case 4:
         goto DelayToAreaEnd;
     }
+
+//---------------------------------------------------------------------
+
 GameTimerFireworks:
     y = 0x05;
     a = M(GameTimerDisplay + 2);

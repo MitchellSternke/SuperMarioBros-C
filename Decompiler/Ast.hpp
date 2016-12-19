@@ -733,7 +733,7 @@ struct AstCodeNode : public AstNode
                         result += std::string(TAB) + "case " + indexStr + ":\n" + TAB + TAB + "goto " + dataName->text + ";\n";
                     }
                 }
-                result += std::string(TAB) + "}\n";
+                result += std::string(TAB) + "}\n\n//---------------------------------------------------------------------\n\n";
                 return result;
             }
             else
