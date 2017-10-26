@@ -35,4 +35,14 @@
  */
 #define ROM_FILENAME "Super Mario Bros. (JU) (PRG0) [!].nes"
 
+/**
+ * Desired frames per second
+ */
+#define FPS 60
+
+/**
+ * MilliSeconds per second
+ */
+#define MS_PER_SEC 1000
+
 #endif // CONSTANTS_HPP

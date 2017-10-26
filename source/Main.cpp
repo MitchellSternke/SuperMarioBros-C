@@ -125,6 +125,8 @@ static void mainLoop()
     engine.reset();
 
     bool running = true;
+    int progStartTime = SDL_GetTicks();
+    int frame = 0;
     while (running)
     {
         SDL_Event event;
@@ -192,6 +194,23 @@ static void mainLoop()
         SDL_RenderCopy(renderer, scanlineTexture, NULL, NULL);
 
         SDL_RenderPresent(renderer);
+
+        /**
+         * Ensure that the framerate stays as close to 60FPS as possible. If the frame was rendered faster, then delay. 
+         * If the frame was slower, reset time so that the game doesn't try to "catch up", going super-speed.
+         */
+        int now = SDL_GetTicks();
+        int delay = progStartTime + int(double(frame) * double(MS_PER_SEC) / double(FPS)) - now;
+        if(delay > 0) 
+        {
+            SDL_Delay(delay);
+        }
+        else 
+        {
+            frame = 0;
+            progStartTime = now;
+        }
+        frame++;
     }
 }
 
