@@ -166,7 +166,7 @@ private:
     /**
      * Map constant data to the address space. The address must be at least 0x8000.
      */
-    void writeData(uint16_t address, const uint8_t* data, size_t length);
+    void writeData(uint16_t address, const uint8_t* data, std::size_t length);
 };
 
 #endif // SMBENGINE_HPP
