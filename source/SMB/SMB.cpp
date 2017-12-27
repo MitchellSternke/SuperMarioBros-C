@@ -1,3790 +1,3595 @@
-#include "Decompiled.hpp"
-
-// Constants
-#define PPU_CTRL_REG1 0x2000
-#define PPU_CTRL_REG2 0x2001
-#define PPU_STATUS 0x2002
-#define PPU_SPR_ADDR 0x2003
-#define PPU_SPR_DATA 0x2004
-#define PPU_SCROLL_REG 0x2005
-#define PPU_ADDRESS 0x2006
-#define PPU_DATA 0x2007
-#define SND_REGISTER 0x4000
-#define SND_SQUARE1_REG 0x4000
-#define SND_SQUARE2_REG 0x4004
-#define SND_TRIANGLE_REG 0x4008
-#define SND_NOISE_REG 0x400c
-#define SND_DELTA_REG 0x4010
-#define SND_MASTERCTRL_REG 0x4015
-#define SPR_DMA 0x4014
-#define JOYPAD_PORT 0x4016
-#define JOYPAD_PORT1 0x4016
-#define JOYPAD_PORT2 0x4017
-#define ObjectOffset 0x08
-#define FrameCounter 0x09
-#define SavedJoypadBits 0x06fc
-#define SavedJoypad1Bits 0x06fc
-#define SavedJoypad2Bits 0x06fd
-#define JoypadBitMask 0x074a
-#define JoypadOverride 0x0758
-#define A_B_Buttons 0x0a
-#define PreviousA_B_Buttons 0x0d
-#define Up_Down_Buttons 0x0b
-#define Left_Right_Buttons 0x0c
-#define GameEngineSubroutine 0x0e
-#define Mirror_PPU_CTRL_REG1 0x0778
-#define Mirror_PPU_CTRL_REG2 0x0779
-#define OperMode 0x0770
-#define OperMode_Task 0x0772
-#define ScreenRoutineTask 0x073c
-#define GamePauseStatus 0x0776
-#define GamePauseTimer 0x0777
-#define DemoAction 0x0717
-#define DemoActionTimer 0x0718
-#define TimerControl 0x0747
-#define IntervalTimerControl 0x077f
-#define Timers 0x0780
-#define SelectTimer 0x0780
-#define PlayerAnimTimer 0x0781
-#define JumpSwimTimer 0x0782
-#define RunningTimer 0x0783
-#define BlockBounceTimer 0x0784
-#define SideCollisionTimer 0x0785
-#define JumpspringTimer 0x0786
-#define GameTimerCtrlTimer 0x0787
-#define ClimbSideTimer 0x0789
-#define EnemyFrameTimer 0x078a
-#define FrenzyEnemyTimer 0x078f
-#define BowserFireBreathTimer 0x0790
-#define StompTimer 0x0791
-#define AirBubbleTimer 0x0792
-#define ScrollIntervalTimer 0x0795
-#define EnemyIntervalTimer 0x0796
-#define BrickCoinTimer 0x079d
-#define InjuryTimer 0x079e
-#define StarInvincibleTimer 0x079f
-#define ScreenTimer 0x07a0
-#define WorldEndTimer 0x07a1
-#define DemoTimer 0x07a2
-#define Sprite_Data 0x0200
-#define Sprite_Y_Position 0x0200
-#define Sprite_Tilenumber 0x0201
-#define Sprite_Attributes 0x0202
-#define Sprite_X_Position 0x0203
-#define ScreenEdge_PageLoc 0x071a
-#define ScreenEdge_X_Pos 0x071c
-#define ScreenLeft_PageLoc 0x071a
-#define ScreenRight_PageLoc 0x071b
-#define ScreenLeft_X_Pos 0x071c
-#define ScreenRight_X_Pos 0x071d
-#define PlayerFacingDir 0x33
-#define DestinationPageLoc 0x34
-#define VictoryWalkControl 0x35
-#define ScrollFractional 0x0768
-#define PrimaryMsgCounter 0x0719
-#define SecondaryMsgCounter 0x0749
-#define HorizontalScroll 0x073f
-#define VerticalScroll 0x0740
-#define ScrollLock 0x0723
-#define ScrollThirtyTwo 0x073d
-#define Player_X_Scroll 0x06ff
-#define Player_Pos_ForScroll 0x0755
-#define ScrollAmount 0x0775
-#define AreaData 0xe7
-#define AreaDataLow 0xe7
-#define AreaDataHigh 0xe8
-#define EnemyData 0xe9
-#define EnemyDataLow 0xe9
-#define EnemyDataHigh 0xea
-#define AreaParserTaskNum 0x071f
-#define ColumnSets 0x071e
-#define CurrentPageLoc 0x0725
-#define CurrentColumnPos 0x0726
-#define BackloadingFlag 0x0728
-#define BehindAreaParserFlag 0x0729
-#define AreaObjectPageLoc 0x072a
-#define AreaObjectPageSel 0x072b
-#define AreaDataOffset 0x072c
-#define AreaObjOffsetBuffer 0x072d
-#define AreaObjectLength 0x0730
-#define StaircaseControl 0x0734
-#define AreaObjectHeight 0x0735
-#define MushroomLedgeHalfLen 0x0736
-#define EnemyDataOffset 0x0739
-#define EnemyObjectPageLoc 0x073a
-#define EnemyObjectPageSel 0x073b
-#define MetatileBuffer 0x06a1
-#define BlockBufferColumnPos 0x06a0
-#define CurrentNTAddr_Low 0x0721
-#define CurrentNTAddr_High 0x0720
-#define AttributeBuffer 0x03f9
-#define LoopCommand 0x0745
-#define DisplayDigits 0x07d7
-#define TopScoreDisplay 0x07d7
-#define ScoreAndCoinDisplay 0x07dd
-#define PlayerScoreDisplay 0x07dd
-#define GameTimerDisplay 0x07f8
-#define DigitModifier 0x0134
-#define VerticalFlipFlag 0x0109
-#define FloateyNum_Control 0x0110
-#define ShellChainCounter 0x0125
-#define FloateyNum_Timer 0x012c
-#define FloateyNum_X_Pos 0x0117
-#define FloateyNum_Y_Pos 0x011e
-#define FlagpoleFNum_Y_Pos 0x010d
-#define FlagpoleFNum_YMFDummy 0x010e
-#define FlagpoleScore 0x010f
-#define FlagpoleCollisionYPos 0x070f
-#define StompChainCounter 0x0484
-#define VRAM_Buffer1_Offset 0x0300
-#define VRAM_Buffer1 0x0301
-#define VRAM_Buffer2_Offset 0x0340
-#define VRAM_Buffer2 0x0341
-#define VRAM_Buffer_AddrCtrl 0x0773
-#define Sprite0HitDetectFlag 0x0722
-#define DisableScreenFlag 0x0774
-#define DisableIntermediate 0x0769
-#define ColorRotateOffset 0x06d4
-#define TerrainControl 0x0727
-#define AreaStyle 0x0733
-#define ForegroundScenery 0x0741
-#define BackgroundScenery 0x0742
-#define CloudTypeOverride 0x0743
-#define BackgroundColorCtrl 0x0744
-#define AreaType 0x074e
-#define AreaAddrsLOffset 0x074f
-#define AreaPointer 0x0750
-#define PlayerEntranceCtrl 0x0710
-#define GameTimerSetting 0x0715
-#define AltEntranceControl 0x0752
-#define EntrancePage 0x0751
-#define NumberOfPlayers 0x077a
-#define WarpZoneControl 0x06d6
-#define ChangeAreaTimer 0x06de
-#define MultiLoopCorrectCntr 0x06d9
-#define MultiLoopPassCntr 0x06da
-#define FetchNewGameTimerFlag 0x0757
-#define GameTimerExpiredFlag 0x0759
-#define PrimaryHardMode 0x076a
-#define SecondaryHardMode 0x06cc
-#define WorldSelectNumber 0x076b
-#define WorldSelectEnableFlag 0x07fc
-#define ContinueWorld 0x07fd
-#define CurrentPlayer 0x0753
-#define PlayerSize 0x0754
-#define PlayerStatus 0x0756
-#define OnscreenPlayerInfo 0x075a
-#define NumberofLives 0x075a
-#define HalfwayPage 0x075b
-#define LevelNumber 0x075c
-#define Hidden1UpFlag 0x075d
-#define CoinTally 0x075e
-#define WorldNumber 0x075f
-#define AreaNumber 0x0760
-#define CoinTallyFor1Ups 0x0748
-#define OffscreenPlayerInfo 0x0761
-#define OffScr_NumberofLives 0x0761
-#define OffScr_HalfwayPage 0x0762
-#define OffScr_LevelNumber 0x0763
-#define OffScr_Hidden1UpFlag 0x0764
-#define OffScr_CoinTally 0x0765
-#define OffScr_WorldNumber 0x0766
-#define OffScr_AreaNumber 0x0767
-#define BalPlatformAlignment 0x03a0
-#define Platform_X_Scroll 0x03a1
-#define PlatformCollisionFlag 0x03a2
-#define YPlatformTopYPos 0x0401
-#define YPlatformCenterYPos 0x58
-#define BrickCoinTimerFlag 0x06bc
-#define StarFlagTaskControl 0x0746
-#define PseudoRandomBitReg 0x07a7
-#define WarmBootValidation 0x07ff
-#define SprShuffleAmtOffset 0x06e0
-#define SprShuffleAmt 0x06e1
-#define SprDataOffset 0x06e4
-#define Player_SprDataOffset 0x06e4
-#define Enemy_SprDataOffset 0x06e5
-#define Block_SprDataOffset 0x06ec
-#define Alt_SprDataOffset 0x06ec
-#define Bubble_SprDataOffset 0x06ee
-#define FBall_SprDataOffset 0x06f1
-#define Misc_SprDataOffset 0x06f3
-#define SprDataOffset_Ctrl 0x03ee
-#define Player_State 0x1d
-#define Enemy_State 0x1e
-#define Fireball_State 0x24
-#define Block_State 0x26
-#define Misc_State 0x2a
-#define Player_MovingDir 0x45
-#define Enemy_MovingDir 0x46
-#define SprObject_X_Speed 0x57
-#define Player_X_Speed 0x57
-#define Enemy_X_Speed 0x58
-#define Fireball_X_Speed 0x5e
-#define Block_X_Speed 0x60
-#define Misc_X_Speed 0x64
-#define Jumpspring_FixedYPos 0x58
-#define JumpspringAnimCtrl 0x070e
-#define JumpspringForce 0x06db
-#define SprObject_PageLoc 0x6d
-#define Player_PageLoc 0x6d
-#define Enemy_PageLoc 0x6e
-#define Fireball_PageLoc 0x74
-#define Block_PageLoc 0x76
-#define Misc_PageLoc 0x7a
-#define Bubble_PageLoc 0x83
-#define SprObject_X_Position 0x86
-#define Player_X_Position 0x86
-#define Enemy_X_Position 0x87
-#define Fireball_X_Position 0x8d
-#define Block_X_Position 0x8f
-#define Misc_X_Position 0x93
-#define Bubble_X_Position 0x9c
-#define SprObject_Y_Speed 0x9f
-#define Player_Y_Speed 0x9f
-#define Enemy_Y_Speed 0xa0
-#define Fireball_Y_Speed 0xa6
-#define Block_Y_Speed 0xa8
-#define Misc_Y_Speed 0xac
-#define SprObject_Y_HighPos 0xb5
-#define Player_Y_HighPos 0xb5
-#define Enemy_Y_HighPos 0xb6
-#define Fireball_Y_HighPos 0xbc
-#define Block_Y_HighPos 0xbe
-#define Misc_Y_HighPos 0xc2
-#define Bubble_Y_HighPos 0xcb
-#define SprObject_Y_Position 0xce
-#define Player_Y_Position 0xce
-#define Enemy_Y_Position 0xcf
-#define Fireball_Y_Position 0xd5
-#define Block_Y_Position 0xd7
-#define Misc_Y_Position 0xdb
-#define Bubble_Y_Position 0xe4
-#define SprObject_Rel_XPos 0x03ad
-#define Player_Rel_XPos 0x03ad
-#define Enemy_Rel_XPos 0x03ae
-#define Fireball_Rel_XPos 0x03af
-#define Bubble_Rel_XPos 0x03b0
-#define Block_Rel_XPos 0x03b1
-#define Misc_Rel_XPos 0x03b3
-#define SprObject_Rel_YPos 0x03b8
-#define Player_Rel_YPos 0x03b8
-#define Enemy_Rel_YPos 0x03b9
-#define Fireball_Rel_YPos 0x03ba
-#define Bubble_Rel_YPos 0x03bb
-#define Block_Rel_YPos 0x03bc
-#define Misc_Rel_YPos 0x03be
-#define SprObject_SprAttrib 0x03c4
-#define Player_SprAttrib 0x03c4
-#define Enemy_SprAttrib 0x03c5
-#define SprObject_X_MoveForce 0x0400
-#define Enemy_X_MoveForce 0x0401
-#define SprObject_YMF_Dummy 0x0416
-#define Player_YMF_Dummy 0x0416
-#define Enemy_YMF_Dummy 0x0417
-#define Bubble_YMF_Dummy 0x042c
-#define SprObject_Y_MoveForce 0x0433
-#define Player_Y_MoveForce 0x0433
-#define Enemy_Y_MoveForce 0x0434
-#define Block_Y_MoveForce 0x043c
-#define DisableCollisionDet 0x0716
-#define Player_CollisionBits 0x0490
-#define Enemy_CollisionBits 0x0491
-#define SprObj_BoundBoxCtrl 0x0499
-#define Player_BoundBoxCtrl 0x0499
-#define Enemy_BoundBoxCtrl 0x049a
-#define Fireball_BoundBoxCtrl 0x04a0
-#define Misc_BoundBoxCtrl 0x04a2
-#define EnemyFrenzyBuffer 0x06cb
-#define EnemyFrenzyQueue 0x06cd
-#define Enemy_Flag 0x0f
-#define Enemy_ID 0x16
-#define PlayerGfxOffset 0x06d5
-#define Player_XSpeedAbsolute 0x0700
-#define FrictionAdderHigh 0x0701
-#define FrictionAdderLow 0x0702
-#define RunningSpeed 0x0703
-#define SwimmingFlag 0x0704
-#define Player_X_MoveForce 0x0705
-#define DiffToHaltJump 0x0706
-#define JumpOrigin_Y_HighPos 0x0707
-#define JumpOrigin_Y_Position 0x0708
-#define VerticalForce 0x0709
-#define VerticalForceDown 0x070a
-#define PlayerChangeSizeFlag 0x070b
-#define PlayerAnimTimerSet 0x070c
-#define PlayerAnimCtrl 0x070d
-#define DeathMusicLoaded 0x0712
-#define FlagpoleSoundQueue 0x0713
-#define CrouchingFlag 0x0714
-#define MaximumLeftSpeed 0x0450
-#define MaximumRightSpeed 0x0456
-#define SprObject_OffscrBits 0x03d0
-#define Player_OffscreenBits 0x03d0
-#define Enemy_OffscreenBits 0x03d1
-#define FBall_OffscreenBits 0x03d2
-#define Bubble_OffscreenBits 0x03d3
-#define Block_OffscreenBits 0x03d4
-#define Misc_OffscreenBits 0x03d6
-#define EnemyOffscrBitsMasked 0x03d8
-#define Cannon_Offset 0x046a
-#define Cannon_PageLoc 0x046b
-#define Cannon_X_Position 0x0471
-#define Cannon_Y_Position 0x0477
-#define Cannon_Timer 0x047d
-#define Whirlpool_Offset 0x046a
-#define Whirlpool_PageLoc 0x046b
-#define Whirlpool_LeftExtent 0x0471
-#define Whirlpool_Length 0x0477
-#define Whirlpool_Flag 0x047d
-#define VineFlagOffset 0x0398
-#define VineHeight 0x0399
-#define VineObjOffset 0x039a
-#define VineStart_Y_Position 0x039d
-#define Block_Orig_YPos 0x03e4
-#define Block_BBuf_Low 0x03e6
-#define Block_Metatile 0x03e8
-#define Block_PageLoc2 0x03ea
-#define Block_RepFlag 0x03ec
-#define Block_ResidualCounter 0x03f0
-#define Block_Orig_XPos 0x03f1
-#define BoundingBox_UL_XPos 0x04ac
-#define BoundingBox_UL_YPos 0x04ad
-#define BoundingBox_DR_XPos 0x04ae
-#define BoundingBox_DR_YPos 0x04af
-#define BoundingBox_UL_Corner 0x04ac
-#define BoundingBox_LR_Corner 0x04ae
-#define EnemyBoundingBoxCoord 0x04b0
-#define PowerUpType 0x39
-#define FireballBouncingFlag 0x3a
-#define FireballCounter 0x06ce
-#define FireballThrowingTimer 0x0711
-#define HammerEnemyOffset 0x06ae
-#define JumpCoinMiscOffset 0x06b7
-#define Block_Buffer_1 0x0500
-#define Block_Buffer_2 0x05d0
-#define HammerThrowingTimer 0x03a2
-#define HammerBroJumpTimer 0x3c
-#define Misc_Collision_Flag 0x06be
-#define RedPTroopaOrigXPos 0x0401
-#define RedPTroopaCenterYPos 0x58
-#define XMovePrimaryCounter 0xa0
-#define XMoveSecondaryCounter 0x58
-#define CheepCheepMoveMFlag 0x58
-#define CheepCheepOrigYPos 0x0434
-#define BitMFilter 0x06dd
-#define LakituReappearTimer 0x06d1
-#define LakituMoveSpeed 0x58
-#define LakituMoveDirection 0xa0
-#define FirebarSpinState_Low 0x58
-#define FirebarSpinState_High 0xa0
-#define FirebarSpinSpeed 0x0388
-#define FirebarSpinDirection 0x34
-#define DuplicateObj_Offset 0x06cf
-#define NumberofGroupEnemies 0x06d3
-#define BlooperMoveCounter 0xa0
-#define BlooperMoveSpeed 0x58
-#define BowserBodyControls 0x0363
-#define BowserFeetCounter 0x0364
-#define BowserMovementSpeed 0x0365
-#define BowserOrigXPos 0x0366
-#define BowserFlameTimerCtrl 0x0367
-#define BowserFront_Offset 0x0368
-#define BridgeCollapseOffset 0x0369
-#define BowserGfxFlag 0x036a
-#define BowserHitPoints 0x0483
-#define MaxRangeFromOrigin 0x06dc
-#define BowserFlamePRandomOfs 0x0417
-#define PiranhaPlantUpYPos 0x0417
-#define PiranhaPlantDownYPos 0x0434
-#define PiranhaPlant_Y_Speed 0x58
-#define PiranhaPlant_MoveFlag 0xa0
-#define FireworksCounter 0x06d7
-#define ExplosionGfxCounter 0x58
-#define ExplosionTimerCounter 0xa0
-#define Squ2_NoteLenBuffer 0x07b3
-#define Squ2_NoteLenCounter 0x07b4
-#define Squ2_EnvelopeDataCtrl 0x07b5
-#define Squ1_NoteLenCounter 0x07b6
-#define Squ1_EnvelopeDataCtrl 0x07b7
-#define Tri_NoteLenBuffer 0x07b8
-#define Tri_NoteLenCounter 0x07b9
-#define Noise_BeatLenCounter 0x07ba
-#define Squ1_SfxLenCounter 0x07bb
-#define Squ2_SfxLenCounter 0x07bd
-#define Sfx_SecondaryCounter 0x07be
-#define Noise_SfxLenCounter 0x07bf
-#define PauseSoundQueue 0xfa
-#define Square1SoundQueue 0xff
-#define Square2SoundQueue 0xfe
-#define NoiseSoundQueue 0xfd
-#define AreaMusicQueue 0xfb
-#define EventMusicQueue 0xfc
-#define Square1SoundBuffer 0xf1
-#define Square2SoundBuffer 0xf2
-#define NoiseSoundBuffer 0xf3
-#define AreaMusicBuffer 0xf4
-#define EventMusicBuffer 0x07b1
-#define PauseSoundBuffer 0x07b2
-#define MusicData 0xf5
-#define MusicDataLow 0xf5
-#define MusicDataHigh 0xf6
-#define MusicOffset_Square2 0xf7
-#define MusicOffset_Square1 0xf8
-#define MusicOffset_Triangle 0xf9
-#define MusicOffset_Noise 0x07b0
-#define NoteLenLookupTblOfs 0xf0
-#define DAC_Counter 0x07c0
-#define NoiseDataLoopbackOfs 0x07c1
-#define NoteLengthTblAdder 0x07c4
-#define AreaMusicBuffer_Alt 0x07c5
-#define PauseModeFlag 0x07c6
-#define GroundMusicHeaderOfs 0x07c7
-#define AltRegContentFlag 0x07ca
-#define Sfx_SmallJump BOOST_BINARY(10000000)
-#define Sfx_Flagpole BOOST_BINARY(01000000)
-#define Sfx_Fireball BOOST_BINARY(00100000)
-#define Sfx_PipeDown_Injury BOOST_BINARY(00010000)
-#define Sfx_EnemySmack BOOST_BINARY(00001000)
-#define Sfx_EnemyStomp BOOST_BINARY(00000100)
-#define Sfx_Bump BOOST_BINARY(00000010)
-#define Sfx_BigJump BOOST_BINARY(00000001)
-#define Sfx_BowserFall BOOST_BINARY(10000000)
-#define Sfx_ExtraLife BOOST_BINARY(01000000)
-#define Sfx_PowerUpGrab BOOST_BINARY(00100000)
-#define Sfx_TimerTick BOOST_BINARY(00010000)
-#define Sfx_Blast BOOST_BINARY(00001000)
-#define Sfx_GrowVine BOOST_BINARY(00000100)
-#define Sfx_GrowPowerUp BOOST_BINARY(00000010)
-#define Sfx_CoinGrab BOOST_BINARY(00000001)
-#define Sfx_BowserFlame BOOST_BINARY(00000010)
-#define Sfx_BrickShatter BOOST_BINARY(00000001)
-#define Silence BOOST_BINARY(10000000)
-#define StarPowerMusic BOOST_BINARY(01000000)
-#define PipeIntroMusic BOOST_BINARY(00100000)
-#define CloudMusic BOOST_BINARY(00010000)
-#define CastleMusic BOOST_BINARY(00001000)
-#define UndergroundMusic BOOST_BINARY(00000100)
-#define WaterMusic BOOST_BINARY(00000010)
-#define GroundMusic BOOST_BINARY(00000001)
-#define TimeRunningOutMusic BOOST_BINARY(01000000)
-#define EndOfLevelMusic BOOST_BINARY(00100000)
-#define AltGameOverMusic BOOST_BINARY(00010000)
-#define EndOfCastleMusic BOOST_BINARY(00001000)
-#define VictoryMusic BOOST_BINARY(00000100)
-#define GameOverMusic BOOST_BINARY(00000010)
-#define DeathMusic BOOST_BINARY(00000001)
-#define GreenKoopa 0x00
-#define BuzzyBeetle 0x02
-#define RedKoopa 0x03
-#define HammerBro 0x05
-#define Goomba 0x06
-#define Bloober 0x07
-#define BulletBill_FrenzyVar 0x08
-#define GreyCheepCheep 0x0a
-#define RedCheepCheep 0x0b
-#define Podoboo 0x0c
-#define PiranhaPlant 0x0d
-#define GreenParatroopaJump 0x0e
-#define RedParatroopa 0x0f
-#define GreenParatroopaFly 0x10
-#define Lakitu 0x11
-#define Spiny 0x12
-#define FlyCheepCheepFrenzy 0x14
-#define FlyingCheepCheep 0x14
-#define BowserFlame 0x15
-#define Fireworks 0x16
-#define BBill_CCheep_Frenzy 0x17
-#define Stop_Frenzy 0x18
-#define Bowser 0x2d
-#define PowerUpObject 0x2e
-#define VineObject 0x2f
-#define FlagpoleFlagObject 0x30
-#define StarFlagObject 0x31
-#define JumpspringObject 0x32
-#define BulletBill_CannonVar 0x33
-#define RetainerObject 0x35
-#define TallEnemy 0x09
-#define World1 0
-#define World2 1
-#define World3 2
-#define World4 3
-#define World5 4
-#define World6 5
-#define World7 6
-#define World8 7
-#define Level1 0
-#define Level2 1
-#define Level3 2
-#define Level4 3
-#define WarmBootOffset LOBYTE(0x07d6)
-#define ColdBootOffset LOBYTE(0x07fe)
-#define TitleScreenDataOffset 0x1ec0
-#define SoundMemory 0x07b0
-#define SwimTileRepOffset PlayerGraphicsTable + 0x9e
-#define MusicHeaderOffsetData MusicHeaderData - 1
-#define MHD MusicHeaderData
-#define A_Button BOOST_BINARY(10000000)
-#define B_Button BOOST_BINARY(01000000)
-#define Select_Button BOOST_BINARY(00100000)
-#define Start_Button BOOST_BINARY(00010000)
-#define Up_Dir BOOST_BINARY(00001000)
-#define Down_Dir BOOST_BINARY(00000100)
-#define Left_Dir BOOST_BINARY(00000010)
-#define Right_Dir BOOST_BINARY(00000001)
-#define TitleScreenModeValue 0
-#define GameModeValue 1
-#define VictoryModeValue 2
-#define GameOverModeValue 3
-
-// Generated Data Addresses
-#define VRAM_AddrTable_Low 0x8000
-#define VRAM_AddrTable_High 0x8013
-#define VRAM_Buffer_Offset 0x8026
-#define WSelectBufferTemplate 0x8028
-#define MushroomIconData 0x802e
-#define DemoActionData 0x8036
-#define DemoTimingData 0x804b
-#define FloateyNumTileData 0x8061
-#define ScoreUpdateData 0x8079
-#define AreaPalette 0x8085
-#define BGColorCtrl_Addr 0x8089
-#define BackgroundColors 0x808d
-#define PlayerColors 0x8095
-#define GameText 0x80a1
-#define TopStatusBarLine 0x80a1
-#define WorldLivesDisplay 0x80c8
-#define TwoPlayerTimeUp 0x80e7
-#define OnePlayerTimeUp 0x80ef
-#define TwoPlayerGameOver 0x80fa
-#define OnePlayerGameOver 0x8102
-#define WarpZoneWelcome 0x810f
-#define LuigiName 0x813c
-#define WarpZoneNumbers 0x8141
-#define GameTextOffsets 0x814d
-#define ColorRotatePalette 0x8157
-#define BlankPalette 0x815d
-#define Palette3Data 0x8165
-#define BlockGfxData 0x8175
-#define MetatileGraphics_Low 0x8189
-#define MetatileGraphics_High 0x818d
-#define Palette0_MTiles 0x8191
-#define Palette1_MTiles 0x822d
-#define Palette2_MTiles 0x82e5
-#define Palette3_MTiles 0x830d
-#define WaterPaletteData 0x8325
-#define GroundPaletteData 0x8349
-#define UndergroundPaletteData 0x836d
-#define CastlePaletteData 0x8391
-#define DaySnowPaletteData 0x83b5
-#define NightSnowPaletteData 0x83bd
-#define MushroomPaletteData 0x83c5
-#define BowserPaletteData 0x83cd
-#define MarioThanksMessage 0x83d5
-#define LuigiThanksMessage 0x83e9
-#define MushroomRetainerSaved 0x83fd
-#define PrincessSaved1 0x8429
-#define PrincessSaved2 0x8440
-#define WorldSelectMessage1 0x845f
-#define WorldSelectMessage2 0x8470
-#define StatusBarData 0x8485
-#define StatusBarOffset 0x8491
-#define DefaultSprOffsets 0x8497
-#define Sprite0Data 0x84a6
-#define MusicSelectData 0x84aa
-#define PlayerStarting_X_Pos 0x84b0
-#define AltYPosOffset 0x84b4
-#define PlayerStarting_Y_Pos 0x84b6
-#define PlayerBGPriorityData 0x84bf
-#define GameTimerData 0x84c7
-#define HalfwayPageNybbles 0x84cb
-#define BSceneDataOffsets 0x84db
-#define BackSceneryData 0x84de
-#define BackSceneryMetatiles 0x856e
-#define FSceneDataOffsets 0x8592
-#define ForeSceneryData 0x8595
-#define TerrainMetatiles 0x85bc
-#define TerrainRenderBits 0x85c0
-#define BlockBuffLowBounds 0x85e0
-#define FrenzyIDData 0x85e4
-#define PulleyRopeMetatiles 0x85e7
-#define CastleMetatiles 0x85ea
-#define SidePipeShaftData 0x8621
-#define SidePipeTopPart 0x8625
-#define SidePipeBottomPart 0x8629
-#define VerticalPipeData 0x862d
-#define CoinMetatileData 0x8635
-#define C_ObjectRow 0x8639
-#define C_ObjectMetatile 0x863c
-#define SolidBlockMetatiles 0x863f
-#define BrickMetatiles 0x8643
-#define StaircaseHeightData 0x8648
-#define StaircaseRowData 0x8651
-#define HoleMetatiles 0x865a
-#define BlockBufferAddr 0x865e
-#define AreaDataOfsLoopback 0x8662
-#define WorldAddrOffsets 0x866d
-#define AreaAddrOffsets 0x8675
-#define World1Areas 0x8675
-#define World2Areas 0x867a
-#define World3Areas 0x867f
-#define World4Areas 0x8683
-#define World5Areas 0x8688
-#define World6Areas 0x868c
-#define World7Areas 0x8690
-#define World8Areas 0x8695
-#define EnemyAddrHOffsets 0x8699
-#define EnemyDataAddrLow 0x869d
-#define EnemyDataAddrHigh 0x86bf
-#define AreaDataHOffsets 0x86e1
-#define AreaDataAddrLow 0x86e5
-#define AreaDataAddrHigh 0x8707
-#define E_CastleArea1 0x8729
-#define E_CastleArea2 0x8750
-#define E_CastleArea3 0x8769
-#define E_CastleArea4 0x8798
-#define E_CastleArea5 0x87c3
-#define E_CastleArea6 0x87d8
-#define E_GroundArea1 0x8812
-#define E_GroundArea2 0x8837
-#define E_GroundArea3 0x8854
-#define E_GroundArea4 0x8862
-#define E_GroundArea5 0x8889
-#define E_GroundArea6 0x88ba
-#define E_GroundArea7 0x88d8
-#define E_GroundArea8 0x88f5
-#define E_GroundArea9 0x890a
-#define E_GroundArea10 0x8934
-#define E_GroundArea11 0x8935
-#define E_GroundArea12 0x8959
-#define E_GroundArea13 0x8962
-#define E_GroundArea14 0x8987
-#define E_GroundArea15 0x89aa
-#define E_GroundArea16 0x89b3
-#define E_GroundArea17 0x89b4
-#define E_GroundArea18 0x89ee
-#define E_GroundArea19 0x8a19
-#define E_GroundArea20 0x8a47
-#define E_GroundArea21 0x8a63
-#define E_GroundArea22 0x8a6c
-#define E_UndergroundArea1 0x8a91
-#define E_UndergroundArea2 0x8abe
-#define E_UndergroundArea3 0x8aec
-#define E_WaterArea1 0x8b19
-#define E_WaterArea2 0x8b2a
-#define E_WaterArea3 0x8b54
-#define L_CastleArea1 0x8b68
-#define L_CastleArea2 0x8bc9
-#define L_CastleArea3 0x8c48
-#define L_CastleArea4 0x8cbb
-#define L_CastleArea5 0x8d28
-#define L_CastleArea6 0x8db3
-#define L_GroundArea1 0x8e24
-#define L_GroundArea2 0x8e87
-#define L_GroundArea3 0x8ef0
-#define L_GroundArea4 0x8f43
-#define L_GroundArea5 0x8fd2
-#define L_GroundArea6 0x9047
-#define L_GroundArea7 0x90ac
-#define L_GroundArea8 0x9101
-#define L_GroundArea9 0x9186
-#define L_GroundArea10 0x91eb
-#define L_GroundArea11 0x91f4
-#define L_GroundArea12 0x9233
-#define L_GroundArea13 0x9248
-#define L_GroundArea14 0x92af
-#define L_GroundArea15 0x9314
-#define L_GroundArea16 0x9387
-#define L_GroundArea17 0x93b8
-#define L_GroundArea18 0x944b
-#define L_GroundArea19 0x94be
-#define L_GroundArea20 0x9537
-#define L_GroundArea21 0x9590
-#define L_GroundArea22 0x95bb
-#define L_UndergroundArea1 0x95ee
-#define L_UndergroundArea2 0x9691
-#define L_UndergroundArea3 0x9732
-#define L_WaterArea1 0x97bf
-#define L_WaterArea2 0x97fe
-#define L_WaterArea3 0x9879
-#define X_SubtracterData 0x9895
-#define OffscrJoypadBitsData 0x9897
-#define Hidden1UpCoinAmts 0x9899
-#define ClimbAdderLow 0x98a1
-#define ClimbAdderHigh 0x98a5
-#define JumpMForceData 0x98a9
-#define FallMForceData 0x98b0
-#define PlayerYSpdData 0x98b7
-#define InitMForceData 0x98be
-#define MaxLeftXSpdData 0x98c5
-#define MaxRightXSpdData 0x98c8
-#define FrictionData 0x98cc
-#define Climb_Y_SpeedData 0x98cf
-#define Climb_Y_MForceData 0x98d2
-#define PlayerAnimTmrData 0x98d5
-#define FireballXSpdData 0x98d8
-#define Bubble_MForceData 0x98da
-#define BubbleTimerData 0x98dc
-#define FlagpoleScoreMods 0x98de
-#define FlagpoleScoreDigits 0x98e3
-#define Jumpspring_Y_PosData 0x98e8
-#define VineHeightData 0x98ec
-#define CannonBitmasks 0x98ee
-#define BulletBillXSpdData 0x98f0
-#define HammerEnemyOfsData 0x98f2
-#define HammerXSpdData 0x98fb
-#define CoinTallyOffsets 0x98fd
-#define ScoreOffsets 0x98ff
-#define StatusBarNybbles 0x9901
-#define BlockYPosAdderData 0x9903
-#define BrickQBlockMetatiles 0x9905
-#define MaxSpdBlockData 0x9913
-#define LoopCmdWorldNumber 0x9915
-#define LoopCmdPageNumber 0x9920
-#define LoopCmdYPosition 0x992b
-#define NormalXSpdData 0x9936
-#define HBroWalkingTimerData 0x9938
-#define PRDiffAdjustData 0x993a
-#define FirebarSpinSpdData 0x9946
-#define FirebarSpinDirData 0x994b
-#define FlyCCXPositionData 0x9950
-#define FlyCCXSpeedData 0x9960
-#define FlyCCTimerData 0x996c
-#define FlameYPosData 0x9970
-#define FlameYMFAdderData 0x9974
-#define FireworksXPosData 0x9976
-#define FireworksYPosData 0x997c
-#define Bitmasks 0x9982
-#define Enemy17YPosData 0x998a
-#define SwimCC_IDData 0x9992
-#define PlatPosDataLow 0x9994
-#define PlatPosDataHigh 0x9997
-#define HammerThrowTmrData 0x999a
-#define XSpeedAdderData 0x999c
-#define RevivedXSpeed 0x99a0
-#define HammerBroJumpLData 0x99a4
-#define BlooberBitmasks 0x99a6
-#define SwimCCXMoveData 0x99a8
-#define FirebarPosLookupTbl 0x99ac
-#define FirebarMirrorData 0x9a0f
-#define FirebarTblOffsets 0x9a13
-#define FirebarYPos 0x9a1f
-#define PRandomSubtracter 0x9a21
-#define FlyCCBPriority 0x9a26
-#define LakituDiffAdj 0x9a2b
-#define BridgeCollapseData 0x9a2e
-#define PRandomRange 0x9a3d
-#define FlameTimerData 0x9a41
-#define StarFlagYPosAdder 0x9a49
-#define StarFlagXPosAdder 0x9a4d
-#define StarFlagTileData 0x9a51
-#define BowserIdentities 0x9a55
-#define ResidualXSpdData 0x9a5d
-#define KickedShellXSpdData 0x9a5f
-#define DemotedKoopaXSpdData 0x9a61
-#define KickedShellPtsData 0x9a63
-#define StompedEnemyPtsData 0x9a66
-#define RevivalRateData 0x9a6a
-#define SetBitsMask 0x9a6c
-#define ClearBitsMask 0x9a73
-#define PlayerPosSPlatData 0x9a7a
-#define PlayerBGUpperExtent 0x9a7c
-#define AreaChangeTimerData 0x9a7e
-#define ClimbXPosAdder 0x9a80
-#define ClimbPLocAdder 0x9a82
-#define FlagpoleYPosData 0x9a84
-#define SolidMTileUpperExt 0x9a89
-#define ClimbMTileUpperExt 0x9a8d
-#define EnemyBGCStateData 0x9a91
-#define EnemyBGCXSpdData 0x9a97
-#define BoundBoxCtrlData 0x9a99
-#define BlockBufferAdderData 0x9ac9
-#define BlockBuffer_X_Adder 0x9acc
-#define BlockBuffer_Y_Adder 0x9ae8
-#define VineYPosAdder 0x9b04
-#define FirstSprXPos 0x9b06
-#define FirstSprYPos 0x9b0a
-#define SecondSprXPos 0x9b0e
-#define SecondSprYPos 0x9b12
-#define FirstSprTilenum 0x9b16
-#define SecondSprTilenum 0x9b1a
-#define HammerSprAttrib 0x9b1e
-#define FlagpoleScoreNumTiles 0x9b22
-#define JumpingCoinTiles 0x9b2c
-#define PowerUpGfxTable 0x9b30
-#define PowerUpAttributes 0x9b40
-#define EnemyGraphicsTable 0x9b44
-#define EnemyGfxTableOffsets 0x9c46
-#define EnemyAttributeData 0x9c61
-#define EnemyAnimTimingBMask 0x9c7c
-#define JumpspringFrameOffsets 0x9c7e
-#define DefaultBlockObjTiles 0x9c83
-#define ExplosionTiles 0x9c87
-#define PlayerGfxTblOffsets 0x9c8a
-#define PlayerGraphicsTable 0x9c9a
-#define SwimKickTileNum 0x9d6a
-#define IntermediatePlayerData 0x9d6c
-#define ChangeSizeOffsetAdder 0x9d72
-#define ObjOffsetData 0x9d86
-#define XOffscreenBitsData 0x9d89
-#define DefaultXOnscreenOfs 0x9d99
-#define YOffscreenBitsData 0x9d9c
-#define DefaultYOnscreenOfs 0x9da5
-#define HighPosUnitData 0x9da8
-#define SwimStompEnvelopeData 0x9daa
-#define ExtraLifeFreqData 0x9db8
-#define PowerUpGrabFreqData 0x9dbe
-#define PUp_VGrow_FreqData 0x9ddc
-#define BrickShatterFreqData 0x9dfc
-#define MusicHeaderData 0x9e0c
-#define TimeRunningOutHdr 0x9e3d
-#define Star_CloudHdr 0x9e42
-#define EndOfLevelMusHdr 0x9e48
-#define ResidualHeaderData 0x9e4d
-#define UndergroundMusHdr 0x9e52
-#define SilenceHdr 0x9e57
-#define CastleMusHdr 0x9e5b
-#define VictoryMusHdr 0x9e60
-#define GameOverMusHdr 0x9e65
-#define WaterMusHdr 0x9e6a
-#define WinCastleMusHdr 0x9e70
-#define GroundLevelPart1Hdr 0x9e75
-#define GroundLevelPart2AHdr 0x9e7b
-#define GroundLevelPart2BHdr 0x9e81
-#define GroundLevelPart2CHdr 0x9e87
-#define GroundLevelPart3AHdr 0x9e8d
-#define GroundLevelPart3BHdr 0x9e93
-#define GroundLevelLeadInHdr 0x9e99
-#define GroundLevelPart4AHdr 0x9e9f
-#define GroundLevelPart4BHdr 0x9ea5
-#define GroundLevelPart4CHdr 0x9eab
-#define DeathMusHdr 0x9eb1
-#define Star_CloudMData 0x9eb7
-#define GroundM_P1Data 0x9f00
-#define SilenceData 0x9f1b
-#define GroundM_P2AData 0x9f48
-#define GroundM_P2BData 0x9f74
-#define GroundM_P2CData 0x9f9c
-#define GroundM_P3AData 0x9fc1
-#define GroundM_P3BData 0x9fda
-#define GroundMLdInData 0x9ff8
-#define GroundM_P4AData 0xa024
-#define GroundM_P4BData 0xa04a
-#define DeathMusData 0xa071
-#define GroundM_P4CData 0xa073
-#define CastleMusData 0xa0a3
-#define GameOverMusData 0xa144
-#define TimeRunOutMusData 0xa171
-#define WinLevelMusData 0xa1af
-#define UndergroundMusData 0xa210
-#define WaterMusData 0xa251
-#define EndOfCastleMusData 0xa350
-#define VictoryMusData 0xa3c7
-#define FreqRegLookupTbl 0xa3ff
-#define MusicLengthLookupTbl 0xa465
-#define EndOfCastleMusicEnvData 0xa495
-#define AreaMusicEnvData 0xa499
-#define WaterEventMusEnvData 0xa4a1
-#define BowserFlameEnvData 0xa4c9
-#define BrickShatterEnvData 0xa4e9
-
-// Constant data
-static const uint8_t VRAM_AddrTable_Low__data[] = {
-    LOBYTE(VRAM_Buffer1), LOBYTE(WaterPaletteData), LOBYTE(GroundPaletteData),
-    LOBYTE(UndergroundPaletteData), LOBYTE(CastlePaletteData), LOBYTE(VRAM_Buffer1_Offset),
-    LOBYTE(VRAM_Buffer2), LOBYTE(VRAM_Buffer2), LOBYTE(BowserPaletteData),
-    LOBYTE(DaySnowPaletteData), LOBYTE(NightSnowPaletteData), LOBYTE(MushroomPaletteData),
-    LOBYTE(MarioThanksMessage), LOBYTE(LuigiThanksMessage), LOBYTE(MushroomRetainerSaved),
-    LOBYTE(PrincessSaved1), LOBYTE(PrincessSaved2), LOBYTE(WorldSelectMessage1),
-    LOBYTE(WorldSelectMessage2)
-};
-
-static const uint8_t VRAM_AddrTable_High__data[] = {
-    HIBYTE(VRAM_Buffer1), HIBYTE(WaterPaletteData), HIBYTE(GroundPaletteData),
-    HIBYTE(UndergroundPaletteData), HIBYTE(CastlePaletteData), HIBYTE(VRAM_Buffer1_Offset),
-    HIBYTE(VRAM_Buffer2), HIBYTE(VRAM_Buffer2), HIBYTE(BowserPaletteData),
-    HIBYTE(DaySnowPaletteData), HIBYTE(NightSnowPaletteData), HIBYTE(MushroomPaletteData),
-    HIBYTE(MarioThanksMessage), HIBYTE(LuigiThanksMessage), HIBYTE(MushroomRetainerSaved),
-    HIBYTE(PrincessSaved1), HIBYTE(PrincessSaved2), HIBYTE(WorldSelectMessage1),
-    HIBYTE(WorldSelectMessage2)
-};
-
-static const uint8_t VRAM_Buffer_Offset__data[] = {
-    LOBYTE(VRAM_Buffer1_Offset), LOBYTE(VRAM_Buffer2_Offset)
-};
-
-static const uint8_t WSelectBufferTemplate__data[] = {
-    0x04, 0x20, 0x73, 0x01, 0x00, 0x00
-};
-
-static const uint8_t MushroomIconData__data[] = {
-    0x07, 0x22, 0x49, 0x83, 0xce, 0x24, 0x24, 0x00
-};
-
-static const uint8_t DemoActionData__data[] = {
-    0x01, 0x80, 0x02, 0x81, 0x41, 0x80, 0x01,
-    0x42, 0xc2, 0x02, 0x80, 0x41, 0xc1, 0x41, 0xc1,
-    0x01, 0xc1, 0x01, 0x02, 0x80, 0x00
-};
-
-static const uint8_t DemoTimingData__data[] = {
-    0x9b, 0x10, 0x18, 0x05, 0x2c, 0x20, 0x24,
-    0x15, 0x5a, 0x10, 0x20, 0x28, 0x30, 0x20, 0x10,
-    0x80, 0x20, 0x30, 0x30, 0x01, 0xff, 0x00
-};
-
-static const uint8_t FloateyNumTileData__data[] = {
-    0xff, 0xff,
-    0xf6, 0xfb,
-    0xf7, 0xfb,
-    0xf8, 0xfb,
-    0xf9, 0xfb,
-    0xfa, 0xfb,
-    0xf6, 0x50,
-    0xf7, 0x50,
-    0xf8, 0x50,
-    0xf9, 0x50,
-    0xfa, 0x50,
-    0xfd, 0xfe
-};
-
-static const uint8_t ScoreUpdateData__data[] = {
-    0xff,
-    0x41, 0x42, 0x44, 0x45, 0x48,
-    0x31, 0x32, 0x34, 0x35, 0x38, 0x00
-};
-
-static const uint8_t AreaPalette__data[] = {
-    0x01, 0x02, 0x03, 0x04
-};
-
-static const uint8_t BGColorCtrl_Addr__data[] = {
-    0x00, 0x09, 0x0a, 0x04
-};
-
-static const uint8_t BackgroundColors__data[] = {
-    0x22, 0x22, 0x0f, 0x0f,
-    0x0f, 0x22, 0x0f, 0x0f
-};
-
-static const uint8_t PlayerColors__data[] = {
-    0x22, 0x16, 0x27, 0x18,
-    0x22, 0x30, 0x27, 0x19,
-    0x22, 0x37, 0x27, 0x16
-};
-
-static const uint8_t* GameText__data = nullptr;
-static const uint8_t TopStatusBarLine__data[] = {
-    0x20, 0x43, 0x05, 0x16, 0x0a, 0x1b, 0x12, 0x18,
-    0x20, 0x52, 0x0b, 0x20, 0x18, 0x1b, 0x15, 0x0d,
-    0x24, 0x24, 0x1d, 0x12, 0x16, 0x0e,
-    0x20, 0x68, 0x05, 0x00, 0x24, 0x24, 0x2e, 0x29,
-    0x23, 0xc0, 0x7f, 0xaa,
-    0x23, 0xc2, 0x01, 0xea,
-    0xff
-};
-
-static const uint8_t WorldLivesDisplay__data[] = {
-    0x21, 0xcd, 0x07, 0x24, 0x24,
-    0x29, 0x24, 0x24, 0x24, 0x24,
-    0x21, 0x4b, 0x09, 0x20, 0x18,
-    0x1b, 0x15, 0x0d, 0x24, 0x24, 0x28, 0x24,
-    0x22, 0x0c, 0x47, 0x24,
-    0x23, 0xdc, 0x01, 0xba,
-    0xff
-};
-
-static const uint8_t TwoPlayerTimeUp__data[] = {
-    0x21, 0xcd, 0x05, 0x16, 0x0a, 0x1b, 0x12, 0x18
-};
-
-static const uint8_t OnePlayerTimeUp__data[] = {
-    0x22, 0x0c, 0x07, 0x1d, 0x12, 0x16, 0x0e, 0x24, 0x1e, 0x19,
-    0xff
-};
-
-static const uint8_t TwoPlayerGameOver__data[] = {
-    0x21, 0xcd, 0x05, 0x16, 0x0a, 0x1b, 0x12, 0x18
-};
-
-static const uint8_t OnePlayerGameOver__data[] = {
-    0x22, 0x0b, 0x09, 0x10, 0x0a, 0x16, 0x0e, 0x24,
-    0x18, 0x1f, 0x0e, 0x1b,
-    0xff
-};
-
-static const uint8_t WarpZoneWelcome__data[] = {
-    0x25, 0x84, 0x15, 0x20, 0x0e, 0x15, 0x0c, 0x18, 0x16,
-    0x0e, 0x24, 0x1d, 0x18, 0x24, 0x20, 0x0a, 0x1b, 0x19,
-    0x24, 0x23, 0x18, 0x17, 0x0e, 0x2b,
-    0x26, 0x25, 0x01, 0x24,
-    0x26, 0x2d, 0x01, 0x24,
-    0x26, 0x35, 0x01, 0x24,
-    0x27, 0xd9, 0x46, 0xaa,
-    0x27, 0xe1, 0x45, 0xaa,
-    0xff
-};
-
-static const uint8_t LuigiName__data[] = {
-    0x15, 0x1e, 0x12, 0x10, 0x12
-};
-
-static const uint8_t WarpZoneNumbers__data[] = {
-    0x04, 0x03, 0x02, 0x00,
-    0x24, 0x05, 0x24, 0x00,
-    0x08, 0x07, 0x06, 0x00
-};
-
-static const uint8_t GameTextOffsets__data[] = {
-    TopStatusBarLine - GameText, TopStatusBarLine - GameText,
-    WorldLivesDisplay - GameText, WorldLivesDisplay - GameText,
-    TwoPlayerTimeUp - GameText, OnePlayerTimeUp - GameText,
-    TwoPlayerGameOver - GameText, OnePlayerGameOver - GameText,
-    WarpZoneWelcome - GameText, WarpZoneWelcome - GameText
-};
-
-static const uint8_t ColorRotatePalette__data[] = {
-    0x27, 0x27, 0x27, 0x17, 0x07, 0x17
-};
-
-static const uint8_t BlankPalette__data[] = {
-    0x3f, 0x0c, 0x04, 0xff, 0xff, 0xff, 0xff, 0x00
-};
-
-static const uint8_t Palette3Data__data[] = {
-    0x0f, 0x07, 0x12, 0x0f,
-    0x0f, 0x07, 0x17, 0x0f,
-    0x0f, 0x07, 0x17, 0x1c,
-    0x0f, 0x07, 0x17, 0x00
-};
-
-static const uint8_t BlockGfxData__data[] = {
-    0x45, 0x45, 0x47, 0x47,
-    0x47, 0x47, 0x47, 0x47,
-    0x57, 0x58, 0x59, 0x5a,
-    0x24, 0x24, 0x24, 0x24,
-    0x26, 0x26, 0x26, 0x26
-};
-
-static const uint8_t MetatileGraphics_Low__data[] = {
-    LOBYTE(Palette0_MTiles), LOBYTE(Palette1_MTiles), LOBYTE(Palette2_MTiles), LOBYTE(Palette3_MTiles)
-};
-
-static const uint8_t MetatileGraphics_High__data[] = {
-    HIBYTE(Palette0_MTiles), HIBYTE(Palette1_MTiles), HIBYTE(Palette2_MTiles), HIBYTE(Palette3_MTiles)
-};
-
-static const uint8_t Palette0_MTiles__data[] = {
-    0x24, 0x24, 0x24, 0x24,
-    0x27, 0x27, 0x27, 0x27,
-    0x24, 0x24, 0x24, 0x35,
-    0x36, 0x25, 0x37, 0x25,
-    0x24, 0x38, 0x24, 0x24,
-    0x24, 0x30, 0x30, 0x26,
-    0x26, 0x26, 0x34, 0x26,
-    0x24, 0x31, 0x24, 0x32,
-    0x33, 0x26, 0x24, 0x33,
-    0x34, 0x26, 0x26, 0x26,
-    0x26, 0x26, 0x26, 0x26,
-    0x24, 0xc0, 0x24, 0xc0,
-    0x24, 0x7f, 0x7f, 0x24,
-    0xb8, 0xba, 0xb9, 0xbb,
-    0xb8, 0xbc, 0xb9, 0xbd,
-    0xba, 0xbc, 0xbb, 0xbd,
-    0x60, 0x64, 0x61, 0x65,
-    0x62, 0x66, 0x63, 0x67,
-    0x60, 0x64, 0x61, 0x65,
-    0x62, 0x66, 0x63, 0x67,
-    0x68, 0x68, 0x69, 0x69,
-    0x26, 0x26, 0x6a, 0x6a,
-    0x4b, 0x4c, 0x4d, 0x4e,
-    0x4d, 0x4f, 0x4d, 0x4f,
-    0x4d, 0x4e, 0x50, 0x51,
-    0x6b, 0x70, 0x2c, 0x2d,
-    0x6c, 0x71, 0x6d, 0x72,
-    0x6e, 0x73, 0x6f, 0x74,
-    0x86, 0x8a, 0x87, 0x8b,
-    0x88, 0x8c, 0x88, 0x8c,
-    0x89, 0x8d, 0x69, 0x69,
-    0x8e, 0x91, 0x8f, 0x92,
-    0x26, 0x93, 0x26, 0x93,
-    0x90, 0x94, 0x69, 0x69,
-    0xa4, 0xe9, 0xea, 0xeb,
-    0x24, 0x24, 0x24, 0x24,
-    0x24, 0x2f, 0x24, 0x3d,
-    0xa2, 0xa2, 0xa3, 0xa3,
-    0x24, 0x24, 0x24, 0x24
-};
-
-static const uint8_t Palette1_MTiles__data[] = {
-    0xa2, 0xa2, 0xa3, 0xa3,
-    0x99, 0x24, 0x99, 0x24,
-    0x24, 0xa2, 0x3e, 0x3f,
-    0x5b, 0x5c, 0x24, 0xa3,
-    0x24, 0x24, 0x24, 0x24,
-    0x9d, 0x47, 0x9e, 0x47,
-    0x47, 0x47, 0x27, 0x27,
-    0x47, 0x47, 0x47, 0x47,
-    0x27, 0x27, 0x47, 0x47,
-    0xa9, 0x47, 0xaa, 0x47,
-    0x9b, 0x27, 0x9c, 0x27,
-    0x27, 0x27, 0x27, 0x27,
-    0x52, 0x52, 0x52, 0x52,
-    0x80, 0xa0, 0x81, 0xa1,
-    0xbe, 0xbe, 0xbf, 0xbf,
-    0x75, 0xba, 0x76, 0xbb,
-    0xba, 0xba, 0xbb, 0xbb,
-    0x45, 0x47, 0x45, 0x47,
-    0x47, 0x47, 0x47, 0x47,
-    0x45, 0x47, 0x45, 0x47,
-    0xb4, 0xb6, 0xb5, 0xb7,
-    0x45, 0x47, 0x45, 0x47,
-    0x45, 0x47, 0x45, 0x47,
-    0x45, 0x47, 0x45, 0x47,
-    0x45, 0x47, 0x45, 0x47,
-    0x45, 0x47, 0x45, 0x47,
-    0x47, 0x47, 0x47, 0x47,
-    0x47, 0x47, 0x47, 0x47,
-    0x47, 0x47, 0x47, 0x47,
-    0x47, 0x47, 0x47, 0x47,
-    0x47, 0x47, 0x47, 0x47,
-    0x24, 0x24, 0x24, 0x24,
-    0x24, 0x24, 0x24, 0x24,
-    0xab, 0xac, 0xad, 0xae,
-    0x5d, 0x5e, 0x5d, 0x5e,
-    0xc1, 0x24, 0xc1, 0x24,
-    0xc6, 0xc8, 0xc7, 0xc9,
-    0xca, 0xcc, 0xcb, 0xcd,
-    0x2a, 0x2a, 0x40, 0x40,
-    0x24, 0x24, 0x24, 0x24,
-    0x24, 0x47, 0x24, 0x47,
-    0x82, 0x83, 0x84, 0x85,
-    0x24, 0x47, 0x24, 0x47,
-    0x86, 0x8a, 0x87, 0x8b,
-    0x8e, 0x91, 0x8f, 0x92,
-    0x24, 0x2f, 0x24, 0x3d
-};
-
-static const uint8_t Palette2_MTiles__data[] = {
-    0x24, 0x24, 0x24, 0x35,
-    0x36, 0x25, 0x37, 0x25,
-    0x24, 0x38, 0x24, 0x24,
-    0x24, 0x24, 0x39, 0x24,
-    0x3a, 0x24, 0x3b, 0x24,
-    0x3c, 0x24, 0x24, 0x24,
-    0x41, 0x26, 0x41, 0x26,
-    0x26, 0x26, 0x26, 0x26,
-    0xb0, 0xb1, 0xb2, 0xb3,
-    0x77, 0x79, 0x77, 0x79
-};
-
-static const uint8_t Palette3_MTiles__data[] = {
-    0x53, 0x55, 0x54, 0x56,
-    0x53, 0x55, 0x54, 0x56,
-    0xa5, 0xa7, 0xa6, 0xa8,
-    0xc2, 0xc4, 0xc3, 0xc5,
-    0x57, 0x59, 0x58, 0x5a,
-    0x7b, 0x7d, 0x7c, 0x7e
-};
-
-static const uint8_t WaterPaletteData__data[] = {
-    0x3f, 0x00, 0x20,
-    0x0f, 0x15, 0x12, 0x25,
-    0x0f, 0x3a, 0x1a, 0x0f,
-    0x0f, 0x30, 0x12, 0x0f,
-    0x0f, 0x27, 0x12, 0x0f,
-    0x22, 0x16, 0x27, 0x18,
-    0x0f, 0x10, 0x30, 0x27,
-    0x0f, 0x16, 0x30, 0x27,
-    0x0f, 0x0f, 0x30, 0x10,
-    0x00
-};
-
-static const uint8_t GroundPaletteData__data[] = {
-    0x3f, 0x00, 0x20,
-    0x0f, 0x29, 0x1a, 0x0f,
-    0x0f, 0x36, 0x17, 0x0f,
-    0x0f, 0x30, 0x21, 0x0f,
-    0x0f, 0x27, 0x17, 0x0f,
-    0x0f, 0x16, 0x27, 0x18,
-    0x0f, 0x1a, 0x30, 0x27,
-    0x0f, 0x16, 0x30, 0x27,
-    0x0f, 0x0f, 0x36, 0x17,
-    0x00
-};
-
-static const uint8_t UndergroundPaletteData__data[] = {
-    0x3f, 0x00, 0x20,
-    0x0f, 0x29, 0x1a, 0x09,
-    0x0f, 0x3c, 0x1c, 0x0f,
-    0x0f, 0x30, 0x21, 0x1c,
-    0x0f, 0x27, 0x17, 0x1c,
-    0x0f, 0x16, 0x27, 0x18,
-    0x0f, 0x1c, 0x36, 0x17,
-    0x0f, 0x16, 0x30, 0x27,
-    0x0f, 0x0c, 0x3c, 0x1c,
-    0x00
-};
-
-static const uint8_t CastlePaletteData__data[] = {
-    0x3f, 0x00, 0x20,
-    0x0f, 0x30, 0x10, 0x00,
-    0x0f, 0x30, 0x10, 0x00,
-    0x0f, 0x30, 0x16, 0x00,
-    0x0f, 0x27, 0x17, 0x00,
-    0x0f, 0x16, 0x27, 0x18,
-    0x0f, 0x1c, 0x36, 0x17,
-    0x0f, 0x16, 0x30, 0x27,
-    0x0f, 0x00, 0x30, 0x10,
-    0x00
-};
-
-static const uint8_t DaySnowPaletteData__data[] = {
-    0x3f, 0x00, 0x04,
-    0x22, 0x30, 0x00, 0x10,
-    0x00
-};
-
-static const uint8_t NightSnowPaletteData__data[] = {
-    0x3f, 0x00, 0x04,
-    0x0f, 0x30, 0x00, 0x10,
-    0x00
-};
-
-static const uint8_t MushroomPaletteData__data[] = {
-    0x3f, 0x00, 0x04,
-    0x22, 0x27, 0x16, 0x0f,
-    0x00
-};
-
-static const uint8_t BowserPaletteData__data[] = {
-    0x3f, 0x14, 0x04,
-    0x0f, 0x1a, 0x30, 0x27,
-    0x00
-};
-
-static const uint8_t MarioThanksMessage__data[] = {
-    0x25, 0x48, 0x10,
-    0x1d, 0x11, 0x0a, 0x17, 0x14, 0x24,
-    0x22, 0x18, 0x1e, 0x24,
-    0x16, 0x0a, 0x1b, 0x12, 0x18, 0x2b,
-    0x00
-};
-
-static const uint8_t LuigiThanksMessage__data[] = {
-    0x25, 0x48, 0x10,
-    0x1d, 0x11, 0x0a, 0x17, 0x14, 0x24,
-    0x22, 0x18, 0x1e, 0x24,
-    0x15, 0x1e, 0x12, 0x10, 0x12, 0x2b,
-    0x00
-};
-
-static const uint8_t MushroomRetainerSaved__data[] = {
-    0x25, 0xc5, 0x16,
-    0x0b, 0x1e, 0x1d, 0x24, 0x18, 0x1e, 0x1b, 0x24,
-    0x19, 0x1b, 0x12, 0x17, 0x0c, 0x0e, 0x1c, 0x1c, 0x24,
-    0x12, 0x1c, 0x24, 0x12, 0x17,
-    0x26, 0x05, 0x0f,
-    0x0a, 0x17, 0x18, 0x1d, 0x11, 0x0e, 0x1b, 0x24,
-    0x0c, 0x0a, 0x1c, 0x1d, 0x15, 0x0e, 0x2b, 0x00
-};
-
-static const uint8_t PrincessSaved1__data[] = {
-    0x25, 0xa7, 0x13,
-    0x22, 0x18, 0x1e, 0x1b, 0x24,
-    0x1a, 0x1e, 0x0e, 0x1c, 0x1d, 0x24,
-    0x12, 0x1c, 0x24, 0x18, 0x1f, 0x0e, 0x1b, 0xaf,
-    0x00
-};
-
-static const uint8_t PrincessSaved2__data[] = {
-    0x25, 0xe3, 0x1b,
-    0x20, 0x0e, 0x24,
-    0x19, 0x1b, 0x0e, 0x1c, 0x0e, 0x17, 0x1d, 0x24,
-    0x22, 0x18, 0x1e, 0x24, 0x0a, 0x24, 0x17, 0x0e, 0x20, 0x24,
-    0x1a, 0x1e, 0x0e, 0x1c, 0x1d, 0xaf,
-    0x00
-};
-
-static const uint8_t WorldSelectMessage1__data[] = {
-    0x26, 0x4a, 0x0d,
-    0x19, 0x1e, 0x1c, 0x11, 0x24,
-    0x0b, 0x1e, 0x1d, 0x1d, 0x18, 0x17, 0x24, 0x0b,
-    0x00
-};
-
-static const uint8_t WorldSelectMessage2__data[] = {
-    0x26, 0x88, 0x11,
-    0x1d, 0x18, 0x24, 0x1c, 0x0e, 0x15, 0x0e, 0x0c, 0x1d, 0x24,
-    0x0a, 0x24, 0x20, 0x18, 0x1b, 0x15, 0x0d,
-    0x00
-};
-
-static const uint8_t StatusBarData__data[] = {
-    0xf0, 0x06,
-    0x62, 0x06,
-    0x62, 0x06,
-    0x6d, 0x02,
-    0x6d, 0x02,
-    0x7a, 0x03
-};
-
-static const uint8_t StatusBarOffset__data[] = {
-    0x06, 0x0c, 0x12, 0x18, 0x1e, 0x24
-};
-
-static const uint8_t DefaultSprOffsets__data[] = {
-    0x04, 0x30, 0x48, 0x60, 0x78, 0x90, 0xa8, 0xc0,
-    0xd8, 0xe8, 0x24, 0xf8, 0xfc, 0x28, 0x2c
-};
-
-static const uint8_t Sprite0Data__data[] = {
-    0x18, 0xff, 0x23, 0x58
-};
-
-static const uint8_t MusicSelectData__data[] = {
-    WaterMusic, GroundMusic, UndergroundMusic, CastleMusic,
-    CloudMusic, PipeIntroMusic
-};
-
-static const uint8_t PlayerStarting_X_Pos__data[] = {
-    0x28, 0x18,
-    0x38, 0x28
-};
-
-static const uint8_t AltYPosOffset__data[] = {
-    0x08, 0x00
-};
-
-static const uint8_t PlayerStarting_Y_Pos__data[] = {
-    0x00, 0x20, 0xb0, 0x50, 0x00, 0x00, 0xb0, 0xb0,
-    0xf0
-};
-
-static const uint8_t PlayerBGPriorityData__data[] = {
-    0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-};
-
-static const uint8_t GameTimerData__data[] = {
-    0x20,
-    0x04, 0x03, 0x02
-};
-
-static const uint8_t HalfwayPageNybbles__data[] = {
-    0x56, 0x40,
-    0x65, 0x70,
-    0x66, 0x40,
-    0x66, 0x40,
-    0x66, 0x40,
-    0x66, 0x60,
-    0x65, 0x70,
-    0x00, 0x00
-};
-
-static const uint8_t BSceneDataOffsets__data[] = {
-    0x00, 0x30, 0x60
-};
-
-static const uint8_t BackSceneryData__data[] = {
-    0x93, 0x00, 0x00, 0x11, 0x12, 0x12, 0x13, 0x00,
-    0x00, 0x51, 0x52, 0x53, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x01, 0x02, 0x02, 0x03, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x91, 0x92, 0x93, 0x00,
-    0x00, 0x00, 0x00, 0x51, 0x52, 0x53, 0x41, 0x42,
-    0x43, 0x00, 0x00, 0x00, 0x00, 0x00, 0x91, 0x92,
-    0x97, 0x87, 0x88, 0x89, 0x99, 0x00, 0x00, 0x00,
-    0x11, 0x12, 0x13, 0xa4, 0xa5, 0xa5, 0xa5, 0xa6,
-    0x97, 0x98, 0x99, 0x01, 0x02, 0x03, 0x00, 0xa4,
-    0xa5, 0xa6, 0x00, 0x11, 0x12, 0x12, 0x12, 0x13,
-    0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x02, 0x03,
-    0x00, 0xa4, 0xa5, 0xa5, 0xa6, 0x00, 0x00, 0x00,
-    0x11, 0x12, 0x12, 0x13, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x9c, 0x00, 0x8b, 0xaa, 0xaa,
-    0xaa, 0xaa, 0x11, 0x12, 0x13, 0x8b, 0x00, 0x9c,
-    0x9c, 0x00, 0x00, 0x01, 0x02, 0x03, 0x11, 0x12,
-    0x12, 0x13, 0x00, 0x00, 0x00, 0x00, 0xaa, 0xaa,
-    0x9c, 0xaa, 0x00, 0x8b, 0x00, 0x01, 0x02, 0x03
-};
-
-static const uint8_t BackSceneryMetatiles__data[] = {
-    0x80, 0x83, 0x00,
-    0x81, 0x84, 0x00,
-    0x82, 0x85, 0x00,
-    0x02, 0x00, 0x00,
-    0x03, 0x00, 0x00,
-    0x04, 0x00, 0x00,
-    0x00, 0x05, 0x06,
-    0x07, 0x06, 0x0a,
-    0x00, 0x08, 0x09,
-    0x4d, 0x00, 0x00,
-    0x0d, 0x0f, 0x4e,
-    0x0e, 0x4e, 0x4e
-};
-
-static const uint8_t FSceneDataOffsets__data[] = {
-    0x00, 0x0d, 0x1a
-};
-
-static const uint8_t ForeSceneryData__data[] = {
-    0x86, 0x87, 0x87, 0x87, 0x87, 0x87, 0x87,
-    0x87, 0x87, 0x87, 0x87, 0x69, 0x69,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x45, 0x47,
-    0x47, 0x47, 0x47, 0x47, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x86, 0x87
-};
-
-static const uint8_t TerrainMetatiles__data[] = {
-    0x69, 0x54, 0x52, 0x62
-};
-
-static const uint8_t TerrainRenderBits__data[] = {
-    BOOST_BINARY(00000000), BOOST_BINARY(00000000),
-    BOOST_BINARY(00000000), BOOST_BINARY(00011000),
-    BOOST_BINARY(00000001), BOOST_BINARY(00011000),
-    BOOST_BINARY(00000111), BOOST_BINARY(00011000),
-    BOOST_BINARY(00001111), BOOST_BINARY(00011000),
-    BOOST_BINARY(11111111), BOOST_BINARY(00011000),
-    BOOST_BINARY(00000001), BOOST_BINARY(00011111),
-    BOOST_BINARY(00000111), BOOST_BINARY(00011111),
-    BOOST_BINARY(00001111), BOOST_BINARY(00011111),
-    BOOST_BINARY(10000001), BOOST_BINARY(00011111),
-    BOOST_BINARY(00000001), BOOST_BINARY(00000000),
-    BOOST_BINARY(10001111), BOOST_BINARY(00011111),
-    BOOST_BINARY(11110001), BOOST_BINARY(00011111),
-    BOOST_BINARY(11111001), BOOST_BINARY(00011000),
-    BOOST_BINARY(11110001), BOOST_BINARY(00011000),
-    BOOST_BINARY(11111111), BOOST_BINARY(00011111)
-};
-
-static const uint8_t BlockBuffLowBounds__data[] = {
-    0x10, 0x51, 0x88, 0xc0
-};
-
-static const uint8_t FrenzyIDData__data[] = {
-    FlyCheepCheepFrenzy, BBill_CCheep_Frenzy, Stop_Frenzy
-};
-
-static const uint8_t PulleyRopeMetatiles__data[] = {
-    0x42, 0x41, 0x43
-};
-
-static const uint8_t CastleMetatiles__data[] = {
-    0x00, 0x45, 0x45, 0x45, 0x00,
-    0x00, 0x48, 0x47, 0x46, 0x00,
-    0x45, 0x49, 0x49, 0x49, 0x45,
-    0x47, 0x47, 0x4a, 0x47, 0x47,
-    0x47, 0x47, 0x4b, 0x47, 0x47,
-    0x49, 0x49, 0x49, 0x49, 0x49,
-    0x47, 0x4a, 0x47, 0x4a, 0x47,
-    0x47, 0x4b, 0x47, 0x4b, 0x47,
-    0x47, 0x47, 0x47, 0x47, 0x47,
-    0x4a, 0x47, 0x4a, 0x47, 0x4a,
-    0x4b, 0x47, 0x4b, 0x47, 0x4b
-};
-
-static const uint8_t SidePipeShaftData__data[] = {
-    0x15, 0x14,
-    0x00, 0x00
-};
-
-static const uint8_t SidePipeTopPart__data[] = {
-    0x15, 0x1e,
-    0x1d, 0x1c
-};
-
-static const uint8_t SidePipeBottomPart__data[] = {
-    0x15, 0x21,
-    0x20, 0x1f
-};
-
-static const uint8_t VerticalPipeData__data[] = {
-    0x11, 0x10,
-    0x15, 0x14,
-    0x13, 0x12,
-    0x15, 0x14
-};
-
-static const uint8_t CoinMetatileData__data[] = {
-    0xc3, 0xc2, 0xc2, 0xc2
-};
-
-static const uint8_t C_ObjectRow__data[] = {
-    0x06, 0x07, 0x08
-};
-
-static const uint8_t C_ObjectMetatile__data[] = {
-    0xc5, 0x0c, 0x89
-};
-
-static const uint8_t SolidBlockMetatiles__data[] = {
-    0x69, 0x61, 0x61, 0x62
-};
-
-static const uint8_t BrickMetatiles__data[] = {
-    0x22, 0x51, 0x52, 0x52,
-    0x88
-};
-
-static const uint8_t StaircaseHeightData__data[] = {
-    0x07, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00
-};
-
-static const uint8_t StaircaseRowData__data[] = {
-    0x03, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a
-};
-
-static const uint8_t HoleMetatiles__data[] = {
-    0x87, 0x00, 0x00, 0x00
-};
-
-static const uint8_t BlockBufferAddr__data[] = {
-    LOBYTE(Block_Buffer_1), LOBYTE(Block_Buffer_2),
-    HIBYTE(Block_Buffer_1), HIBYTE(Block_Buffer_2)
-};
-
-static const uint8_t AreaDataOfsLoopback__data[] = {
-    0x12, 0x36, 0x0e, 0x0e, 0x0e, 0x32, 0x32, 0x32, 0x0a, 0x26, 0x40
-};
-
-static const uint8_t WorldAddrOffsets__data[] = {
-    World1Areas - AreaAddrOffsets, World2Areas - AreaAddrOffsets,
-    World3Areas - AreaAddrOffsets, World4Areas - AreaAddrOffsets,
-    World5Areas - AreaAddrOffsets, World6Areas - AreaAddrOffsets,
-    World7Areas - AreaAddrOffsets, World8Areas - AreaAddrOffsets
-};
-
-static const uint8_t* AreaAddrOffsets__data = nullptr;
-static const uint8_t World1Areas__data[] = {
-    0x25, 0x29, 0xc0, 0x26, 0x60
-};
-
-static const uint8_t World2Areas__data[] = {
-    0x28, 0x29, 0x01, 0x27, 0x62
-};
-
-static const uint8_t World3Areas__data[] = {
-    0x24, 0x35, 0x20, 0x63
-};
-
-static const uint8_t World4Areas__data[] = {
-    0x22, 0x29, 0x41, 0x2c, 0x61
-};
-
-static const uint8_t World5Areas__data[] = {
-    0x2a, 0x31, 0x26, 0x62
-};
-
-static const uint8_t World6Areas__data[] = {
-    0x2e, 0x23, 0x2d, 0x60
-};
-
-static const uint8_t World7Areas__data[] = {
-    0x33, 0x29, 0x01, 0x27, 0x64
-};
-
-static const uint8_t World8Areas__data[] = {
-    0x30, 0x32, 0x21, 0x65
-};
-
-static const uint8_t EnemyAddrHOffsets__data[] = {
-    0x1f, 0x06, 0x1c, 0x00
-};
-
-static const uint8_t EnemyDataAddrLow__data[] = {
-    LOBYTE(E_CastleArea1), LOBYTE(E_CastleArea2), LOBYTE(E_CastleArea3), LOBYTE(E_CastleArea4), LOBYTE(E_CastleArea5), LOBYTE(E_CastleArea6),
-    LOBYTE(E_GroundArea1), LOBYTE(E_GroundArea2), LOBYTE(E_GroundArea3), LOBYTE(E_GroundArea4), LOBYTE(E_GroundArea5), LOBYTE(E_GroundArea6),
-    LOBYTE(E_GroundArea7), LOBYTE(E_GroundArea8), LOBYTE(E_GroundArea9), LOBYTE(E_GroundArea10), LOBYTE(E_GroundArea11), LOBYTE(E_GroundArea12),
-    LOBYTE(E_GroundArea13), LOBYTE(E_GroundArea14), LOBYTE(E_GroundArea15), LOBYTE(E_GroundArea16), LOBYTE(E_GroundArea17), LOBYTE(E_GroundArea18),
-    LOBYTE(E_GroundArea19), LOBYTE(E_GroundArea20), LOBYTE(E_GroundArea21), LOBYTE(E_GroundArea22), LOBYTE(E_UndergroundArea1),
-    LOBYTE(E_UndergroundArea2), LOBYTE(E_UndergroundArea3), LOBYTE(E_WaterArea1), LOBYTE(E_WaterArea2), LOBYTE(E_WaterArea3)
-};
-
-static const uint8_t EnemyDataAddrHigh__data[] = {
-    HIBYTE(E_CastleArea1), HIBYTE(E_CastleArea2), HIBYTE(E_CastleArea3), HIBYTE(E_CastleArea4), HIBYTE(E_CastleArea5), HIBYTE(E_CastleArea6),
-    HIBYTE(E_GroundArea1), HIBYTE(E_GroundArea2), HIBYTE(E_GroundArea3), HIBYTE(E_GroundArea4), HIBYTE(E_GroundArea5), HIBYTE(E_GroundArea6),
-    HIBYTE(E_GroundArea7), HIBYTE(E_GroundArea8), HIBYTE(E_GroundArea9), HIBYTE(E_GroundArea10), HIBYTE(E_GroundArea11), HIBYTE(E_GroundArea12),
-    HIBYTE(E_GroundArea13), HIBYTE(E_GroundArea14), HIBYTE(E_GroundArea15), HIBYTE(E_GroundArea16), HIBYTE(E_GroundArea17), HIBYTE(E_GroundArea18),
-    HIBYTE(E_GroundArea19), HIBYTE(E_GroundArea20), HIBYTE(E_GroundArea21), HIBYTE(E_GroundArea22), HIBYTE(E_UndergroundArea1),
-    HIBYTE(E_UndergroundArea2), HIBYTE(E_UndergroundArea3), HIBYTE(E_WaterArea1), HIBYTE(E_WaterArea2), HIBYTE(E_WaterArea3)
-};
-
-static const uint8_t AreaDataHOffsets__data[] = {
-    0x00, 0x03, 0x19, 0x1c
-};
-
-static const uint8_t AreaDataAddrLow__data[] = {
-    LOBYTE(L_WaterArea1), LOBYTE(L_WaterArea2), LOBYTE(L_WaterArea3), LOBYTE(L_GroundArea1), LOBYTE(L_GroundArea2), LOBYTE(L_GroundArea3),
-    LOBYTE(L_GroundArea4), LOBYTE(L_GroundArea5), LOBYTE(L_GroundArea6), LOBYTE(L_GroundArea7), LOBYTE(L_GroundArea8), LOBYTE(L_GroundArea9),
-    LOBYTE(L_GroundArea10), LOBYTE(L_GroundArea11), LOBYTE(L_GroundArea12), LOBYTE(L_GroundArea13), LOBYTE(L_GroundArea14), LOBYTE(L_GroundArea15),
-    LOBYTE(L_GroundArea16), LOBYTE(L_GroundArea17), LOBYTE(L_GroundArea18), LOBYTE(L_GroundArea19), LOBYTE(L_GroundArea20), LOBYTE(L_GroundArea21),
-    LOBYTE(L_GroundArea22), LOBYTE(L_UndergroundArea1), LOBYTE(L_UndergroundArea2), LOBYTE(L_UndergroundArea3), LOBYTE(L_CastleArea1),
-    LOBYTE(L_CastleArea2), LOBYTE(L_CastleArea3), LOBYTE(L_CastleArea4), LOBYTE(L_CastleArea5), LOBYTE(L_CastleArea6)
-};
-
-static const uint8_t AreaDataAddrHigh__data[] = {
-    HIBYTE(L_WaterArea1), HIBYTE(L_WaterArea2), HIBYTE(L_WaterArea3), HIBYTE(L_GroundArea1), HIBYTE(L_GroundArea2), HIBYTE(L_GroundArea3),
-    HIBYTE(L_GroundArea4), HIBYTE(L_GroundArea5), HIBYTE(L_GroundArea6), HIBYTE(L_GroundArea7), HIBYTE(L_GroundArea8), HIBYTE(L_GroundArea9),
-    HIBYTE(L_GroundArea10), HIBYTE(L_GroundArea11), HIBYTE(L_GroundArea12), HIBYTE(L_GroundArea13), HIBYTE(L_GroundArea14), HIBYTE(L_GroundArea15),
-    HIBYTE(L_GroundArea16), HIBYTE(L_GroundArea17), HIBYTE(L_GroundArea18), HIBYTE(L_GroundArea19), HIBYTE(L_GroundArea20), HIBYTE(L_GroundArea21),
-    HIBYTE(L_GroundArea22), HIBYTE(L_UndergroundArea1), HIBYTE(L_UndergroundArea2), HIBYTE(L_UndergroundArea3), HIBYTE(L_CastleArea1),
-    HIBYTE(L_CastleArea2), HIBYTE(L_CastleArea3), HIBYTE(L_CastleArea4), HIBYTE(L_CastleArea5), HIBYTE(L_CastleArea6)
-};
-
-static const uint8_t E_CastleArea1__data[] = {
-    0x76, 0xdd, 0xbb, 0x4c, 0xea, 0x1d, 0x1b, 0xcc, 0x56, 0x5d,
-    0x16, 0x9d, 0xc6, 0x1d, 0x36, 0x9d, 0xc9, 0x1d, 0x04, 0xdb,
-    0x49, 0x1d, 0x84, 0x1b, 0xc9, 0x5d, 0x88, 0x95, 0x0f, 0x08,
-    0x30, 0x4c, 0x78, 0x2d, 0xa6, 0x28, 0x90, 0xb5,
-    0xff
-};
-
-static const uint8_t E_CastleArea2__data[] = {
-    0x0f, 0x03, 0x56, 0x1b, 0xc9, 0x1b, 0x0f, 0x07, 0x36, 0x1b,
-    0xaa, 0x1b, 0x48, 0x95, 0x0f, 0x0a, 0x2a, 0x1b, 0x5b, 0x0c,
-    0x78, 0x2d, 0x90, 0xb5,
-    0xff
-};
-
-static const uint8_t E_CastleArea3__data[] = {
-    0x0b, 0x8c, 0x4b, 0x4c, 0x77, 0x5f, 0xeb, 0x0c, 0xbd, 0xdb,
-    0x19, 0x9d, 0x75, 0x1d, 0x7d, 0x5b, 0xd9, 0x1d, 0x3d, 0xdd,
-    0x99, 0x1d, 0x26, 0x9d, 0x5a, 0x2b, 0x8a, 0x2c, 0xca, 0x1b,
-    0x20, 0x95, 0x7b, 0x5c, 0xdb, 0x4c, 0x1b, 0xcc, 0x3b, 0xcc,
-    0x78, 0x2d, 0xa6, 0x28, 0x90, 0xb5,
-    0xff
-};
-
-static const uint8_t E_CastleArea4__data[] = {
-    0x0b, 0x8c, 0x3b, 0x1d, 0x8b, 0x1d, 0xab, 0x0c, 0xdb, 0x1d,
-    0x0f, 0x03, 0x65, 0x1d, 0x6b, 0x1b, 0x05, 0x9d, 0x0b, 0x1b,
-    0x05, 0x9b, 0x0b, 0x1d, 0x8b, 0x0c, 0x1b, 0x8c, 0x70, 0x15,
-    0x7b, 0x0c, 0xdb, 0x0c, 0x0f, 0x08, 0x78, 0x2d, 0xa6, 0x28,
-    0x90, 0xb5,
-    0xff
-};
-
-static const uint8_t E_CastleArea5__data[] = {
-    0x27, 0xa9, 0x4b, 0x0c, 0x68, 0x29, 0x0f, 0x06, 0x77, 0x1b,
-    0x0f, 0x0b, 0x60, 0x15, 0x4b, 0x8c, 0x78, 0x2d, 0x90, 0xb5,
-    0xff
-};
-
-static const uint8_t E_CastleArea6__data[] = {
-    0x0f, 0x03, 0x8e, 0x65, 0xe1, 0xbb, 0x38, 0x6d, 0xa8, 0x3e, 0xe5, 0xe7,
-    0x0f, 0x08, 0x0b, 0x02, 0x2b, 0x02, 0x5e, 0x65, 0xe1, 0xbb, 0x0e,
-    0xdb, 0x0e, 0xbb, 0x8e, 0xdb, 0x0e, 0xfe, 0x65, 0xec, 0x0f, 0x0d,
-    0x4e, 0x65, 0xe1, 0x0f, 0x0e, 0x4e, 0x02, 0xe0, 0x0f, 0x10, 0xfe, 0xe5, 0xe1,
-    0x1b, 0x85, 0x7b, 0x0c, 0x5b, 0x95, 0x78, 0x2d, 0x90, 0xb5,
-    0xff
-};
-
-static const uint8_t E_GroundArea1__data[] = {
-    0xa5, 0x86, 0xe4, 0x28, 0x18, 0xa8, 0x45, 0x83, 0x69, 0x03,
-    0xc6, 0x29, 0x9b, 0x83, 0x16, 0xa4, 0x88, 0x24, 0xe9, 0x28,
-    0x05, 0xa8, 0x7b, 0x28, 0x24, 0x8f, 0xc8, 0x03, 0xe8, 0x03,
-    0x46, 0xa8, 0x85, 0x24, 0xc8, 0x24,
-    0xff
-};
-
-static const uint8_t E_GroundArea2__data[] = {
-    0xeb, 0x8e, 0x0f, 0x03, 0xfb, 0x05, 0x17, 0x85, 0xdb, 0x8e,
-    0x0f, 0x07, 0x57, 0x05, 0x7b, 0x05, 0x9b, 0x80, 0x2b, 0x85,
-    0xfb, 0x05, 0x0f, 0x0b, 0x1b, 0x05, 0x9b, 0x05,
-    0xff
-};
-
-static const uint8_t E_GroundArea3__data[] = {
-    0x2e, 0xc2, 0x66, 0xe2, 0x11, 0x0f, 0x07, 0x02, 0x11, 0x0f, 0x0c,
-    0x12, 0x11,
-    0xff
-};
-
-static const uint8_t E_GroundArea4__data[] = {
-    0x0e, 0xc2, 0xa8, 0xab, 0x00, 0xbb, 0x8e, 0x6b, 0x82, 0xde, 0x00, 0xa0,
-    0x33, 0x86, 0x43, 0x06, 0x3e, 0xb4, 0xa0, 0xcb, 0x02, 0x0f, 0x07,
-    0x7e, 0x42, 0xa6, 0x83, 0x02, 0x0f, 0x0a, 0x3b, 0x02, 0xcb, 0x37,
-    0x0f, 0x0c, 0xe3, 0x0e,
-    0xff
-};
-
-static const uint8_t E_GroundArea5__data[] = {
-    0x9b, 0x8e, 0xca, 0x0e, 0xee, 0x42, 0x44, 0x5b, 0x86, 0x80, 0xb8,
-    0x1b, 0x80, 0x50, 0xba, 0x10, 0xb7, 0x5b, 0x00, 0x17, 0x85,
-    0x4b, 0x05, 0xfe, 0x34, 0x40, 0xb7, 0x86, 0xc6, 0x06, 0x5b, 0x80,
-    0x83, 0x00, 0xd0, 0x38, 0x5b, 0x8e, 0x8a, 0x0e, 0xa6, 0x00,
-    0xbb, 0x0e, 0xc5, 0x80, 0xf3, 0x00,
-    0xff
-};
-
-static const uint8_t E_GroundArea6__data[] = {
-    0x1e, 0xc2, 0x00, 0x6b, 0x06, 0x8b, 0x86, 0x63, 0xb7, 0x0f, 0x05,
-    0x03, 0x06, 0x23, 0x06, 0x4b, 0xb7, 0xbb, 0x00, 0x5b, 0xb7,
-    0xfb, 0x37, 0x3b, 0xb7, 0x0f, 0x0b, 0x1b, 0x37,
-    0xff
-};
-
-static const uint8_t E_GroundArea7__data[] = {
-    0x2b, 0xd7, 0xe3, 0x03, 0xc2, 0x86, 0xe2, 0x06, 0x76, 0xa5,
-    0xa3, 0x8f, 0x03, 0x86, 0x2b, 0x57, 0x68, 0x28, 0xe9, 0x28,
-    0xe5, 0x83, 0x24, 0x8f, 0x36, 0xa8, 0x5b, 0x03,
-    0xff
-};
-
-static const uint8_t E_GroundArea8__data[] = {
-    0x0f, 0x02, 0x78, 0x40, 0x48, 0xce, 0xf8, 0xc3, 0xf8, 0xc3,
-    0x0f, 0x07, 0x7b, 0x43, 0xc6, 0xd0, 0x0f, 0x8a, 0xc8, 0x50,
-    0xff
-};
-
-static const uint8_t E_GroundArea9__data[] = {
-    0x85, 0x86, 0x0b, 0x80, 0x1b, 0x00, 0xdb, 0x37, 0x77, 0x80,
-    0xeb, 0x37, 0xfe, 0x2b, 0x20, 0x2b, 0x80, 0x7b, 0x38, 0xab, 0xb8,
-    0x77, 0x86, 0xfe, 0x42, 0x20, 0x49, 0x86, 0x8b, 0x06, 0x9b, 0x80,
-    0x7b, 0x8e, 0x5b, 0xb7, 0x9b, 0x0e, 0xbb, 0x0e, 0x9b, 0x80
-};
-
-static const uint8_t E_GroundArea10__data[] = {
-    0xff
-};
-
-static const uint8_t E_GroundArea11__data[] = {
-    0x0b, 0x80, 0x60, 0x38, 0x10, 0xb8, 0xc0, 0x3b, 0xdb, 0x8e,
-    0x40, 0xb8, 0xf0, 0x38, 0x7b, 0x8e, 0xa0, 0xb8, 0xc0, 0xb8,
-    0xfb, 0x00, 0xa0, 0xb8, 0x30, 0xbb, 0xee, 0x42, 0x88, 0x0f, 0x0b,
-    0x2b, 0x0e, 0x67, 0x0e,
-    0xff
-};
-
-static const uint8_t E_GroundArea12__data[] = {
-    0x0a, 0xaa, 0x0e, 0x28, 0x2a, 0x0e, 0x31, 0x88,
-    0xff
-};
-
-static const uint8_t E_GroundArea13__data[] = {
-    0xc7, 0x83, 0xd7, 0x03, 0x42, 0x8f, 0x7a, 0x03, 0x05, 0xa4,
-    0x78, 0x24, 0xa6, 0x25, 0xe4, 0x25, 0x4b, 0x83, 0xe3, 0x03,
-    0x05, 0xa4, 0x89, 0x24, 0xb5, 0x24, 0x09, 0xa4, 0x65, 0x24,
-    0xc9, 0x24, 0x0f, 0x08, 0x85, 0x25,
-    0xff
-};
-
-static const uint8_t E_GroundArea14__data[] = {
-    0xcd, 0xa5, 0xb5, 0xa8, 0x07, 0xa8, 0x76, 0x28, 0xcc, 0x25,
-    0x65, 0xa4, 0xa9, 0x24, 0xe5, 0x24, 0x19, 0xa4, 0x0f, 0x07,
-    0x95, 0x28, 0xe6, 0x24, 0x19, 0xa4, 0xd7, 0x29, 0x16, 0xa9,
-    0x58, 0x29, 0x97, 0x29,
-    0xff
-};
-
-static const uint8_t E_GroundArea15__data[] = {
-    0x0f, 0x02, 0x02, 0x11, 0x0f, 0x07, 0x02, 0x11,
-    0xff
-};
-
-static const uint8_t E_GroundArea16__data[] = {
-    0xff
-};
-
-static const uint8_t E_GroundArea17__data[] = {
-    0x2b, 0x82, 0xab, 0x38, 0xde, 0x42, 0xe2, 0x1b, 0xb8, 0xeb,
-    0x3b, 0xdb, 0x80, 0x8b, 0xb8, 0x1b, 0x82, 0xfb, 0xb8, 0x7b,
-    0x80, 0xfb, 0x3c, 0x5b, 0xbc, 0x7b, 0xb8, 0x1b, 0x8e, 0xcb,
-    0x0e, 0x1b, 0x8e, 0x0f, 0x0d, 0x2b, 0x3b, 0xbb, 0xb8, 0xeb, 0x82,
-    0x4b, 0xb8, 0xbb, 0x38, 0x3b, 0xb7, 0xbb, 0x02, 0x0f, 0x13,
-    0x1b, 0x00, 0xcb, 0x80, 0x6b, 0xbc,
-    0xff
-};
-
-static const uint8_t E_GroundArea18__data[] = {
-    0x7b, 0x80, 0xae, 0x00, 0x80, 0x8b, 0x8e, 0xe8, 0x05, 0xf9, 0x86,
-    0x17, 0x86, 0x16, 0x85, 0x4e, 0x2b, 0x80, 0xab, 0x8e, 0x87, 0x85,
-    0xc3, 0x05, 0x8b, 0x82, 0x9b, 0x02, 0xab, 0x02, 0xbb, 0x86,
-    0xcb, 0x06, 0xd3, 0x03, 0x3b, 0x8e, 0x6b, 0x0e, 0xa7, 0x8e,
-    0xff
-};
-
-static const uint8_t E_GroundArea19__data[] = {
-    0x29, 0x8e, 0x52, 0x11, 0x83, 0x0e, 0x0f, 0x03, 0x9b, 0x0e,
-    0x2b, 0x8e, 0x5b, 0x0e, 0xcb, 0x8e, 0xfb, 0x0e, 0xfb, 0x82,
-    0x9b, 0x82, 0xbb, 0x02, 0xfe, 0x42, 0xe8, 0xbb, 0x8e, 0x0f, 0x0a,
-    0xab, 0x0e, 0xcb, 0x0e, 0xf9, 0x0e, 0x88, 0x86, 0xa6, 0x06,
-    0xdb, 0x02, 0xb6, 0x8e,
-    0xff
-};
-
-static const uint8_t E_GroundArea20__data[] = {
-    0xab, 0xce, 0xde, 0x42, 0xc0, 0xcb, 0xce, 0x5b, 0x8e, 0x1b, 0xce,
-    0x4b, 0x85, 0x67, 0x45, 0x0f, 0x07, 0x2b, 0x00, 0x7b, 0x85,
-    0x97, 0x05, 0x0f, 0x0a, 0x92, 0x02,
-    0xff
-};
-
-static const uint8_t E_GroundArea21__data[] = {
-    0x0a, 0xaa, 0x0e, 0x24, 0x4a, 0x1e, 0x23, 0xaa,
-    0xff
-};
-
-static const uint8_t E_GroundArea22__data[] = {
-    0x1b, 0x80, 0xbb, 0x38, 0x4b, 0xbc, 0xeb, 0x3b, 0x0f, 0x04,
-    0x2b, 0x00, 0xab, 0x38, 0xeb, 0x00, 0xcb, 0x8e, 0xfb, 0x80,
-    0xab, 0xb8, 0x6b, 0x80, 0xfb, 0x3c, 0x9b, 0xbb, 0x5b, 0xbc,
-    0xfb, 0x00, 0x6b, 0xb8, 0xfb, 0x38,
-    0xff
-};
-
-static const uint8_t E_UndergroundArea1__data[] = {
-    0x0b, 0x86, 0x1a, 0x06, 0xdb, 0x06, 0xde, 0xc2, 0x02, 0xf0, 0x3b,
-    0xbb, 0x80, 0xeb, 0x06, 0x0b, 0x86, 0x93, 0x06, 0xf0, 0x39,
-    0x0f, 0x06, 0x60, 0xb8, 0x1b, 0x86, 0xa0, 0xb9, 0xb7, 0x27,
-    0xbd, 0x27, 0x2b, 0x83, 0xa1, 0x26, 0xa9, 0x26, 0xee, 0x25, 0x0b,
-    0x27, 0xb4,
-    0xff
-};
-
-static const uint8_t E_UndergroundArea2__data[] = {
-    0x0f, 0x02, 0x1e, 0x2f, 0x60, 0xe0, 0x3a, 0xa5, 0xa7, 0xdb, 0x80,
-    0x3b, 0x82, 0x8b, 0x02, 0xfe, 0x42, 0x68, 0x70, 0xbb, 0x25, 0xa7,
-    0x2c, 0x27, 0xb2, 0x26, 0xb9, 0x26, 0x9b, 0x80, 0xa8, 0x82,
-    0xb5, 0x27, 0xbc, 0x27, 0xb0, 0xbb, 0x3b, 0x82, 0x87, 0x34,
-    0xee, 0x25, 0x6b,
-    0xff
-};
-
-static const uint8_t E_UndergroundArea3__data[] = {
-    0x1e, 0xa5, 0x0a, 0x2e, 0x28, 0x27, 0x2e, 0x33, 0xc7, 0x0f, 0x03, 0x1e, 0x40, 0x07,
-    0x2e, 0x30, 0xe7, 0x0f, 0x05, 0x1e, 0x24, 0x44, 0x0f, 0x07, 0x1e, 0x22, 0x6a,
-    0x2e, 0x23, 0xab, 0x0f, 0x09, 0x1e, 0x41, 0x68, 0x1e, 0x2a, 0x8a, 0x2e, 0x23, 0xa2,
-    0x2e, 0x32, 0xea,
-    0xff
-};
-
-static const uint8_t E_WaterArea1__data[] = {
-    0x3b, 0x87, 0x66, 0x27, 0xcc, 0x27, 0xee, 0x31, 0x87, 0xee, 0x23, 0xa7,
-    0x3b, 0x87, 0xdb, 0x07,
-    0xff
-};
-
-static const uint8_t E_WaterArea2__data[] = {
-    0x0f, 0x01, 0x2e, 0x25, 0x2b, 0x2e, 0x25, 0x4b, 0x4e, 0x25, 0xcb, 0x6b, 0x07,
-    0x97, 0x47, 0xe9, 0x87, 0x47, 0xc7, 0x7a, 0x07, 0xd6, 0xc7,
-    0x78, 0x07, 0x38, 0x87, 0xab, 0x47, 0xe3, 0x07, 0x9b, 0x87,
-    0x0f, 0x09, 0x68, 0x47, 0xdb, 0xc7, 0x3b, 0xc7,
-    0xff
-};
-
-static const uint8_t E_WaterArea3__data[] = {
-    0x47, 0x9b, 0xcb, 0x07, 0xfa, 0x1d, 0x86, 0x9b, 0x3a, 0x87,
-    0x56, 0x07, 0x88, 0x1b, 0x07, 0x9d, 0x2e, 0x65, 0xf0,
-    0xff
-};
-
-static const uint8_t L_CastleArea1__data[] = {
-    0x9b, 0x07,
-    0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xce, 0x03, 0xdc, 0x51,
-    0xee, 0x07, 0x73, 0xe0, 0x74, 0x0a, 0x7e, 0x06, 0x9e, 0x0a,
-    0xce, 0x06, 0xe4, 0x00, 0xe8, 0x0a, 0xfe, 0x0a, 0x2e, 0x89,
-    0x4e, 0x0b, 0x54, 0x0a, 0x14, 0x8a, 0xc4, 0x0a, 0x34, 0x8a,
-    0x7e, 0x06, 0xc7, 0x0a, 0x01, 0xe0, 0x02, 0x0a, 0x47, 0x0a,
-    0x81, 0x60, 0x82, 0x0a, 0xc7, 0x0a, 0x0e, 0x87, 0x7e, 0x02,
-    0xa7, 0x02, 0xb3, 0x02, 0xd7, 0x02, 0xe3, 0x02, 0x07, 0x82,
-    0x13, 0x02, 0x3e, 0x06, 0x7e, 0x02, 0xae, 0x07, 0xfe, 0x0a,
-    0x0d, 0xc4, 0xcd, 0x43, 0xce, 0x09, 0xde, 0x0b, 0xdd, 0x42,
-    0xfe, 0x02, 0x5d, 0xc7,
-    0xfd
-};
-
-static const uint8_t L_CastleArea2__data[] = {
-    0x5b, 0x07,
-    0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0x5e, 0x0a, 0x68, 0x64,
-    0x98, 0x64, 0xa8, 0x64, 0xce, 0x06, 0xfe, 0x02, 0x0d, 0x01,
-    0x1e, 0x0e, 0x7e, 0x02, 0x94, 0x63, 0xb4, 0x63, 0xd4, 0x63,
-    0xf4, 0x63, 0x14, 0xe3, 0x2e, 0x0e, 0x5e, 0x02, 0x64, 0x35,
-    0x88, 0x72, 0xbe, 0x0e, 0x0d, 0x04, 0xae, 0x02, 0xce, 0x08,
-    0xcd, 0x4b, 0xfe, 0x02, 0x0d, 0x05, 0x68, 0x31, 0x7e, 0x0a,
-    0x96, 0x31, 0xa9, 0x63, 0xa8, 0x33, 0xd5, 0x30, 0xee, 0x02,
-    0xe6, 0x62, 0xf4, 0x61, 0x04, 0xb1, 0x08, 0x3f, 0x44, 0x33,
-    0x94, 0x63, 0xa4, 0x31, 0xe4, 0x31, 0x04, 0xbf, 0x08, 0x3f,
-    0x04, 0xbf, 0x08, 0x3f, 0xcd, 0x4b, 0x03, 0xe4, 0x0e, 0x03,
-    0x2e, 0x01, 0x7e, 0x06, 0xbe, 0x02, 0xde, 0x06, 0xfe, 0x0a,
-    0x0d, 0xc4, 0xcd, 0x43, 0xce, 0x09, 0xde, 0x0b, 0xdd, 0x42,
-    0xfe, 0x02, 0x5d, 0xc7,
-    0xfd
-};
-
-static const uint8_t L_CastleArea3__data[] = {
-    0x9b, 0x07,
-    0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xfe, 0x00, 0x27, 0xb1,
-    0x65, 0x32, 0x75, 0x0a, 0x71, 0x00, 0xb7, 0x31, 0x08, 0xe4,
-    0x18, 0x64, 0x1e, 0x04, 0x57, 0x3b, 0xbb, 0x0a, 0x17, 0x8a,
-    0x27, 0x3a, 0x73, 0x0a, 0x7b, 0x0a, 0xd7, 0x0a, 0xe7, 0x3a,
-    0x3b, 0x8a, 0x97, 0x0a, 0xfe, 0x08, 0x24, 0x8a, 0x2e, 0x00,
-    0x3e, 0x40, 0x38, 0x64, 0x6f, 0x00, 0x9f, 0x00, 0xbe, 0x43,
-    0xc8, 0x0a, 0xc9, 0x63, 0xce, 0x07, 0xfe, 0x07, 0x2e, 0x81,
-    0x66, 0x42, 0x6a, 0x42, 0x79, 0x0a, 0xbe, 0x00, 0xc8, 0x64,
-    0xf8, 0x64, 0x08, 0xe4, 0x2e, 0x07, 0x7e, 0x03, 0x9e, 0x07,
-    0xbe, 0x03, 0xde, 0x07, 0xfe, 0x0a, 0x03, 0xa5, 0x0d, 0x44,
-    0xcd, 0x43, 0xce, 0x09, 0xdd, 0x42, 0xde, 0x0b, 0xfe, 0x02,
-    0x5d, 0xc7,
-    0xfd
-};
-
-static const uint8_t L_CastleArea4__data[] = {
-    0x9b, 0x07,
-    0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xfe, 0x06, 0x0c, 0x81,
-    0x39, 0x0a, 0x5c, 0x01, 0x89, 0x0a, 0xac, 0x01, 0xd9, 0x0a,
-    0xfc, 0x01, 0x2e, 0x83, 0xa7, 0x01, 0xb7, 0x00, 0xc7, 0x01,
-    0xde, 0x0a, 0xfe, 0x02, 0x4e, 0x83, 0x5a, 0x32, 0x63, 0x0a,
-    0x69, 0x0a, 0x7e, 0x02, 0xee, 0x03, 0xfa, 0x32, 0x03, 0x8a,
-    0x09, 0x0a, 0x1e, 0x02, 0xee, 0x03, 0xfa, 0x32, 0x03, 0x8a,
-    0x09, 0x0a, 0x14, 0x42, 0x1e, 0x02, 0x7e, 0x0a, 0x9e, 0x07,
-    0xfe, 0x0a, 0x2e, 0x86, 0x5e, 0x0a, 0x8e, 0x06, 0xbe, 0x0a,
-    0xee, 0x07, 0x3e, 0x83, 0x5e, 0x07, 0xfe, 0x0a, 0x0d, 0xc4,
-    0x41, 0x52, 0x51, 0x52, 0xcd, 0x43, 0xce, 0x09, 0xde, 0x0b,
-    0xdd, 0x42, 0xfe, 0x02, 0x5d, 0xc7,
-    0xfd
-};
-
-static const uint8_t L_CastleArea5__data[] = {
-    0x5b, 0x07,
-    0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xfe, 0x0a, 0xae, 0x86,
-    0xbe, 0x07, 0xfe, 0x02, 0x0d, 0x02, 0x27, 0x32, 0x46, 0x61,
-    0x55, 0x62, 0x5e, 0x0e, 0x1e, 0x82, 0x68, 0x3c, 0x74, 0x3a,
-    0x7d, 0x4b, 0x5e, 0x8e, 0x7d, 0x4b, 0x7e, 0x82, 0x84, 0x62,
-    0x94, 0x61, 0xa4, 0x31, 0xbd, 0x4b, 0xce, 0x06, 0xfe, 0x02,
-    0x0d, 0x06, 0x34, 0x31, 0x3e, 0x0a, 0x64, 0x32, 0x75, 0x0a,
-    0x7b, 0x61, 0xa4, 0x33, 0xae, 0x02, 0xde, 0x0e, 0x3e, 0x82,
-    0x64, 0x32, 0x78, 0x32, 0xb4, 0x36, 0xc8, 0x36, 0xdd, 0x4b,
-    0x44, 0xb2, 0x58, 0x32, 0x94, 0x63, 0xa4, 0x3e, 0xba, 0x30,
-    0xc9, 0x61, 0xce, 0x06, 0xdd, 0x4b, 0xce, 0x86, 0xdd, 0x4b,
-    0xfe, 0x02, 0x2e, 0x86, 0x5e, 0x02, 0x7e, 0x06, 0xfe, 0x02,
-    0x1e, 0x86, 0x3e, 0x02, 0x5e, 0x06, 0x7e, 0x02, 0x9e, 0x06,
-    0xfe, 0x0a, 0x0d, 0xc4, 0xcd, 0x43, 0xce, 0x09, 0xde, 0x0b,
-    0xdd, 0x42, 0xfe, 0x02, 0x5d, 0xc7,
-    0xfd
-};
-
-static const uint8_t L_CastleArea6__data[] = {
-    0x5b, 0x06,
-    0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0x5e, 0x0a, 0xae, 0x02,
-    0x0d, 0x01, 0x39, 0x73, 0x0d, 0x03, 0x39, 0x7b, 0x4d, 0x4b,
-    0xde, 0x06, 0x1e, 0x8a, 0xae, 0x06, 0xc4, 0x33, 0x16, 0xfe,
-    0xa5, 0x77, 0xfe, 0x02, 0xfe, 0x82, 0x0d, 0x07, 0x39, 0x73,
-    0xa8, 0x74, 0xed, 0x4b, 0x49, 0xfb, 0xe8, 0x74, 0xfe, 0x0a,
-    0x2e, 0x82, 0x67, 0x02, 0x84, 0x7a, 0x87, 0x31, 0x0d, 0x0b,
-    0xfe, 0x02, 0x0d, 0x0c, 0x39, 0x73, 0x5e, 0x06, 0xc6, 0x76,
-    0x45, 0xff, 0xbe, 0x0a, 0xdd, 0x48, 0xfe, 0x06, 0x3d, 0xcb,
-    0x46, 0x7e, 0xad, 0x4a, 0xfe, 0x82, 0x39, 0xf3, 0xa9, 0x7b,
-    0x4e, 0x8a, 0x9e, 0x07, 0xfe, 0x0a, 0x0d, 0xc4, 0xcd, 0x43,
-    0xce, 0x09, 0xde, 0x0b, 0xdd, 0x42, 0xfe, 0x02, 0x5d, 0xc7,
-    0xfd
-};
-
-static const uint8_t L_GroundArea1__data[] = {
-    0x94, 0x11,
-    0x0f, 0x26, 0xfe, 0x10, 0x28, 0x94, 0x65, 0x15, 0xeb, 0x12,
-    0xfa, 0x41, 0x4a, 0x96, 0x54, 0x40, 0xa4, 0x42, 0xb7, 0x13,
-    0xe9, 0x19, 0xf5, 0x15, 0x11, 0x80, 0x47, 0x42, 0x71, 0x13,
-    0x80, 0x41, 0x15, 0x92, 0x1b, 0x1f, 0x24, 0x40, 0x55, 0x12,
-    0x64, 0x40, 0x95, 0x12, 0xa4, 0x40, 0xd2, 0x12, 0xe1, 0x40,
-    0x13, 0xc0, 0x2c, 0x17, 0x2f, 0x12, 0x49, 0x13, 0x83, 0x40,
-    0x9f, 0x14, 0xa3, 0x40, 0x17, 0x92, 0x83, 0x13, 0x92, 0x41,
-    0xb9, 0x14, 0xc5, 0x12, 0xc8, 0x40, 0xd4, 0x40, 0x4b, 0x92,
-    0x78, 0x1b, 0x9c, 0x94, 0x9f, 0x11, 0xdf, 0x14, 0xfe, 0x11,
-    0x7d, 0xc1, 0x9e, 0x42, 0xcf, 0x20,
-    0xfd
-};
-
-static const uint8_t L_GroundArea2__data[] = {
-    0x90, 0xb1,
-    0x0f, 0x26, 0x29, 0x91, 0x7e, 0x42, 0xfe, 0x40, 0x28, 0x92,
-    0x4e, 0x42, 0x2e, 0xc0, 0x57, 0x73, 0xc3, 0x25, 0xc7, 0x27,
-    0x23, 0x84, 0x33, 0x20, 0x5c, 0x01, 0x77, 0x63, 0x88, 0x62,
-    0x99, 0x61, 0xaa, 0x60, 0xbc, 0x01, 0xee, 0x42, 0x4e, 0xc0,
-    0x69, 0x11, 0x7e, 0x42, 0xde, 0x40, 0xf8, 0x62, 0x0e, 0xc2,
-    0xae, 0x40, 0xd7, 0x63, 0xe7, 0x63, 0x33, 0xa7, 0x37, 0x27,
-    0x43, 0x04, 0xcc, 0x01, 0xe7, 0x73, 0x0c, 0x81, 0x3e, 0x42,
-    0x0d, 0x0a, 0x5e, 0x40, 0x88, 0x72, 0xbe, 0x42, 0xe7, 0x87,
-    0xfe, 0x40, 0x39, 0xe1, 0x4e, 0x00, 0x69, 0x60, 0x87, 0x60,
-    0xa5, 0x60, 0xc3, 0x31, 0xfe, 0x31, 0x6d, 0xc1, 0xbe, 0x42,
-    0xef, 0x20,
-    0xfd
-};
-
-static const uint8_t L_GroundArea3__data[] = {
-    0x52, 0x21,
-    0x0f, 0x20, 0x6e, 0x40, 0x58, 0xf2, 0x93, 0x01, 0x97, 0x00,
-    0x0c, 0x81, 0x97, 0x40, 0xa6, 0x41, 0xc7, 0x40, 0x0d, 0x04,
-    0x03, 0x01, 0x07, 0x01, 0x23, 0x01, 0x27, 0x01, 0xec, 0x03,
-    0xac, 0xf3, 0xc3, 0x03, 0x78, 0xe2, 0x94, 0x43, 0x47, 0xf3,
-    0x74, 0x43, 0x47, 0xfb, 0x74, 0x43, 0x2c, 0xf1, 0x4c, 0x63,
-    0x47, 0x00, 0x57, 0x21, 0x5c, 0x01, 0x7c, 0x72, 0x39, 0xf1,
-    0xec, 0x02, 0x4c, 0x81, 0xd8, 0x62, 0xec, 0x01, 0x0d, 0x0d,
-    0x0f, 0x38, 0xc7, 0x07, 0xed, 0x4a, 0x1d, 0xc1, 0x5f, 0x26,
-    0xfd
-};
-
-static const uint8_t L_GroundArea4__data[] = {
-    0x54, 0x21,
-    0x0f, 0x26, 0xa7, 0x22, 0x37, 0xfb, 0x73, 0x20, 0x83, 0x07,
-    0x87, 0x02, 0x93, 0x20, 0xc7, 0x73, 0x04, 0xf1, 0x06, 0x31,
-    0x39, 0x71, 0x59, 0x71, 0xe7, 0x73, 0x37, 0xa0, 0x47, 0x04,
-    0x86, 0x7c, 0xe5, 0x71, 0xe7, 0x31, 0x33, 0xa4, 0x39, 0x71,
-    0xa9, 0x71, 0xd3, 0x23, 0x08, 0xf2, 0x13, 0x05, 0x27, 0x02,
-    0x49, 0x71, 0x75, 0x75, 0xe8, 0x72, 0x67, 0xf3, 0x99, 0x71,
-    0xe7, 0x20, 0xf4, 0x72, 0xf7, 0x31, 0x17, 0xa0, 0x33, 0x20,
-    0x39, 0x71, 0x73, 0x28, 0xbc, 0x05, 0x39, 0xf1, 0x79, 0x71,
-    0xa6, 0x21, 0xc3, 0x06, 0xd3, 0x20, 0xdc, 0x00, 0xfc, 0x00,
-    0x07, 0xa2, 0x13, 0x21, 0x5f, 0x32, 0x8c, 0x00, 0x98, 0x7a,
-    0xc7, 0x63, 0xd9, 0x61, 0x03, 0xa2, 0x07, 0x22, 0x74, 0x72,
-    0x77, 0x31, 0xe7, 0x73, 0x39, 0xf1, 0x58, 0x72, 0x77, 0x73,
-    0xd8, 0x72, 0x7f, 0xb1, 0x97, 0x73, 0xb6, 0x64, 0xc5, 0x65,
-    0xd4, 0x66, 0xe3, 0x67, 0xf3, 0x67, 0x8d, 0xc1, 0xcf, 0x26,
-    0xfd
-};
-
-static const uint8_t L_GroundArea5__data[] = {
-    0x52, 0x31,
-    0x0f, 0x20, 0x6e, 0x66, 0x07, 0x81, 0x36, 0x01, 0x66, 0x00,
-    0xa7, 0x22, 0x08, 0xf2, 0x67, 0x7b, 0xdc, 0x02, 0x98, 0xf2,
-    0xd7, 0x20, 0x39, 0xf1, 0x9f, 0x33, 0xdc, 0x27, 0xdc, 0x57,
-    0x23, 0x83, 0x57, 0x63, 0x6c, 0x51, 0x87, 0x63, 0x99, 0x61,
-    0xa3, 0x06, 0xb3, 0x21, 0x77, 0xf3, 0xf3, 0x21, 0xf7, 0x2a,
-    0x13, 0x81, 0x23, 0x22, 0x53, 0x00, 0x63, 0x22, 0xe9, 0x0b,
-    0x0c, 0x83, 0x13, 0x21, 0x16, 0x22, 0x33, 0x05, 0x8f, 0x35,
-    0xec, 0x01, 0x63, 0xa0, 0x67, 0x20, 0x73, 0x01, 0x77, 0x01,
-    0x83, 0x20, 0x87, 0x20, 0xb3, 0x20, 0xb7, 0x20, 0xc3, 0x01,
-    0xc7, 0x00, 0xd3, 0x20, 0xd7, 0x20, 0x67, 0xa0, 0x77, 0x07,
-    0x87, 0x22, 0xe8, 0x62, 0xf5, 0x65, 0x1c, 0x82, 0x7f, 0x38,
-    0x8d, 0xc1, 0xcf, 0x26,
-    0xfd
-};
-
-static const uint8_t L_GroundArea6__data[] = {
-    0x50, 0x21,
-    0x07, 0x81, 0x47, 0x24, 0x57, 0x00, 0x63, 0x01, 0x77, 0x01,
-    0xc9, 0x71, 0x68, 0xf2, 0xe7, 0x73, 0x97, 0xfb, 0x06, 0x83,
-    0x5c, 0x01, 0xd7, 0x22, 0xe7, 0x00, 0x03, 0xa7, 0x6c, 0x02,
-    0xb3, 0x22, 0xe3, 0x01, 0xe7, 0x07, 0x47, 0xa0, 0x57, 0x06,
-    0xa7, 0x01, 0xd3, 0x00, 0xd7, 0x01, 0x07, 0x81, 0x67, 0x20,
-    0x93, 0x22, 0x03, 0xa3, 0x1c, 0x61, 0x17, 0x21, 0x6f, 0x33,
-    0xc7, 0x63, 0xd8, 0x62, 0xe9, 0x61, 0xfa, 0x60, 0x4f, 0xb3,
-    0x87, 0x63, 0x9c, 0x01, 0xb7, 0x63, 0xc8, 0x62, 0xd9, 0x61,
-    0xea, 0x60, 0x39, 0xf1, 0x87, 0x21, 0xa7, 0x01, 0xb7, 0x20,
-    0x39, 0xf1, 0x5f, 0x38, 0x6d, 0xc1, 0xaf, 0x26,
-    0xfd
-};
-
-static const uint8_t L_GroundArea7__data[] = {
-    0x90, 0x11,
-    0x0f, 0x26, 0xfe, 0x10, 0x2a, 0x93, 0x87, 0x17, 0xa3, 0x14,
-    0xb2, 0x42, 0x0a, 0x92, 0x19, 0x40, 0x36, 0x14, 0x50, 0x41,
-    0x82, 0x16, 0x2b, 0x93, 0x24, 0x41, 0xbb, 0x14, 0xb8, 0x00,
-    0xc2, 0x43, 0xc3, 0x13, 0x1b, 0x94, 0x67, 0x12, 0xc4, 0x15,
-    0x53, 0xc1, 0xd2, 0x41, 0x12, 0xc1, 0x29, 0x13, 0x85, 0x17,
-    0x1b, 0x92, 0x1a, 0x42, 0x47, 0x13, 0x83, 0x41, 0xa7, 0x13,
-    0x0e, 0x91, 0xa7, 0x63, 0xb7, 0x63, 0xc5, 0x65, 0xd5, 0x65,
-    0xdd, 0x4a, 0xe3, 0x67, 0xf3, 0x67, 0x8d, 0xc1, 0xae, 0x42,
-    0xdf, 0x20,
-    0xfd
-};
-
-static const uint8_t L_GroundArea8__data[] = {
-    0x90, 0x11,
-    0x0f, 0x26, 0x6e, 0x10, 0x8b, 0x17, 0xaf, 0x32, 0xd8, 0x62,
-    0xe8, 0x62, 0xfc, 0x3f, 0xad, 0xc8, 0xf8, 0x64, 0x0c, 0xbe,
-    0x43, 0x43, 0xf8, 0x64, 0x0c, 0xbf, 0x73, 0x40, 0x84, 0x40,
-    0x93, 0x40, 0xa4, 0x40, 0xb3, 0x40, 0xf8, 0x64, 0x48, 0xe4,
-    0x5c, 0x39, 0x83, 0x40, 0x92, 0x41, 0xb3, 0x40, 0xf8, 0x64,
-    0x48, 0xe4, 0x5c, 0x39, 0xf8, 0x64, 0x13, 0xc2, 0x37, 0x65,
-    0x4c, 0x24, 0x63, 0x00, 0x97, 0x65, 0xc3, 0x42, 0x0b, 0x97,
-    0xac, 0x32, 0xf8, 0x64, 0x0c, 0xbe, 0x53, 0x45, 0x9d, 0x48,
-    0xf8, 0x64, 0x2a, 0xe2, 0x3c, 0x47, 0x56, 0x43, 0xba, 0x62,
-    0xf8, 0x64, 0x0c, 0xb7, 0x88, 0x64, 0xbc, 0x31, 0xd4, 0x45,
-    0xfc, 0x31, 0x3c, 0xb1, 0x78, 0x64, 0x8c, 0x38, 0x0b, 0x9c,
-    0x1a, 0x33, 0x18, 0x61, 0x28, 0x61, 0x39, 0x60, 0x5d, 0x4a,
-    0xee, 0x11, 0x0f, 0xb8, 0x1d, 0xc1, 0x3e, 0x42, 0x6f, 0x20,
-    0xfd
-};
-
-static const uint8_t L_GroundArea9__data[] = {
-    0x52, 0x31,
-    0x0f, 0x20, 0x6e, 0x40, 0xf7, 0x20, 0x07, 0x84, 0x17, 0x20,
-    0x4f, 0x34, 0xc3, 0x03, 0xc7, 0x02, 0xd3, 0x22, 0x27, 0xe3,
-    0x39, 0x61, 0xe7, 0x73, 0x5c, 0xe4, 0x57, 0x00, 0x6c, 0x73,
-    0x47, 0xa0, 0x53, 0x06, 0x63, 0x22, 0xa7, 0x73, 0xfc, 0x73,
-    0x13, 0xa1, 0x33, 0x05, 0x43, 0x21, 0x5c, 0x72, 0xc3, 0x23,
-    0xcc, 0x03, 0x77, 0xfb, 0xac, 0x02, 0x39, 0xf1, 0xa7, 0x73,
-    0xd3, 0x04, 0xe8, 0x72, 0xe3, 0x22, 0x26, 0xf4, 0xbc, 0x02,
-    0x8c, 0x81, 0xa8, 0x62, 0x17, 0x87, 0x43, 0x24, 0xa7, 0x01,
-    0xc3, 0x04, 0x08, 0xf2, 0x97, 0x21, 0xa3, 0x02, 0xc9, 0x0b,
-    0xe1, 0x69, 0xf1, 0x69, 0x8d, 0xc1, 0xcf, 0x26,
-    0xfd
-};
-
-static const uint8_t L_GroundArea10__data[] = {
-    0x38, 0x11,
-    0x0f, 0x26, 0xad, 0x40, 0x3d, 0xc7,
-    0xfd
-};
-
-static const uint8_t L_GroundArea11__data[] = {
-    0x95, 0xb1,
-    0x0f, 0x26, 0x0d, 0x02, 0xc8, 0x72, 0x1c, 0x81, 0x38, 0x72,
-    0x0d, 0x05, 0x97, 0x34, 0x98, 0x62, 0xa3, 0x20, 0xb3, 0x06,
-    0xc3, 0x20, 0xcc, 0x03, 0xf9, 0x91, 0x2c, 0x81, 0x48, 0x62,
-    0x0d, 0x09, 0x37, 0x63, 0x47, 0x03, 0x57, 0x21, 0x8c, 0x02,
-    0xc5, 0x79, 0xc7, 0x31, 0xf9, 0x11, 0x39, 0xf1, 0xa9, 0x11,
-    0x6f, 0xb4, 0xd3, 0x65, 0xe3, 0x65, 0x7d, 0xc1, 0xbf, 0x26,
-    0xfd
-};
-
-static const uint8_t L_GroundArea12__data[] = {
-    0x00, 0xc1,
-    0x4c, 0x00, 0xf4, 0x4f, 0x0d, 0x02, 0x02, 0x42, 0x43, 0x4f,
-    0x52, 0xc2, 0xde, 0x00, 0x5a, 0xc2, 0x4d, 0xc7,
-    0xfd
-};
-
-static const uint8_t L_GroundArea13__data[] = {
-    0x90, 0x51,
-    0x0f, 0x26, 0xee, 0x10, 0x0b, 0x94, 0x33, 0x14, 0x42, 0x42,
-    0x77, 0x16, 0x86, 0x44, 0x02, 0x92, 0x4a, 0x16, 0x69, 0x42,
-    0x73, 0x14, 0xb0, 0x00, 0xc7, 0x12, 0x05, 0xc0, 0x1c, 0x17,
-    0x1f, 0x11, 0x36, 0x12, 0x8f, 0x14, 0x91, 0x40, 0x1b, 0x94,
-    0x35, 0x12, 0x34, 0x42, 0x60, 0x42, 0x61, 0x12, 0x87, 0x12,
-    0x96, 0x40, 0xa3, 0x14, 0x1c, 0x98, 0x1f, 0x11, 0x47, 0x12,
-    0x9f, 0x15, 0xcc, 0x15, 0xcf, 0x11, 0x05, 0xc0, 0x1f, 0x15,
-    0x39, 0x12, 0x7c, 0x16, 0x7f, 0x11, 0x82, 0x40, 0x98, 0x12,
-    0xdf, 0x15, 0x16, 0xc4, 0x17, 0x14, 0x54, 0x12, 0x9b, 0x16,
-    0x28, 0x94, 0xce, 0x01, 0x3d, 0xc1, 0x5e, 0x42, 0x8f, 0x20,
-    0xfd
-};
-
-static const uint8_t L_GroundArea14__data[] = {
-    0x97, 0x11,
-    0x0f, 0x26, 0xfe, 0x10, 0x2b, 0x92, 0x57, 0x12, 0x8b, 0x12,
-    0xc0, 0x41, 0xf7, 0x13, 0x5b, 0x92, 0x69, 0x0b, 0xbb, 0x12,
-    0xb2, 0x46, 0x19, 0x93, 0x71, 0x00, 0x17, 0x94, 0x7c, 0x14,
-    0x7f, 0x11, 0x93, 0x41, 0xbf, 0x15, 0xfc, 0x13, 0xff, 0x11,
-    0x2f, 0x95, 0x50, 0x42, 0x51, 0x12, 0x58, 0x14, 0xa6, 0x12,
-    0xdb, 0x12, 0x1b, 0x93, 0x46, 0x43, 0x7b, 0x12, 0x8d, 0x49,
-    0xb7, 0x14, 0x1b, 0x94, 0x49, 0x0b, 0xbb, 0x12, 0xfc, 0x13,
-    0xff, 0x12, 0x03, 0xc1, 0x2f, 0x15, 0x43, 0x12, 0x4b, 0x13,
-    0x77, 0x13, 0x9d, 0x4a, 0x15, 0xc1, 0xa1, 0x41, 0xc3, 0x12,
-    0xfe, 0x01, 0x7d, 0xc1, 0x9e, 0x42, 0xcf, 0x20,
-    0xfd
-};
-
-static const uint8_t L_GroundArea15__data[] = {
-    0x52, 0x21,
-    0x0f, 0x20, 0x6e, 0x44, 0x0c, 0xf1, 0x4c, 0x01, 0xaa, 0x35,
-    0xd9, 0x34, 0xee, 0x20, 0x08, 0xb3, 0x37, 0x32, 0x43, 0x04,
-    0x4e, 0x21, 0x53, 0x20, 0x7c, 0x01, 0x97, 0x21, 0xb7, 0x07,
-    0x9c, 0x81, 0xe7, 0x42, 0x5f, 0xb3, 0x97, 0x63, 0xac, 0x02,
-    0xc5, 0x41, 0x49, 0xe0, 0x58, 0x61, 0x76, 0x64, 0x85, 0x65,
-    0x94, 0x66, 0xa4, 0x22, 0xa6, 0x03, 0xc8, 0x22, 0xdc, 0x02,
-    0x68, 0xf2, 0x96, 0x42, 0x13, 0x82, 0x17, 0x02, 0xaf, 0x34,
-    0xf6, 0x21, 0xfc, 0x06, 0x26, 0x80, 0x2a, 0x24, 0x36, 0x01,
-    0x8c, 0x00, 0xff, 0x35, 0x4e, 0xa0, 0x55, 0x21, 0x77, 0x20,
-    0x87, 0x07, 0x89, 0x22, 0xae, 0x21, 0x4c, 0x82, 0x9f, 0x34,
-    0xec, 0x01, 0x03, 0xe7, 0x13, 0x67, 0x8d, 0x4a, 0xad, 0x41,
-    0x0f, 0xa6,
-    0xfd
-};
-
-static const uint8_t L_GroundArea16__data[] = {
-    0x10, 0x51,
-    0x4c, 0x00, 0xc7, 0x12, 0xc6, 0x42, 0x03, 0x92, 0x02, 0x42,
-    0x29, 0x12, 0x63, 0x12, 0x62, 0x42, 0x69, 0x14, 0xa5, 0x12,
-    0xa4, 0x42, 0xe2, 0x14, 0xe1, 0x44, 0xf8, 0x16, 0x37, 0xc1,
-    0x8f, 0x38, 0x02, 0xbb, 0x28, 0x7a, 0x68, 0x7a, 0xa8, 0x7a,
-    0xe0, 0x6a, 0xf0, 0x6a, 0x6d, 0xc5,
-    0xfd
-};
-
-static const uint8_t L_GroundArea17__data[] = {
-    0x92, 0x31,
-    0x0f, 0x20, 0x6e, 0x40, 0x0d, 0x02, 0x37, 0x73, 0xec, 0x00,
-    0x0c, 0x80, 0x3c, 0x00, 0x6c, 0x00, 0x9c, 0x00, 0x06, 0xc0,
-    0xc7, 0x73, 0x06, 0x83, 0x28, 0x72, 0x96, 0x40, 0xe7, 0x73,
-    0x26, 0xc0, 0x87, 0x7b, 0xd2, 0x41, 0x39, 0xf1, 0xc8, 0xf2,
-    0x97, 0xe3, 0xa3, 0x23, 0xe7, 0x02, 0xe3, 0x07, 0xf3, 0x22,
-    0x37, 0xe3, 0x9c, 0x00, 0xbc, 0x00, 0xec, 0x00, 0x0c, 0x80,
-    0x3c, 0x00, 0x86, 0x21, 0xa6, 0x06, 0xb6, 0x24, 0x5c, 0x80,
-    0x7c, 0x00, 0x9c, 0x00, 0x29, 0xe1, 0xdc, 0x05, 0xf6, 0x41,
-    0xdc, 0x80, 0xe8, 0x72, 0x0c, 0x81, 0x27, 0x73, 0x4c, 0x01,
-    0x66, 0x74, 0x0d, 0x11, 0x3f, 0x35, 0xb6, 0x41, 0x2c, 0x82,
-    0x36, 0x40, 0x7c, 0x02, 0x86, 0x40, 0xf9, 0x61, 0x39, 0xe1,
-    0xac, 0x04, 0xc6, 0x41, 0x0c, 0x83, 0x16, 0x41, 0x88, 0xf2,
-    0x39, 0xf1, 0x7c, 0x00, 0x89, 0x61, 0x9c, 0x00, 0xa7, 0x63,
-    0xbc, 0x00, 0xc5, 0x65, 0xdc, 0x00, 0xe3, 0x67, 0xf3, 0x67,
-    0x8d, 0xc1, 0xcf, 0x26,
-    0xfd
-};
-
-static const uint8_t L_GroundArea18__data[] = {
-    0x55, 0xb1,
-    0x0f, 0x26, 0xcf, 0x33, 0x07, 0xb2, 0x15, 0x11, 0x52, 0x42,
-    0x99, 0x0b, 0xac, 0x02, 0xd3, 0x24, 0xd6, 0x42, 0xd7, 0x25,
-    0x23, 0x84, 0xcf, 0x33, 0x07, 0xe3, 0x19, 0x61, 0x78, 0x7a,
-    0xef, 0x33, 0x2c, 0x81, 0x46, 0x64, 0x55, 0x65, 0x65, 0x65,
-    0xec, 0x74, 0x47, 0x82, 0x53, 0x05, 0x63, 0x21, 0x62, 0x41,
-    0x96, 0x22, 0x9a, 0x41, 0xcc, 0x03, 0xb9, 0x91, 0x39, 0xf1,
-    0x63, 0x26, 0x67, 0x27, 0xd3, 0x06, 0xfc, 0x01, 0x18, 0xe2,
-    0xd9, 0x07, 0xe9, 0x04, 0x0c, 0x86, 0x37, 0x22, 0x93, 0x24,
-    0x87, 0x84, 0xac, 0x02, 0xc2, 0x41, 0xc3, 0x23, 0xd9, 0x71,
-    0xfc, 0x01, 0x7f, 0xb1, 0x9c, 0x00, 0xa7, 0x63, 0xb6, 0x64,
-    0xcc, 0x00, 0xd4, 0x66, 0xe3, 0x67, 0xf3, 0x67, 0x8d, 0xc1,
-    0xcf, 0x26,
-    0xfd
-};
-
-static const uint8_t L_GroundArea19__data[] = {
-    0x50, 0xb1,
-    0x0f, 0x26, 0xfc, 0x00, 0x1f, 0xb3, 0x5c, 0x00, 0x65, 0x65,
-    0x74, 0x66, 0x83, 0x67, 0x93, 0x67, 0xdc, 0x73, 0x4c, 0x80,
-    0xb3, 0x20, 0xc9, 0x0b, 0xc3, 0x08, 0xd3, 0x2f, 0xdc, 0x00,
-    0x2c, 0x80, 0x4c, 0x00, 0x8c, 0x00, 0xd3, 0x2e, 0xed, 0x4a,
-    0xfc, 0x00, 0xd7, 0xa1, 0xec, 0x01, 0x4c, 0x80, 0x59, 0x11,
-    0xd8, 0x11, 0xda, 0x10, 0x37, 0xa0, 0x47, 0x04, 0x99, 0x11,
-    0xe7, 0x21, 0x3a, 0x90, 0x67, 0x20, 0x76, 0x10, 0x77, 0x60,
-    0x87, 0x07, 0xd8, 0x12, 0x39, 0xf1, 0xac, 0x00, 0xe9, 0x71,
-    0x0c, 0x80, 0x2c, 0x00, 0x4c, 0x05, 0xc7, 0x7b, 0x39, 0xf1,
-    0xec, 0x00, 0xf9, 0x11, 0x0c, 0x82, 0x6f, 0x34, 0xf8, 0x11,
-    0xfa, 0x10, 0x7f, 0xb2, 0xac, 0x00, 0xb6, 0x64, 0xcc, 0x01,
-    0xe3, 0x67, 0xf3, 0x67, 0x8d, 0xc1, 0xcf, 0x26,
-    0xfd
-};
-
-static const uint8_t L_GroundArea20__data[] = {
-    0x52, 0xb1,
-    0x0f, 0x20, 0x6e, 0x45, 0x39, 0x91, 0xb3, 0x04, 0xc3, 0x21,
-    0xc8, 0x11, 0xca, 0x10, 0x49, 0x91, 0x7c, 0x73, 0xe8, 0x12,
-    0x88, 0x91, 0x8a, 0x10, 0xe7, 0x21, 0x05, 0x91, 0x07, 0x30,
-    0x17, 0x07, 0x27, 0x20, 0x49, 0x11, 0x9c, 0x01, 0xc8, 0x72,
-    0x23, 0xa6, 0x27, 0x26, 0xd3, 0x03, 0xd8, 0x7a, 0x89, 0x91,
-    0xd8, 0x72, 0x39, 0xf1, 0xa9, 0x11, 0x09, 0xf1, 0x63, 0x24,
-    0x67, 0x24, 0xd8, 0x62, 0x28, 0x91, 0x2a, 0x10, 0x56, 0x21,
-    0x70, 0x04, 0x79, 0x0b, 0x8c, 0x00, 0x94, 0x21, 0x9f, 0x35,
-    0x2f, 0xb8, 0x3d, 0xc1, 0x7f, 0x26,
-    0xfd
-};
-
-static const uint8_t L_GroundArea21__data[] = {
-    0x06, 0xc1,
-    0x4c, 0x00, 0xf4, 0x4f, 0x0d, 0x02, 0x06, 0x20, 0x24, 0x4f,
-    0x35, 0xa0, 0x36, 0x20, 0x53, 0x46, 0xd5, 0x20, 0xd6, 0x20,
-    0x34, 0xa1, 0x73, 0x49, 0x74, 0x20, 0x94, 0x20, 0xb4, 0x20,
-    0xd4, 0x20, 0xf4, 0x20, 0x2e, 0x80, 0x59, 0x42, 0x4d, 0xc7,
-    0xfd
-};
-
-static const uint8_t L_GroundArea22__data[] = {
-    0x96, 0x31,
-    0x0f, 0x26, 0x0d, 0x03, 0x1a, 0x60, 0x77, 0x42, 0xc4, 0x00,
-    0xc8, 0x62, 0xb9, 0xe1, 0xd3, 0x06, 0xd7, 0x07, 0xf9, 0x61,
-    0x0c, 0x81, 0x4e, 0xb1, 0x8e, 0xb1, 0xbc, 0x01, 0xe4, 0x50,
-    0xe9, 0x61, 0x0c, 0x81, 0x0d, 0x0a, 0x84, 0x43, 0x98, 0x72,
-    0x0d, 0x0c, 0x0f, 0x38, 0x1d, 0xc1, 0x5f, 0x26,
-    0xfd
-};
-
-static const uint8_t L_UndergroundArea1__data[] = {
-    0x48, 0x0f,
-    0x0e, 0x01, 0x5e, 0x02, 0xa7, 0x00, 0xbc, 0x73, 0x1a, 0xe0,
-    0x39, 0x61, 0x58, 0x62, 0x77, 0x63, 0x97, 0x63, 0xb8, 0x62,
-    0xd6, 0x07, 0xf8, 0x62, 0x19, 0xe1, 0x75, 0x52, 0x86, 0x40,
-    0x87, 0x50, 0x95, 0x52, 0x93, 0x43, 0xa5, 0x21, 0xc5, 0x52,
-    0xd6, 0x40, 0xd7, 0x20, 0xe5, 0x06, 0xe6, 0x51, 0x3e, 0x8d,
-    0x5e, 0x03, 0x67, 0x52, 0x77, 0x52, 0x7e, 0x02, 0x9e, 0x03,
-    0xa6, 0x43, 0xa7, 0x23, 0xde, 0x05, 0xfe, 0x02, 0x1e, 0x83,
-    0x33, 0x54, 0x46, 0x40, 0x47, 0x21, 0x56, 0x04, 0x5e, 0x02,
-    0x83, 0x54, 0x93, 0x52, 0x96, 0x07, 0x97, 0x50, 0xbe, 0x03,
-    0xc7, 0x23, 0xfe, 0x02, 0x0c, 0x82, 0x43, 0x45, 0x45, 0x24,
-    0x46, 0x24, 0x90, 0x08, 0x95, 0x51, 0x78, 0xfa, 0xd7, 0x73,
-    0x39, 0xf1, 0x8c, 0x01, 0xa8, 0x52, 0xb8, 0x52, 0xcc, 0x01,
-    0x5f, 0xb3, 0x97, 0x63, 0x9e, 0x00, 0x0e, 0x81, 0x16, 0x24,
-    0x66, 0x04, 0x8e, 0x00, 0xfe, 0x01, 0x08, 0xd2, 0x0e, 0x06,
-    0x6f, 0x47, 0x9e, 0x0f, 0x0e, 0x82, 0x2d, 0x47, 0x28, 0x7a,
-    0x68, 0x7a, 0xa8, 0x7a, 0xae, 0x01, 0xde, 0x0f, 0x6d, 0xc5,
-    0xfd
-};
-
-static const uint8_t L_UndergroundArea2__data[] = {
-    0x48, 0x0f,
-    0x0e, 0x01, 0x5e, 0x02, 0xbc, 0x01, 0xfc, 0x01, 0x2c, 0x82,
-    0x41, 0x52, 0x4e, 0x04, 0x67, 0x25, 0x68, 0x24, 0x69, 0x24,
-    0xba, 0x42, 0xc7, 0x04, 0xde, 0x0b, 0xb2, 0x87, 0xfe, 0x02,
-    0x2c, 0xe1, 0x2c, 0x71, 0x67, 0x01, 0x77, 0x00, 0x87, 0x01,
-    0x8e, 0x00, 0xee, 0x01, 0xf6, 0x02, 0x03, 0x85, 0x05, 0x02,
-    0x13, 0x21, 0x16, 0x02, 0x27, 0x02, 0x2e, 0x02, 0x88, 0x72,
-    0xc7, 0x20, 0xd7, 0x07, 0xe4, 0x76, 0x07, 0xa0, 0x17, 0x06,
-    0x48, 0x7a, 0x76, 0x20, 0x98, 0x72, 0x79, 0xe1, 0x88, 0x62,
-    0x9c, 0x01, 0xb7, 0x73, 0xdc, 0x01, 0xf8, 0x62, 0xfe, 0x01,
-    0x08, 0xe2, 0x0e, 0x00, 0x6e, 0x02, 0x73, 0x20, 0x77, 0x23,
-    0x83, 0x04, 0x93, 0x20, 0xae, 0x00, 0xfe, 0x0a, 0x0e, 0x82,
-    0x39, 0x71, 0xa8, 0x72, 0xe7, 0x73, 0x0c, 0x81, 0x8f, 0x32,
-    0xae, 0x00, 0xfe, 0x04, 0x04, 0xd1, 0x17, 0x04, 0x26, 0x49,
-    0x27, 0x29, 0xdf, 0x33, 0xfe, 0x02, 0x44, 0xf6, 0x7c, 0x01,
-    0x8e, 0x06, 0xbf, 0x47, 0xee, 0x0f, 0x4d, 0xc7, 0x0e, 0x82,
-    0x68, 0x7a, 0xae, 0x01, 0xde, 0x0f, 0x6d, 0xc5,
-    0xfd
-};
-
-static const uint8_t L_UndergroundArea3__data[] = {
-    0x48, 0x01,
-    0x0e, 0x01, 0x00, 0x5a, 0x3e, 0x06, 0x45, 0x46, 0x47, 0x46,
-    0x53, 0x44, 0xae, 0x01, 0xdf, 0x4a, 0x4d, 0xc7, 0x0e, 0x81,
-    0x00, 0x5a, 0x2e, 0x04, 0x37, 0x28, 0x3a, 0x48, 0x46, 0x47,
-    0xc7, 0x07, 0xce, 0x0f, 0xdf, 0x4a, 0x4d, 0xc7, 0x0e, 0x81,
-    0x00, 0x5a, 0x33, 0x53, 0x43, 0x51, 0x46, 0x40, 0x47, 0x50,
-    0x53, 0x04, 0x55, 0x40, 0x56, 0x50, 0x62, 0x43, 0x64, 0x40,
-    0x65, 0x50, 0x71, 0x41, 0x73, 0x51, 0x83, 0x51, 0x94, 0x40,
-    0x95, 0x50, 0xa3, 0x50, 0xa5, 0x40, 0xa6, 0x50, 0xb3, 0x51,
-    0xb6, 0x40, 0xb7, 0x50, 0xc3, 0x53, 0xdf, 0x4a, 0x4d, 0xc7,
-    0x0e, 0x81, 0x00, 0x5a, 0x2e, 0x02, 0x36, 0x47, 0x37, 0x52,
-    0x3a, 0x49, 0x47, 0x25, 0xa7, 0x52, 0xd7, 0x04, 0xdf, 0x4a,
-    0x4d, 0xc7, 0x0e, 0x81, 0x00, 0x5a, 0x3e, 0x02, 0x44, 0x51,
-    0x53, 0x44, 0x54, 0x44, 0x55, 0x24, 0xa1, 0x54, 0xae, 0x01,
-    0xb4, 0x21, 0xdf, 0x4a, 0xe5, 0x07, 0x4d, 0xc7,
-    0xfd
-};
-
-static const uint8_t L_WaterArea1__data[] = {
-    0x41, 0x01,
-    0xb4, 0x34, 0xc8, 0x52, 0xf2, 0x51, 0x47, 0xd3, 0x6c, 0x03,
-    0x65, 0x49, 0x9e, 0x07, 0xbe, 0x01, 0xcc, 0x03, 0xfe, 0x07,
-    0x0d, 0xc9, 0x1e, 0x01, 0x6c, 0x01, 0x62, 0x35, 0x63, 0x53,
-    0x8a, 0x41, 0xac, 0x01, 0xb3, 0x53, 0xe9, 0x51, 0x26, 0xc3,
-    0x27, 0x33, 0x63, 0x43, 0x64, 0x33, 0xba, 0x60, 0xc9, 0x61,
-    0xce, 0x0b, 0xe5, 0x09, 0xee, 0x0f, 0x7d, 0xca, 0x7d, 0x47,
-    0xfd
-};
-
-static const uint8_t L_WaterArea2__data[] = {
-    0x41, 0x01,
-    0xb8, 0x52, 0xea, 0x41, 0x27, 0xb2, 0xb3, 0x42, 0x16, 0xd4,
-    0x4a, 0x42, 0xa5, 0x51, 0xa7, 0x31, 0x27, 0xd3, 0x08, 0xe2,
-    0x16, 0x64, 0x2c, 0x04, 0x38, 0x42, 0x76, 0x64, 0x88, 0x62,
-    0xde, 0x07, 0xfe, 0x01, 0x0d, 0xc9, 0x23, 0x32, 0x31, 0x51,
-    0x98, 0x52, 0x0d, 0xc9, 0x59, 0x42, 0x63, 0x53, 0x67, 0x31,
-    0x14, 0xc2, 0x36, 0x31, 0x87, 0x53, 0x17, 0xe3, 0x29, 0x61,
-    0x30, 0x62, 0x3c, 0x08, 0x42, 0x37, 0x59, 0x40, 0x6a, 0x42,
-    0x99, 0x40, 0xc9, 0x61, 0xd7, 0x63, 0x39, 0xd1, 0x58, 0x52,
-    0xc3, 0x67, 0xd3, 0x31, 0xdc, 0x06, 0xf7, 0x42, 0xfa, 0x42,
-    0x23, 0xb1, 0x43, 0x67, 0xc3, 0x34, 0xc7, 0x34, 0xd1, 0x51,
-    0x43, 0xb3, 0x47, 0x33, 0x9a, 0x30, 0xa9, 0x61, 0xb8, 0x62,
-    0xbe, 0x0b, 0xd5, 0x09, 0xde, 0x0f, 0x0d, 0xca, 0x7d, 0x47,
-    0xfd
-};
-
-static const uint8_t L_WaterArea3__data[] = {
-    0x49, 0x0f,
-    0x1e, 0x01, 0x39, 0x73, 0x5e, 0x07, 0xae, 0x0b, 0x1e, 0x82,
-    0x6e, 0x88, 0x9e, 0x02, 0x0d, 0x04, 0x2e, 0x0b, 0x45, 0x09,
-    0x4e, 0x0f, 0xed, 0x47,
-    0xfd,
-    0xff
-};
-
-static const uint8_t X_SubtracterData__data[] = {
-    0x00, 0x10
-};
-
-static const uint8_t OffscrJoypadBitsData__data[] = {
-    0x01, 0x02
-};
-
-static const uint8_t Hidden1UpCoinAmts__data[] = {
-    0x15, 0x23, 0x16, 0x1b, 0x17, 0x18, 0x23, 0x63
-};
-
-static const uint8_t ClimbAdderLow__data[] = {
-    0x0e, 0x04, 0xfc, 0xf2
-};
-
-static const uint8_t ClimbAdderHigh__data[] = {
-    0x00, 0x00, 0xff, 0xff
-};
-
-static const uint8_t JumpMForceData__data[] = {
-    0x20, 0x20, 0x1e, 0x28, 0x28, 0x0d, 0x04
-};
-
-static const uint8_t FallMForceData__data[] = {
-    0x70, 0x70, 0x60, 0x90, 0x90, 0x0a, 0x09
-};
-
-static const uint8_t PlayerYSpdData__data[] = {
-    0xfc, 0xfc, 0xfc, 0xfb, 0xfb, 0xfe, 0xff
-};
-
-static const uint8_t InitMForceData__data[] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00
-};
-
-static const uint8_t MaxLeftXSpdData__data[] = {
-    0xd8, 0xe8, 0xf0
-};
-
-static const uint8_t MaxRightXSpdData__data[] = {
-    0x28, 0x18, 0x10,
-    0x0c
-};
-
-static const uint8_t FrictionData__data[] = {
-    0xe4, 0x98, 0xd0
-};
-
-static const uint8_t Climb_Y_SpeedData__data[] = {
-    0x00, 0xff, 0x01
-};
-
-static const uint8_t Climb_Y_MForceData__data[] = {
-    0x00, 0x20, 0xff
-};
-
-static const uint8_t PlayerAnimTmrData__data[] = {
-    0x02, 0x04, 0x07
-};
-
-static const uint8_t FireballXSpdData__data[] = {
-    0x40, 0xc0
-};
-
-static const uint8_t Bubble_MForceData__data[] = {
-    0xff, 0x50
-};
-
-static const uint8_t BubbleTimerData__data[] = {
-    0x40, 0x20
-};
-
-static const uint8_t FlagpoleScoreMods__data[] = {
-    0x05, 0x02, 0x08, 0x04, 0x01
-};
-
-static const uint8_t FlagpoleScoreDigits__data[] = {
-    0x03, 0x03, 0x04, 0x04, 0x04
-};
-
-static const uint8_t Jumpspring_Y_PosData__data[] = {
-    0x08, 0x10, 0x08, 0x00
-};
-
-static const uint8_t VineHeightData__data[] = {
-    0x30, 0x60
-};
-
-static const uint8_t CannonBitmasks__data[] = {
-    BOOST_BINARY(00001111), BOOST_BINARY(00000111)
-};
-
-static const uint8_t BulletBillXSpdData__data[] = {
-    0x18, 0xe8
-};
-
-static const uint8_t HammerEnemyOfsData__data[] = {
-    0x04, 0x04, 0x04, 0x05, 0x05, 0x05,
-    0x06, 0x06, 0x06
-};
-
-static const uint8_t HammerXSpdData__data[] = {
-    0x10, 0xf0
-};
-
-static const uint8_t CoinTallyOffsets__data[] = {
-    0x17, 0x1d
-};
-
-static const uint8_t ScoreOffsets__data[] = {
-    0x0b, 0x11
-};
-
-static const uint8_t StatusBarNybbles__data[] = {
-    0x02, 0x13
-};
-
-static const uint8_t BlockYPosAdderData__data[] = {
-    0x04, 0x12
-};
-
-static const uint8_t BrickQBlockMetatiles__data[] = {
-    0xc1, 0xc0, 0x5f, 0x60,
-    0x55, 0x56, 0x57, 0x58, 0x59,
-    0x5a, 0x5b, 0x5c, 0x5d, 0x5e
-};
-
-static const uint8_t MaxSpdBlockData__data[] = {
-    0x06, 0x08
-};
-
-static const uint8_t LoopCmdWorldNumber__data[] = {
-    0x03, 0x03, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x07, 0x07, 0x07
-};
-
-static const uint8_t LoopCmdPageNumber__data[] = {
-    0x05, 0x09, 0x04, 0x05, 0x06, 0x08, 0x09, 0x0a, 0x06, 0x0b, 0x10
-};
-
-static const uint8_t LoopCmdYPosition__data[] = {
-    0x40, 0xb0, 0xb0, 0x80, 0x40, 0x40, 0x80, 0x40, 0xf0, 0xf0, 0xf0
-};
-
-static const uint8_t NormalXSpdData__data[] = {
-    0xf8, 0xf4
-};
-
-static const uint8_t HBroWalkingTimerData__data[] = {
-    0x80, 0x50
-};
-
-static const uint8_t PRDiffAdjustData__data[] = {
-    0x26, 0x2c, 0x32, 0x38,
-    0x20, 0x22, 0x24, 0x26,
-    0x13, 0x14, 0x15, 0x16
-};
-
-static const uint8_t FirebarSpinSpdData__data[] = {
-    0x28, 0x38, 0x28, 0x38, 0x28
-};
-
-static const uint8_t FirebarSpinDirData__data[] = {
-    0x00, 0x00, 0x10, 0x10, 0x00
-};
-
-static const uint8_t FlyCCXPositionData__data[] = {
-    0x80, 0x30, 0x40, 0x80,
-    0x30, 0x50, 0x50, 0x70,
-    0x20, 0x40, 0x80, 0xa0,
-    0x70, 0x40, 0x90, 0x68
-};
-
-static const uint8_t FlyCCXSpeedData__data[] = {
-    0x0e, 0x05, 0x06, 0x0e,
-    0x1c, 0x20, 0x10, 0x0c,
-    0x1e, 0x22, 0x18, 0x14
-};
-
-static const uint8_t FlyCCTimerData__data[] = {
-    0x10, 0x60, 0x20, 0x48
-};
-
-static const uint8_t FlameYPosData__data[] = {
-    0x90, 0x80, 0x70, 0x90
-};
-
-static const uint8_t FlameYMFAdderData__data[] = {
-    0xff, 0x01
-};
-
-static const uint8_t FireworksXPosData__data[] = {
-    0x00, 0x30, 0x60, 0x60, 0x00, 0x20
-};
-
-static const uint8_t FireworksYPosData__data[] = {
-    0x60, 0x40, 0x70, 0x40, 0x60, 0x30
-};
-
-static const uint8_t Bitmasks__data[] = {
-    BOOST_BINARY(00000001), BOOST_BINARY(00000010), BOOST_BINARY(00000100), BOOST_BINARY(00001000), BOOST_BINARY(00010000), BOOST_BINARY(00100000), BOOST_BINARY(01000000), BOOST_BINARY(10000000)
-};
-
-static const uint8_t Enemy17YPosData__data[] = {
-    0x40, 0x30, 0x90, 0x50, 0x20, 0x60, 0xa0, 0x70
-};
-
-static const uint8_t SwimCC_IDData__data[] = {
-    0x0a, 0x0b
-};
-
-static const uint8_t PlatPosDataLow__data[] = {
-    0x08, 0x0c, 0xf8
-};
-
-static const uint8_t PlatPosDataHigh__data[] = {
-    0x00, 0x00, 0xff
-};
-
-static const uint8_t HammerThrowTmrData__data[] = {
-    0x30, 0x1c
-};
-
-static const uint8_t XSpeedAdderData__data[] = {
-    0x00, 0xe8, 0x00, 0x18
-};
-
-static const uint8_t RevivedXSpeed__data[] = {
-    0x08, 0xf8, 0x0c, 0xf4
-};
-
-static const uint8_t HammerBroJumpLData__data[] = {
-    0x20, 0x37
-};
-
-static const uint8_t BlooberBitmasks__data[] = {
-    BOOST_BINARY(00111111), BOOST_BINARY(00000011)
-};
-
-static const uint8_t SwimCCXMoveData__data[] = {
-    0x40, 0x80,
-    0x04, 0x04
-};
-
-static const uint8_t FirebarPosLookupTbl__data[] = {
-    0x00, 0x01, 0x03, 0x04, 0x05, 0x06, 0x07, 0x07, 0x08,
-    0x00, 0x03, 0x06, 0x09, 0x0b, 0x0d, 0x0e, 0x0f, 0x10,
-    0x00, 0x04, 0x09, 0x0d, 0x10, 0x13, 0x16, 0x17, 0x18,
-    0x00, 0x06, 0x0c, 0x12, 0x16, 0x1a, 0x1d, 0x1f, 0x20,
-    0x00, 0x07, 0x0f, 0x16, 0x1c, 0x21, 0x25, 0x27, 0x28,
-    0x00, 0x09, 0x12, 0x1b, 0x21, 0x27, 0x2c, 0x2f, 0x30,
-    0x00, 0x0b, 0x15, 0x1f, 0x27, 0x2e, 0x33, 0x37, 0x38,
-    0x00, 0x0c, 0x18, 0x24, 0x2d, 0x35, 0x3b, 0x3e, 0x40,
-    0x00, 0x0e, 0x1b, 0x28, 0x32, 0x3b, 0x42, 0x46, 0x48,
-    0x00, 0x0f, 0x1f, 0x2d, 0x38, 0x42, 0x4a, 0x4e, 0x50,
-    0x00, 0x11, 0x22, 0x31, 0x3e, 0x49, 0x51, 0x56, 0x58
-};
-
-static const uint8_t FirebarMirrorData__data[] = {
-    0x01, 0x03, 0x02, 0x00
-};
-
-static const uint8_t FirebarTblOffsets__data[] = {
-    0x00, 0x09, 0x12, 0x1b, 0x24, 0x2d,
-    0x36, 0x3f, 0x48, 0x51, 0x5a, 0x63
-};
-
-static const uint8_t FirebarYPos__data[] = {
-    0x0c, 0x18
-};
-
-static const uint8_t PRandomSubtracter__data[] = {
-    0xf8, 0xa0, 0x70, 0xbd, 0x00
-};
-
-static const uint8_t FlyCCBPriority__data[] = {
-    0x20, 0x20, 0x20, 0x00, 0x00
-};
-
-static const uint8_t LakituDiffAdj__data[] = {
-    0x15, 0x30, 0x40
-};
-
-static const uint8_t BridgeCollapseData__data[] = {
-    0x1a,
-    0x58,
-    0x98, 0x96, 0x94, 0x92, 0x90, 0x8e, 0x8c,
-    0x8a, 0x88, 0x86, 0x84, 0x82, 0x80
-};
-
-static const uint8_t PRandomRange__data[] = {
-    0x21, 0x41, 0x11, 0x31
-};
-
-static const uint8_t FlameTimerData__data[] = {
-    0xbf, 0x40, 0xbf, 0xbf, 0xbf, 0x40, 0x40, 0xbf
-};
-
-static const uint8_t StarFlagYPosAdder__data[] = {
-    0x00, 0x00, 0x08, 0x08
-};
-
-static const uint8_t StarFlagXPosAdder__data[] = {
-    0x00, 0x08, 0x00, 0x08
-};
-
-static const uint8_t StarFlagTileData__data[] = {
-    0x54, 0x55, 0x56, 0x57
-};
-
-static const uint8_t BowserIdentities__data[] = {
-    Goomba, GreenKoopa, BuzzyBeetle, Spiny, Lakitu, Bloober, HammerBro, Bowser
-};
-
-static const uint8_t ResidualXSpdData__data[] = {
-    0x18, 0xe8
-};
-
-static const uint8_t KickedShellXSpdData__data[] = {
-    0x30, 0xd0
-};
-
-static const uint8_t DemotedKoopaXSpdData__data[] = {
-    0x08, 0xf8
-};
-
-static const uint8_t KickedShellPtsData__data[] = {
-    0x0a, 0x06, 0x04
-};
-
-static const uint8_t StompedEnemyPtsData__data[] = {
-    0x02, 0x06, 0x05, 0x06
-};
-
-static const uint8_t RevivalRateData__data[] = {
-    0x10, 0x0b
-};
-
-static const uint8_t SetBitsMask__data[] = {
-    BOOST_BINARY(10000000), BOOST_BINARY(01000000), BOOST_BINARY(00100000), BOOST_BINARY(00010000), BOOST_BINARY(00001000), BOOST_BINARY(00000100), BOOST_BINARY(00000010)
-};
-
-static const uint8_t ClearBitsMask__data[] = {
-    BOOST_BINARY(01111111), BOOST_BINARY(10111111), BOOST_BINARY(11011111), BOOST_BINARY(11101111), BOOST_BINARY(11110111), BOOST_BINARY(11111011), BOOST_BINARY(11111101)
-};
-
-static const uint8_t PlayerPosSPlatData__data[] = {
-    0x80, 0x00
-};
-
-static const uint8_t PlayerBGUpperExtent__data[] = {
-    0x20, 0x10
-};
-
-static const uint8_t AreaChangeTimerData__data[] = {
-    0xa0, 0x34
-};
-
-static const uint8_t ClimbXPosAdder__data[] = {
-    0xf9, 0x07
-};
-
-static const uint8_t ClimbPLocAdder__data[] = {
-    0xff, 0x00
-};
-
-static const uint8_t FlagpoleYPosData__data[] = {
-    0x18, 0x22, 0x50, 0x68, 0x90
-};
-
-static const uint8_t SolidMTileUpperExt__data[] = {
-    0x10, 0x61, 0x88, 0xc4
-};
-
-static const uint8_t ClimbMTileUpperExt__data[] = {
-    0x24, 0x6d, 0x8a, 0xc6
-};
-
-static const uint8_t EnemyBGCStateData__data[] = {
-    0x01, 0x01, 0x02, 0x02, 0x02, 0x05
-};
-
-static const uint8_t EnemyBGCXSpdData__data[] = {
-    0x10, 0xf0
-};
-
-static const uint8_t BoundBoxCtrlData__data[] = {
-    0x02, 0x08, 0x0e, 0x20,
-    0x03, 0x14, 0x0d, 0x20,
-    0x02, 0x14, 0x0e, 0x20,
-    0x02, 0x09, 0x0e, 0x15,
-    0x00, 0x00, 0x18, 0x06,
-    0x00, 0x00, 0x20, 0x0d,
-    0x00, 0x00, 0x30, 0x0d,
-    0x00, 0x00, 0x08, 0x08,
-    0x06, 0x04, 0x0a, 0x08,
-    0x03, 0x0e, 0x0d, 0x14,
-    0x00, 0x02, 0x10, 0x15,
-    0x04, 0x04, 0x0c, 0x1c
-};
-
-static const uint8_t BlockBufferAdderData__data[] = {
-    0x00, 0x07, 0x0e
-};
-
-static const uint8_t BlockBuffer_X_Adder__data[] = {
-    0x08, 0x03, 0x0c, 0x02, 0x02, 0x0d, 0x0d, 0x08,
-    0x03, 0x0c, 0x02, 0x02, 0x0d, 0x0d, 0x08, 0x03,
-    0x0c, 0x02, 0x02, 0x0d, 0x0d, 0x08, 0x00, 0x10,
-    0x04, 0x14, 0x04, 0x04
-};
-
-static const uint8_t BlockBuffer_Y_Adder__data[] = {
-    0x04, 0x20, 0x20, 0x08, 0x18, 0x08, 0x18, 0x02,
-    0x20, 0x20, 0x08, 0x18, 0x08, 0x18, 0x12, 0x20,
-    0x20, 0x18, 0x18, 0x18, 0x18, 0x18, 0x14, 0x14,
-    0x06, 0x06, 0x08, 0x10
-};
-
-static const uint8_t VineYPosAdder__data[] = {
-    0x00, 0x30
-};
-
-static const uint8_t FirstSprXPos__data[] = {
-    0x04, 0x00, 0x04, 0x00
-};
-
-static const uint8_t FirstSprYPos__data[] = {
-    0x00, 0x04, 0x00, 0x04
-};
-
-static const uint8_t SecondSprXPos__data[] = {
-    0x00, 0x08, 0x00, 0x08
-};
-
-static const uint8_t SecondSprYPos__data[] = {
-    0x08, 0x00, 0x08, 0x00
-};
-
-static const uint8_t FirstSprTilenum__data[] = {
-    0x80, 0x82, 0x81, 0x83
-};
-
-static const uint8_t SecondSprTilenum__data[] = {
-    0x81, 0x83, 0x80, 0x82
-};
-
-static const uint8_t HammerSprAttrib__data[] = {
-    0x03, 0x03, 0xc3, 0xc3
-};
-
-static const uint8_t FlagpoleScoreNumTiles__data[] = {
-    0xf9, 0x50,
-    0xf7, 0x50,
-    0xfa, 0xfb,
-    0xf8, 0xfb,
-    0xf6, 0xfb
-};
-
-static const uint8_t JumpingCoinTiles__data[] = {
-    0x60, 0x61, 0x62, 0x63
-};
-
-static const uint8_t PowerUpGfxTable__data[] = {
-    0x76, 0x77, 0x78, 0x79,
-    0xd6, 0xd6, 0xd9, 0xd9,
-    0x8d, 0x8d, 0xe4, 0xe4,
-    0x76, 0x77, 0x78, 0x79
-};
-
-static const uint8_t PowerUpAttributes__data[] = {
-    0x02, 0x01, 0x02, 0x01
-};
-
-static const uint8_t EnemyGraphicsTable__data[] = {
-    0xfc, 0xfc, 0xaa, 0xab, 0xac, 0xad,
-    0xfc, 0xfc, 0xae, 0xaf, 0xb0, 0xb1,
-    0xfc, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9,
-    0xfc, 0xa0, 0xa1, 0xa2, 0xa3, 0xa4,
-    0x69, 0xa5, 0x6a, 0xa7, 0xa8, 0xa9,
-    0x6b, 0xa0, 0x6c, 0xa2, 0xa3, 0xa4,
-    0xfc, 0xfc, 0x96, 0x97, 0x98, 0x99,
-    0xfc, 0xfc, 0x9a, 0x9b, 0x9c, 0x9d,
-    0xfc, 0xfc, 0x8f, 0x8e, 0x8e, 0x8f,
-    0xfc, 0xfc, 0x95, 0x94, 0x94, 0x95,
-    0xfc, 0xfc, 0xdc, 0xdc, 0xdf, 0xdf,
-    0xdc, 0xdc, 0xdd, 0xdd, 0xde, 0xde,
-    0xfc, 0xfc, 0xb2, 0xb3, 0xb4, 0xb5,
-    0xfc, 0xfc, 0xb6, 0xb3, 0xb7, 0xb5,
-    0xfc, 0xfc, 0x70, 0x71, 0x72, 0x73,
-    0xfc, 0xfc, 0x6e, 0x6e, 0x6f, 0x6f,
-    0xfc, 0xfc, 0x6d, 0x6d, 0x6f, 0x6f,
-    0xfc, 0xfc, 0x6f, 0x6f, 0x6e, 0x6e,
-    0xfc, 0xfc, 0x6f, 0x6f, 0x6d, 0x6d,
-    0xfc, 0xfc, 0xf4, 0xf4, 0xf5, 0xf5,
-    0xfc, 0xfc, 0xf4, 0xf4, 0xf5, 0xf5,
-    0xfc, 0xfc, 0xf5, 0xf5, 0xf4, 0xf4,
-    0xfc, 0xfc, 0xf5, 0xf5, 0xf4, 0xf4,
-    0xfc, 0xfc, 0xfc, 0xfc, 0xef, 0xef,
-    0xb9, 0xb8, 0xbb, 0xba, 0xbc, 0xbc,
-    0xfc, 0xfc, 0xbd, 0xbd, 0xbc, 0xbc,
-    0x7a, 0x7b, 0xda, 0xdb, 0xd8, 0xd8,
-    0xcd, 0xcd, 0xce, 0xce, 0xcf, 0xcf,
-    0x7d, 0x7c, 0xd1, 0x8c, 0xd3, 0xd2,
-    0x7d, 0x7c, 0x89, 0x88, 0x8b, 0x8a,
-    0xd5, 0xd4, 0xe3, 0xe2, 0xd3, 0xd2,
-    0xd5, 0xd4, 0xe3, 0xe2, 0x8b, 0x8a,
-    0xe5, 0xe5, 0xe6, 0xe6, 0xeb, 0xeb,
-    0xec, 0xec, 0xed, 0xed, 0xee, 0xee,
-    0xfc, 0xfc, 0xd0, 0xd0, 0xd7, 0xd7,
-    0xbf, 0xbe, 0xc1, 0xc0, 0xc2, 0xfc,
-    0xc4, 0xc3, 0xc6, 0xc5, 0xc8, 0xc7,
-    0xbf, 0xbe, 0xca, 0xc9, 0xc2, 0xfc,
-    0xc4, 0xc3, 0xc6, 0xc5, 0xcc, 0xcb,
-    0xfc, 0xfc, 0xe8, 0xe7, 0xea, 0xe9,
-    0xf2, 0xf2, 0xf3, 0xf3, 0xf2, 0xf2,
-    0xf1, 0xf1, 0xf1, 0xf1, 0xfc, 0xfc,
-    0xf0, 0xf0, 0xfc, 0xfc, 0xfc, 0xfc
-};
-
-static const uint8_t EnemyGfxTableOffsets__data[] = {
-    0x0c, 0x0c, 0x00, 0x0c, 0x0c, 0xa8, 0x54, 0x3c,
-    0xea, 0x18, 0x48, 0x48, 0xcc, 0xc0, 0x18, 0x18,
-    0x18, 0x90, 0x24, 0xff, 0x48, 0x9c, 0xd2, 0xd8,
-    0xf0, 0xf6, 0xfc
-};
-
-static const uint8_t EnemyAttributeData__data[] = {
-    0x01, 0x02, 0x03, 0x02, 0x01, 0x01, 0x03, 0x03,
-    0x03, 0x01, 0x01, 0x02, 0x02, 0x21, 0x01, 0x02,
-    0x01, 0x01, 0x02, 0xff, 0x02, 0x02, 0x01, 0x01,
-    0x02, 0x02, 0x02
-};
-
-static const uint8_t EnemyAnimTimingBMask__data[] = {
-    0x08, 0x18
-};
-
-static const uint8_t JumpspringFrameOffsets__data[] = {
-    0x18, 0x19, 0x1a, 0x19, 0x18
-};
-
-static const uint8_t DefaultBlockObjTiles__data[] = {
-    0x85, 0x85, 0x86, 0x86
-};
-
-static const uint8_t ExplosionTiles__data[] = {
-    0x68, 0x67, 0x66
-};
-
-static const uint8_t PlayerGfxTblOffsets__data[] = {
-    0x20, 0x28, 0xc8, 0x18, 0x00, 0x40, 0x50, 0x58,
-    0x80, 0x88, 0xb8, 0x78, 0x60, 0xa0, 0xb0, 0xb8
-};
-
-static const uint8_t PlayerGraphicsTable__data[] = {
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-    0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
-    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
-    0x08, 0x09, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d,
-    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x30, 0x2c, 0x2d,
-    0x08, 0x09, 0x0a, 0x0b, 0x2e, 0x2f, 0x2c, 0x2d,
-    0x08, 0x09, 0x28, 0x29, 0x2a, 0x2b, 0x5c, 0x5d,
-    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x5e, 0x5f,
-    0xfc, 0xfc, 0x08, 0x09, 0x58, 0x59, 0x5a, 0x5a,
-    0x08, 0x09, 0x28, 0x29, 0x2a, 0x2b, 0x0e, 0x0f,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x33, 0x34, 0x35,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x36, 0x37, 0x38, 0x39,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x3a, 0x37, 0x3b, 0x3c,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x3d, 0x3e, 0x3f, 0x40,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x41, 0x42, 0x43,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x33, 0x44, 0x45,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x33, 0x44, 0x47,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x33, 0x48, 0x49,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x33, 0x90, 0x91,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x3a, 0x37, 0x92, 0x93,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x9e, 0x9e, 0x9f, 0x9f,
-    0xfc, 0xfc, 0xfc, 0xfc, 0x3a, 0x37, 0x4f, 0x4f,
-    0xfc, 0xfc, 0x00, 0x01, 0x4c, 0x4d, 0x4e, 0x4e,
-    0x00, 0x01, 0x4c, 0x4d, 0x4a, 0x4a, 0x4b, 0x4b
-};
-
-static const uint8_t SwimKickTileNum__data[] = {
-    0x31, 0x46
-};
-
-static const uint8_t IntermediatePlayerData__data[] = {
-    0x58, 0x01, 0x00, 0x60, 0xff, 0x04
-};
-
-static const uint8_t ChangeSizeOffsetAdder__data[] = {
-    0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02,
-    0x02, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x00
-};
-
-static const uint8_t ObjOffsetData__data[] = {
-    0x07, 0x16, 0x0d
-};
-
-static const uint8_t XOffscreenBitsData__data[] = {
-    0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01, 0x00,
-    0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff
-};
-
-static const uint8_t DefaultXOnscreenOfs__data[] = {
-    0x07, 0x0f, 0x07
-};
-
-static const uint8_t YOffscreenBitsData__data[] = {
-    0x00, 0x08, 0x0c, 0x0e,
-    0x0f, 0x07, 0x03, 0x01,
-    0x00
-};
-
-static const uint8_t DefaultYOnscreenOfs__data[] = {
-    0x04, 0x00, 0x04
-};
-
-static const uint8_t HighPosUnitData__data[] = {
-    0xff, 0x00
-};
-
-static const uint8_t SwimStompEnvelopeData__data[] = {
-    0x9f, 0x9b, 0x98, 0x96, 0x95, 0x94, 0x92, 0x90,
-    0x90, 0x9a, 0x97, 0x95, 0x93, 0x92
-};
-
-static const uint8_t ExtraLifeFreqData__data[] = {
-    0x58, 0x02, 0x54, 0x56, 0x4e, 0x44
-};
-
-static const uint8_t PowerUpGrabFreqData__data[] = {
-    0x4c, 0x52, 0x4c, 0x48, 0x3e, 0x36, 0x3e, 0x36, 0x30,
-    0x28, 0x4a, 0x50, 0x4a, 0x64, 0x3c, 0x32, 0x3c, 0x32,
-    0x2c, 0x24, 0x3a, 0x64, 0x3a, 0x34, 0x2c, 0x22, 0x2c,
-    0x22, 0x1c, 0x14
-};
-
-static const uint8_t PUp_VGrow_FreqData__data[] = {
-    0x14, 0x04, 0x22, 0x24, 0x16, 0x04, 0x24, 0x26,
-    0x18, 0x04, 0x26, 0x28, 0x1a, 0x04, 0x28, 0x2a,
-    0x1c, 0x04, 0x2a, 0x2c, 0x1e, 0x04, 0x2c, 0x2e,
-    0x20, 0x04, 0x2e, 0x30, 0x22, 0x04, 0x30, 0x32
-};
-
-static const uint8_t BrickShatterFreqData__data[] = {
-    0x01, 0x0e, 0x0e, 0x0d, 0x0b, 0x06, 0x0c, 0x0f,
-    0x0a, 0x09, 0x03, 0x0d, 0x08, 0x0d, 0x06, 0x0c
-};
-
-static const uint8_t MusicHeaderData__data[] = {
-    DeathMusHdr - MHD,
-    GameOverMusHdr - MHD,
-    VictoryMusHdr - MHD,
-    WinCastleMusHdr - MHD,
-    GameOverMusHdr - MHD,
-    EndOfLevelMusHdr - MHD,
-    TimeRunningOutHdr - MHD,
-    SilenceHdr - MHD,
-    GroundLevelPart1Hdr - MHD,
-    WaterMusHdr - MHD,
-    UndergroundMusHdr - MHD,
-    CastleMusHdr - MHD,
-    Star_CloudHdr - MHD,
-    GroundLevelLeadInHdr - MHD,
-    Star_CloudHdr - MHD,
-    SilenceHdr - MHD,
-    GroundLevelLeadInHdr - MHD,
-    GroundLevelPart1Hdr - MHD, GroundLevelPart1Hdr - MHD,
-    GroundLevelPart2AHdr - MHD, GroundLevelPart2BHdr - MHD, GroundLevelPart2AHdr - MHD, GroundLevelPart2CHdr - MHD,
-    GroundLevelPart2AHdr - MHD, GroundLevelPart2BHdr - MHD, GroundLevelPart2AHdr - MHD, GroundLevelPart2CHdr - MHD,
-    GroundLevelPart3AHdr - MHD, GroundLevelPart3BHdr - MHD, GroundLevelPart3AHdr - MHD, GroundLevelLeadInHdr - MHD,
-    GroundLevelPart1Hdr - MHD, GroundLevelPart1Hdr - MHD,
-    GroundLevelPart4AHdr - MHD, GroundLevelPart4BHdr - MHD, GroundLevelPart4AHdr - MHD, GroundLevelPart4CHdr - MHD,
-    GroundLevelPart4AHdr - MHD, GroundLevelPart4BHdr - MHD, GroundLevelPart4AHdr - MHD, GroundLevelPart4CHdr - MHD,
-    GroundLevelPart3AHdr - MHD, GroundLevelPart3BHdr - MHD, GroundLevelPart3AHdr - MHD, GroundLevelLeadInHdr - MHD,
-    GroundLevelPart4AHdr - MHD, GroundLevelPart4BHdr - MHD, GroundLevelPart4AHdr - MHD, GroundLevelPart4CHdr - MHD
-};
-
-static const uint8_t TimeRunningOutHdr__data[] = {
-    0x08, LOBYTE(TimeRunOutMusData), HIBYTE(TimeRunOutMusData), 0x27, 0x18
-};
-
-static const uint8_t Star_CloudHdr__data[] = {
-    0x20, LOBYTE(Star_CloudMData), HIBYTE(Star_CloudMData), 0x2e, 0x1a, 0x40
-};
-
-static const uint8_t EndOfLevelMusHdr__data[] = {
-    0x20, LOBYTE(WinLevelMusData), HIBYTE(WinLevelMusData), 0x3d, 0x21
-};
-
-static const uint8_t ResidualHeaderData__data[] = {
-    0x20, 0xc4, 0xfc, 0x3f, 0x1d
-};
-
-static const uint8_t UndergroundMusHdr__data[] = {
-    0x18, LOBYTE(UndergroundMusData), HIBYTE(UndergroundMusData), 0x00, 0x00
-};
-
-static const uint8_t SilenceHdr__data[] = {
-    0x08, LOBYTE(SilenceData), HIBYTE(SilenceData), 0x00
-};
-
-static const uint8_t CastleMusHdr__data[] = {
-    0x00, LOBYTE(CastleMusData), HIBYTE(CastleMusData), 0x93, 0x62
-};
-
-static const uint8_t VictoryMusHdr__data[] = {
-    0x10, LOBYTE(VictoryMusData), HIBYTE(VictoryMusData), 0x24, 0x14
-};
-
-static const uint8_t GameOverMusHdr__data[] = {
-    0x18, LOBYTE(GameOverMusData), HIBYTE(GameOverMusData), 0x1e, 0x14
-};
-
-static const uint8_t WaterMusHdr__data[] = {
-    0x08, LOBYTE(WaterMusData), HIBYTE(WaterMusData), 0xa0, 0x70, 0x68
-};
-
-static const uint8_t WinCastleMusHdr__data[] = {
-    0x08, LOBYTE(EndOfCastleMusData), HIBYTE(EndOfCastleMusData), 0x4c, 0x24
-};
-
-static const uint8_t GroundLevelPart1Hdr__data[] = {
-    0x18, LOBYTE(GroundM_P1Data), HIBYTE(GroundM_P1Data), 0x2d, 0x1c, 0xb8
-};
-
-static const uint8_t GroundLevelPart2AHdr__data[] = {
-    0x18, LOBYTE(GroundM_P2AData), HIBYTE(GroundM_P2AData), 0x20, 0x12, 0x70
-};
-
-static const uint8_t GroundLevelPart2BHdr__data[] = {
-    0x18, LOBYTE(GroundM_P2BData), HIBYTE(GroundM_P2BData), 0x1b, 0x10, 0x44
-};
-
-static const uint8_t GroundLevelPart2CHdr__data[] = {
-    0x18, LOBYTE(GroundM_P2CData), HIBYTE(GroundM_P2CData), 0x11, 0x0a, 0x1c
-};
-
-static const uint8_t GroundLevelPart3AHdr__data[] = {
-    0x18, LOBYTE(GroundM_P3AData), HIBYTE(GroundM_P3AData), 0x2d, 0x10, 0x58
-};
-
-static const uint8_t GroundLevelPart3BHdr__data[] = {
-    0x18, LOBYTE(GroundM_P3BData), HIBYTE(GroundM_P3BData), 0x14, 0x0d, 0x3f
-};
-
-static const uint8_t GroundLevelLeadInHdr__data[] = {
-    0x18, LOBYTE(GroundMLdInData), HIBYTE(GroundMLdInData), 0x15, 0x0d, 0x21
-};
-
-static const uint8_t GroundLevelPart4AHdr__data[] = {
-    0x18, LOBYTE(GroundM_P4AData), HIBYTE(GroundM_P4AData), 0x18, 0x10, 0x7a
-};
-
-static const uint8_t GroundLevelPart4BHdr__data[] = {
-    0x18, LOBYTE(GroundM_P4BData), HIBYTE(GroundM_P4BData), 0x19, 0x0f, 0x54
-};
-
-static const uint8_t GroundLevelPart4CHdr__data[] = {
-    0x18, LOBYTE(GroundM_P4CData), HIBYTE(GroundM_P4CData), 0x1e, 0x12, 0x2b
-};
-
-static const uint8_t DeathMusHdr__data[] = {
-    0x18, LOBYTE(DeathMusData), HIBYTE(DeathMusData), 0x1e, 0x0f, 0x2d
-};
-
-static const uint8_t Star_CloudMData__data[] = {
-    0x84, 0x2c, 0x2c, 0x2c, 0x82, 0x04, 0x2c, 0x04, 0x85, 0x2c, 0x84, 0x2c, 0x2c,
-    0x2a, 0x2a, 0x2a, 0x82, 0x04, 0x2a, 0x04, 0x85, 0x2a, 0x84, 0x2a, 0x2a, 0x00,
-    0x1f, 0x1f, 0x1f, 0x98, 0x1f, 0x1f, 0x98, 0x9e, 0x98, 0x1f,
-    0x1d, 0x1d, 0x1d, 0x94, 0x1d, 0x1d, 0x94, 0x9c, 0x94, 0x1d,
-    0x86, 0x18, 0x85, 0x26, 0x30, 0x84, 0x04, 0x26, 0x30,
-    0x86, 0x14, 0x85, 0x22, 0x2c, 0x84, 0x04, 0x22, 0x2c,
-    0x21, 0xd0, 0xc4, 0xd0, 0x31, 0xd0, 0xc4, 0xd0, 0x00
-};
-
-static const uint8_t GroundM_P1Data__data[] = {
-    0x85, 0x2c, 0x22, 0x1c, 0x84, 0x26, 0x2a, 0x82, 0x28, 0x26, 0x04,
-    0x87, 0x22, 0x34, 0x3a, 0x82, 0x40, 0x04, 0x36, 0x84, 0x3a, 0x34,
-    0x82, 0x2c, 0x30, 0x85, 0x2a
-};
-
-static const uint8_t SilenceData__data[] = {
-    0x00,
-    0x5d, 0x55, 0x4d, 0x15, 0x19, 0x96, 0x15, 0xd5, 0xe3, 0xeb,
-    0x2d, 0xa6, 0x2b, 0x27, 0x9c, 0x9e, 0x59,
-    0x85, 0x22, 0x1c, 0x14, 0x84, 0x1e, 0x22, 0x82, 0x20, 0x1e, 0x04, 0x87,
-    0x1c, 0x2c, 0x34, 0x82, 0x36, 0x04, 0x30, 0x34, 0x04, 0x2c, 0x04, 0x26,
-    0x2a, 0x85, 0x22
-};
-
-static const uint8_t GroundM_P2AData__data[] = {
-    0x84, 0x04, 0x82, 0x3a, 0x38, 0x36, 0x32, 0x04, 0x34,
-    0x04, 0x24, 0x26, 0x2c, 0x04, 0x26, 0x2c, 0x30, 0x00,
-    0x05, 0xb4, 0xb2, 0xb0, 0x2b, 0xac, 0x84,
-    0x9c, 0x9e, 0xa2, 0x84, 0x94, 0x9c, 0x9e,
-    0x85, 0x14, 0x22, 0x84, 0x2c, 0x85, 0x1e,
-    0x82, 0x2c, 0x84, 0x2c, 0x1e
-};
-
-static const uint8_t GroundM_P2BData__data[] = {
-    0x84, 0x04, 0x82, 0x3a, 0x38, 0x36, 0x32, 0x04, 0x34,
-    0x04, 0x64, 0x04, 0x64, 0x86, 0x64, 0x00,
-    0x05, 0xb4, 0xb2, 0xb0, 0x2b, 0xac, 0x84,
-    0x37, 0xb6, 0xb6, 0x45,
-    0x85, 0x14, 0x1c, 0x82, 0x22, 0x84, 0x2c,
-    0x4e, 0x82, 0x4e, 0x84, 0x4e, 0x22
-};
-
-static const uint8_t GroundM_P2CData__data[] = {
-    0x84, 0x04, 0x85, 0x32, 0x85, 0x30, 0x86, 0x2c, 0x04, 0x00,
-    0x05, 0xa4, 0x05, 0x9e, 0x05, 0x9d, 0x85,
-    0x84, 0x14, 0x85, 0x24, 0x28, 0x2c, 0x82,
-    0x22, 0x84, 0x22, 0x14,
-    0x21, 0xd0, 0xc4, 0xd0, 0x31, 0xd0, 0xc4, 0xd0, 0x00
-};
-
-static const uint8_t GroundM_P3AData__data[] = {
-    0x82, 0x2c, 0x84, 0x2c, 0x2c, 0x82, 0x2c, 0x30,
-    0x04, 0x34, 0x2c, 0x04, 0x26, 0x86, 0x22, 0x00,
-    0xa4, 0x25, 0x25, 0xa4, 0x29, 0xa2, 0x1d, 0x9c, 0x95
-};
-
-static const uint8_t GroundM_P3BData__data[] = {
-    0x82, 0x2c, 0x2c, 0x04, 0x2c, 0x04, 0x2c, 0x30, 0x85, 0x34, 0x04, 0x04, 0x00,
-    0xa4, 0x25, 0x25, 0xa4, 0xa8, 0x63, 0x04,
-    0x85, 0x0e, 0x1a, 0x84, 0x24, 0x85, 0x22, 0x14, 0x84, 0x0c
-};
-
-static const uint8_t GroundMLdInData__data[] = {
-    0x82, 0x34, 0x84, 0x34, 0x34, 0x82, 0x2c, 0x84, 0x34, 0x86, 0x3a, 0x04, 0x00,
-    0xa0, 0x21, 0x21, 0xa0, 0x21, 0x2b, 0x05, 0xa3,
-    0x82, 0x18, 0x84, 0x18, 0x18, 0x82, 0x18, 0x18, 0x04, 0x86, 0x3a, 0x22,
-    0x31, 0x90, 0x31, 0x90, 0x31, 0x71, 0x31, 0x90, 0x90, 0x90, 0x00
-};
-
-static const uint8_t GroundM_P4AData__data[] = {
-    0x82, 0x34, 0x84, 0x2c, 0x85, 0x22, 0x84, 0x24,
-    0x82, 0x26, 0x36, 0x04, 0x36, 0x86, 0x26, 0x00,
-    0xac, 0x27, 0x5d, 0x1d, 0x9e, 0x2d, 0xac, 0x9f,
-    0x85, 0x14, 0x82, 0x20, 0x84, 0x22, 0x2c,
-    0x1e, 0x1e, 0x82, 0x2c, 0x2c, 0x1e, 0x04
-};
-
-static const uint8_t GroundM_P4BData__data[] = {
-    0x87, 0x2a, 0x40, 0x40, 0x40, 0x3a, 0x36,
-    0x82, 0x34, 0x2c, 0x04, 0x26, 0x86, 0x22, 0x00,
-    0xe3, 0xf7, 0xf7, 0xf7, 0xf5, 0xf1, 0xac, 0x27, 0x9e, 0x9d,
-    0x85, 0x18, 0x82, 0x1e, 0x84, 0x22, 0x2a,
-    0x22, 0x22, 0x82, 0x2c, 0x2c, 0x22, 0x04
-};
-
-static const uint8_t DeathMusData__data[] = {
-    0x86, 0x04
-};
-
-static const uint8_t GroundM_P4CData__data[] = {
-    0x82, 0x2a, 0x36, 0x04, 0x36, 0x87, 0x36, 0x34, 0x30, 0x86, 0x2c, 0x04, 0x00,
-    0x00, 0x68, 0x6a, 0x6c, 0x45,
-    0xa2, 0x31, 0xb0, 0xf1, 0xed, 0xeb, 0xa2, 0x1d, 0x9c, 0x95,
-    0x86, 0x04,
-    0x85, 0x22, 0x82, 0x22, 0x87, 0x22, 0x26, 0x2a, 0x84, 0x2c, 0x22, 0x86, 0x14,
-    0x51, 0x90, 0x31, 0x11, 0x00
-};
-
-static const uint8_t CastleMusData__data[] = {
-    0x80, 0x22, 0x28, 0x22, 0x26, 0x22, 0x24, 0x22, 0x26,
-    0x22, 0x28, 0x22, 0x2a, 0x22, 0x28, 0x22, 0x26,
-    0x22, 0x28, 0x22, 0x26, 0x22, 0x24, 0x22, 0x26,
-    0x22, 0x28, 0x22, 0x2a, 0x22, 0x28, 0x22, 0x26,
-    0x20, 0x26, 0x20, 0x24, 0x20, 0x26, 0x20, 0x28,
-    0x20, 0x26, 0x20, 0x28, 0x20, 0x26, 0x20, 0x24,
-    0x20, 0x26, 0x20, 0x24, 0x20, 0x26, 0x20, 0x28,
-    0x20, 0x26, 0x20, 0x28, 0x20, 0x26, 0x20, 0x24,
-    0x28, 0x30, 0x28, 0x32, 0x28, 0x30, 0x28, 0x2e,
-    0x28, 0x30, 0x28, 0x2e, 0x28, 0x2c, 0x28, 0x2e,
-    0x28, 0x30, 0x28, 0x32, 0x28, 0x30, 0x28, 0x2e,
-    0x28, 0x30, 0x28, 0x2e, 0x28, 0x2c, 0x28, 0x2e, 0x00,
-    0x04, 0x70, 0x6e, 0x6c, 0x6e, 0x70, 0x72, 0x70, 0x6e,
-    0x70, 0x6e, 0x6c, 0x6e, 0x70, 0x72, 0x70, 0x6e,
-    0x6e, 0x6c, 0x6e, 0x70, 0x6e, 0x70, 0x6e, 0x6c,
-    0x6e, 0x6c, 0x6e, 0x70, 0x6e, 0x70, 0x6e, 0x6c,
-    0x76, 0x78, 0x76, 0x74, 0x76, 0x74, 0x72, 0x74,
-    0x76, 0x78, 0x76, 0x74, 0x76, 0x74, 0x72, 0x74,
-    0x84, 0x1a, 0x83, 0x18, 0x20, 0x84, 0x1e, 0x83, 0x1c, 0x28,
-    0x26, 0x1c, 0x1a, 0x1c
-};
-
-static const uint8_t GameOverMusData__data[] = {
-    0x82, 0x2c, 0x04, 0x04, 0x22, 0x04, 0x04, 0x84, 0x1c, 0x87,
-    0x26, 0x2a, 0x26, 0x84, 0x24, 0x28, 0x24, 0x80, 0x22, 0x00,
-    0x9c, 0x05, 0x94, 0x05, 0x0d, 0x9f, 0x1e, 0x9c, 0x98, 0x9d,
-    0x82, 0x22, 0x04, 0x04, 0x1c, 0x04, 0x04, 0x84, 0x14,
-    0x86, 0x1e, 0x80, 0x16, 0x80, 0x14
-};
-
-static const uint8_t TimeRunOutMusData__data[] = {
-    0x81, 0x1c, 0x30, 0x04, 0x30, 0x30, 0x04, 0x1e, 0x32, 0x04, 0x32, 0x32,
-    0x04, 0x20, 0x34, 0x04, 0x34, 0x34, 0x04, 0x36, 0x04, 0x84, 0x36, 0x00,
-    0x46, 0xa4, 0x64, 0xa4, 0x48, 0xa6, 0x66, 0xa6, 0x4a, 0xa8, 0x68, 0xa8,
-    0x6a, 0x44, 0x2b,
-    0x81, 0x2a, 0x42, 0x04, 0x42, 0x42, 0x04, 0x2c, 0x64, 0x04, 0x64, 0x64,
-    0x04, 0x2e, 0x46, 0x04, 0x46, 0x46, 0x04, 0x22, 0x04, 0x84, 0x22
-};
-
-static const uint8_t WinLevelMusData__data[] = {
-    0x87, 0x04, 0x06, 0x0c, 0x14, 0x1c, 0x22, 0x86, 0x2c, 0x22,
-    0x87, 0x04, 0x60, 0x0e, 0x14, 0x1a, 0x24, 0x86, 0x2c, 0x24,
-    0x87, 0x04, 0x08, 0x10, 0x18, 0x1e, 0x28, 0x86, 0x30, 0x30,
-    0x80, 0x64, 0x00,
-    0xcd, 0xd5, 0xdd, 0xe3, 0xed, 0xf5, 0xbb, 0xb5, 0xcf, 0xd5,
-    0xdb, 0xe5, 0xed, 0xf3, 0xbd, 0xb3, 0xd1, 0xd9, 0xdf, 0xe9,
-    0xf1, 0xf7, 0xbf, 0xff, 0xff, 0xff, 0x34,
-    0x00,
-    0x86, 0x04, 0x87, 0x14, 0x1c, 0x22, 0x86, 0x34, 0x84, 0x2c,
-    0x04, 0x04, 0x04, 0x87, 0x14, 0x1a, 0x24, 0x86, 0x32, 0x84,
-    0x2c, 0x04, 0x86, 0x04, 0x87, 0x18, 0x1e, 0x28, 0x86, 0x36,
-    0x87, 0x30, 0x30, 0x30, 0x80, 0x2c
-};
-
-static const uint8_t UndergroundMusData__data[] = {
-    0x82, 0x14, 0x2c, 0x62, 0x26, 0x10, 0x28, 0x80, 0x04,
-    0x82, 0x14, 0x2c, 0x62, 0x26, 0x10, 0x28, 0x80, 0x04,
-    0x82, 0x08, 0x1e, 0x5e, 0x18, 0x60, 0x1a, 0x80, 0x04,
-    0x82, 0x08, 0x1e, 0x5e, 0x18, 0x60, 0x1a, 0x86, 0x04,
-    0x83, 0x1a, 0x18, 0x16, 0x84, 0x14, 0x1a, 0x18, 0x0e, 0x0c,
-    0x16, 0x83, 0x14, 0x20, 0x1e, 0x1c, 0x28, 0x26, 0x87,
-    0x24, 0x1a, 0x12, 0x10, 0x62, 0x0e, 0x80, 0x04, 0x04,
-    0x00
-};
-
-static const uint8_t WaterMusData__data[] = {
-    0x82, 0x18, 0x1c, 0x20, 0x22, 0x26, 0x28,
-    0x81, 0x2a, 0x2a, 0x2a, 0x04, 0x2a, 0x04, 0x83, 0x2a, 0x82, 0x22,
-    0x86, 0x34, 0x32, 0x34, 0x81, 0x04, 0x22, 0x26, 0x2a, 0x2c, 0x30,
-    0x86, 0x34, 0x83, 0x32, 0x82, 0x36, 0x84, 0x34, 0x85, 0x04, 0x81, 0x22,
-    0x86, 0x30, 0x2e, 0x30, 0x81, 0x04, 0x22, 0x26, 0x2a, 0x2c, 0x2e,
-    0x86, 0x30, 0x83, 0x22, 0x82, 0x36, 0x84, 0x34, 0x85, 0x04, 0x81, 0x22,
-    0x86, 0x3a, 0x3a, 0x3a, 0x82, 0x3a, 0x81, 0x40, 0x82, 0x04, 0x81, 0x3a,
-    0x86, 0x36, 0x36, 0x36, 0x82, 0x36, 0x81, 0x3a, 0x82, 0x04, 0x81, 0x36,
-    0x86, 0x34, 0x82, 0x26, 0x2a, 0x36,
-    0x81, 0x34, 0x34, 0x85, 0x34, 0x81, 0x2a, 0x86, 0x2c, 0x00,
-    0x84, 0x90, 0xb0, 0x84, 0x50, 0x50, 0xb0, 0x00,
-    0x98, 0x96, 0x94, 0x92, 0x94, 0x96, 0x58, 0x58, 0x58, 0x44,
-    0x5c, 0x44, 0x9f, 0xa3, 0xa1, 0xa3, 0x85, 0xa3, 0xe0, 0xa6,
-    0x23, 0xc4, 0x9f, 0x9d, 0x9f, 0x85, 0x9f, 0xd2, 0xa6, 0x23,
-    0xc4, 0xb5, 0xb1, 0xaf, 0x85, 0xb1, 0xaf, 0xad, 0x85, 0x95,
-    0x9e, 0xa2, 0xaa, 0x6a, 0x6a, 0x6b, 0x5e, 0x9d,
-    0x84, 0x04, 0x04, 0x82, 0x22, 0x86, 0x22,
-    0x82, 0x14, 0x22, 0x2c, 0x12, 0x22, 0x2a, 0x14, 0x22, 0x2c,
-    0x1c, 0x22, 0x2c, 0x14, 0x22, 0x2c, 0x12, 0x22, 0x2a, 0x14,
-    0x22, 0x2c, 0x1c, 0x22, 0x2c, 0x18, 0x22, 0x2a, 0x16, 0x20,
-    0x28, 0x18, 0x22, 0x2a, 0x12, 0x22, 0x2a, 0x18, 0x22, 0x2a,
-    0x12, 0x22, 0x2a, 0x14, 0x22, 0x2c, 0x0c, 0x22, 0x2c, 0x14, 0x22, 0x34, 0x12,
-    0x22, 0x30, 0x10, 0x22, 0x2e, 0x16, 0x22, 0x34, 0x18, 0x26,
-    0x36, 0x16, 0x26, 0x36, 0x14, 0x26, 0x36, 0x12, 0x22, 0x36,
-    0x5c, 0x22, 0x34, 0x0c, 0x22, 0x22, 0x81, 0x1e, 0x1e, 0x85, 0x1e,
-    0x81, 0x12, 0x86, 0x14
-};
-
-static const uint8_t EndOfCastleMusData__data[] = {
-    0x81, 0x2c, 0x22, 0x1c, 0x2c, 0x22, 0x1c, 0x85, 0x2c, 0x04,
-    0x81, 0x2e, 0x24, 0x1e, 0x2e, 0x24, 0x1e, 0x85, 0x2e, 0x04,
-    0x81, 0x32, 0x28, 0x22, 0x32, 0x28, 0x22, 0x85, 0x32,
-    0x87, 0x36, 0x36, 0x36, 0x84, 0x3a, 0x00,
-    0x5c, 0x54, 0x4c, 0x5c, 0x54, 0x4c,
-    0x5c, 0x1c, 0x1c, 0x5c, 0x5c, 0x5c, 0x5c,
-    0x5e, 0x56, 0x4e, 0x5e, 0x56, 0x4e,
-    0x5e, 0x1e, 0x1e, 0x5e, 0x5e, 0x5e, 0x5e,
-    0x62, 0x5a, 0x50, 0x62, 0x5a, 0x50,
-    0x62, 0x22, 0x22, 0x62, 0xe7, 0xe7, 0xe7, 0x2b,
-    0x86, 0x14, 0x81, 0x14, 0x80, 0x14, 0x14, 0x81, 0x14, 0x14, 0x14, 0x14,
-    0x86, 0x16, 0x81, 0x16, 0x80, 0x16, 0x16, 0x81, 0x16, 0x16, 0x16, 0x16,
-    0x81, 0x28, 0x22, 0x1a, 0x28, 0x22, 0x1a, 0x28, 0x80, 0x28, 0x28,
-    0x81, 0x28, 0x87, 0x2c, 0x2c, 0x2c, 0x84, 0x30
-};
-
-static const uint8_t VictoryMusData__data[] = {
-    0x83, 0x04, 0x84, 0x0c, 0x83, 0x62, 0x10, 0x84, 0x12,
-    0x83, 0x1c, 0x22, 0x1e, 0x22, 0x26, 0x18, 0x1e, 0x04, 0x1c, 0x00,
-    0xe3, 0xe1, 0xe3, 0x1d, 0xde, 0xe0, 0x23,
-    0xec, 0x75, 0x74, 0xf0, 0xf4, 0xf6, 0xea, 0x31, 0x2d,
-    0x83, 0x12, 0x14, 0x04, 0x18, 0x1a, 0x1c, 0x14,
-    0x26, 0x22, 0x1e, 0x1c, 0x18, 0x1e, 0x22, 0x0c, 0x14,
-    0xff, 0xff, 0xff
-};
-
-static const uint8_t FreqRegLookupTbl__data[] = {
-    0x00, 0x88, 0x00, 0x2f, 0x00, 0x00,
-    0x02, 0xa6, 0x02, 0x80, 0x02, 0x5c, 0x02, 0x3a,
-    0x02, 0x1a, 0x01, 0xdf, 0x01, 0xc4, 0x01, 0xab,
-    0x01, 0x93, 0x01, 0x7c, 0x01, 0x67, 0x01, 0x53,
-    0x01, 0x40, 0x01, 0x2e, 0x01, 0x1d, 0x01, 0x0d,
-    0x00, 0xfe, 0x00, 0xef, 0x00, 0xe2, 0x00, 0xd5,
-    0x00, 0xc9, 0x00, 0xbe, 0x00, 0xb3, 0x00, 0xa9,
-    0x00, 0xa0, 0x00, 0x97, 0x00, 0x8e, 0x00, 0x86,
-    0x00, 0x77, 0x00, 0x7e, 0x00, 0x71, 0x00, 0x54,
-    0x00, 0x64, 0x00, 0x5f, 0x00, 0x59, 0x00, 0x50,
-    0x00, 0x47, 0x00, 0x43, 0x00, 0x3b, 0x00, 0x35,
-    0x00, 0x2a, 0x00, 0x23, 0x04, 0x75, 0x03, 0x57,
-    0x02, 0xf9, 0x02, 0xcf, 0x01, 0xfc, 0x00, 0x6a
-};
-
-static const uint8_t MusicLengthLookupTbl__data[] = {
-    0x05, 0x0a, 0x14, 0x28, 0x50, 0x1e, 0x3c, 0x02,
-    0x04, 0x08, 0x10, 0x20, 0x40, 0x18, 0x30, 0x0c,
-    0x03, 0x06, 0x0c, 0x18, 0x30, 0x12, 0x24, 0x08,
-    0x36, 0x03, 0x09, 0x06, 0x12, 0x1b, 0x24, 0x0c,
-    0x24, 0x02, 0x06, 0x04, 0x0c, 0x12, 0x18, 0x08,
-    0x12, 0x01, 0x03, 0x02, 0x06, 0x09, 0x0c, 0x04
-};
-
-static const uint8_t EndOfCastleMusicEnvData__data[] = {
-    0x98, 0x99, 0x9a, 0x9b
-};
-
-static const uint8_t AreaMusicEnvData__data[] = {
-    0x90, 0x94, 0x94, 0x95, 0x95, 0x96, 0x97, 0x98
-};
-
-static const uint8_t WaterEventMusEnvData__data[] = {
-    0x90, 0x91, 0x92, 0x92, 0x93, 0x93, 0x93, 0x94,
-    0x94, 0x94, 0x94, 0x94, 0x94, 0x95, 0x95, 0x95,
-    0x95, 0x95, 0x95, 0x96, 0x96, 0x96, 0x96, 0x96,
-    0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96,
-    0x96, 0x96, 0x96, 0x96, 0x95, 0x95, 0x94, 0x93
-};
-
-static const uint8_t BowserFlameEnvData__data[] = {
-    0x15, 0x16, 0x16, 0x17, 0x17, 0x18, 0x19, 0x19,
-    0x1a, 0x1a, 0x1c, 0x1d, 0x1d, 0x1e, 0x1e, 0x1f,
-    0x1f, 0x1f, 0x1f, 0x1e, 0x1d, 0x1c, 0x1e, 0x1f,
-    0x1f, 0x1e, 0x1d, 0x1c, 0x1a, 0x18, 0x16, 0x14
-};
-
-static const uint8_t BrickShatterEnvData__data[] = {
-    0x15, 0x16, 0x16, 0x17, 0x17, 0x18, 0x19, 0x19,
-    0x1a, 0x1a, 0x1c, 0x1d, 0x1d, 0x1e, 0x1e, 0x1f
-};
+// This is an automatically generated file.
+// Do not edit directly.
+//
+#include "SMB.hpp"
 
 void SMBEngine::loadConstantData()
 {
-    writeData(VRAM_AddrTable_Low, VRAM_AddrTable_Low__data, sizeof(VRAM_AddrTable_Low__data));
-    writeData(VRAM_AddrTable_High, VRAM_AddrTable_High__data, sizeof(VRAM_AddrTable_High__data));
-    writeData(VRAM_Buffer_Offset, VRAM_Buffer_Offset__data, sizeof(VRAM_Buffer_Offset__data));
-    writeData(WSelectBufferTemplate, WSelectBufferTemplate__data, sizeof(WSelectBufferTemplate__data));
-    writeData(MushroomIconData, MushroomIconData__data, sizeof(MushroomIconData__data));
-    writeData(DemoActionData, DemoActionData__data, sizeof(DemoActionData__data));
-    writeData(DemoTimingData, DemoTimingData__data, sizeof(DemoTimingData__data));
-    writeData(FloateyNumTileData, FloateyNumTileData__data, sizeof(FloateyNumTileData__data));
-    writeData(ScoreUpdateData, ScoreUpdateData__data, sizeof(ScoreUpdateData__data));
-    writeData(AreaPalette, AreaPalette__data, sizeof(AreaPalette__data));
-    writeData(BGColorCtrl_Addr, BGColorCtrl_Addr__data, sizeof(BGColorCtrl_Addr__data));
-    writeData(BackgroundColors, BackgroundColors__data, sizeof(BackgroundColors__data));
-    writeData(PlayerColors, PlayerColors__data, sizeof(PlayerColors__data));
-    writeData(TopStatusBarLine, TopStatusBarLine__data, sizeof(TopStatusBarLine__data));
-    writeData(WorldLivesDisplay, WorldLivesDisplay__data, sizeof(WorldLivesDisplay__data));
-    writeData(TwoPlayerTimeUp, TwoPlayerTimeUp__data, sizeof(TwoPlayerTimeUp__data));
-    writeData(OnePlayerTimeUp, OnePlayerTimeUp__data, sizeof(OnePlayerTimeUp__data));
-    writeData(TwoPlayerGameOver, TwoPlayerGameOver__data, sizeof(TwoPlayerGameOver__data));
-    writeData(OnePlayerGameOver, OnePlayerGameOver__data, sizeof(OnePlayerGameOver__data));
-    writeData(WarpZoneWelcome, WarpZoneWelcome__data, sizeof(WarpZoneWelcome__data));
-    writeData(LuigiName, LuigiName__data, sizeof(LuigiName__data));
-    writeData(WarpZoneNumbers, WarpZoneNumbers__data, sizeof(WarpZoneNumbers__data));
-    writeData(GameTextOffsets, GameTextOffsets__data, sizeof(GameTextOffsets__data));
-    writeData(ColorRotatePalette, ColorRotatePalette__data, sizeof(ColorRotatePalette__data));
-    writeData(BlankPalette, BlankPalette__data, sizeof(BlankPalette__data));
-    writeData(Palette3Data, Palette3Data__data, sizeof(Palette3Data__data));
-    writeData(BlockGfxData, BlockGfxData__data, sizeof(BlockGfxData__data));
-    writeData(MetatileGraphics_Low, MetatileGraphics_Low__data, sizeof(MetatileGraphics_Low__data));
-    writeData(MetatileGraphics_High, MetatileGraphics_High__data, sizeof(MetatileGraphics_High__data));
-    writeData(Palette0_MTiles, Palette0_MTiles__data, sizeof(Palette0_MTiles__data));
-    writeData(Palette1_MTiles, Palette1_MTiles__data, sizeof(Palette1_MTiles__data));
-    writeData(Palette2_MTiles, Palette2_MTiles__data, sizeof(Palette2_MTiles__data));
-    writeData(Palette3_MTiles, Palette3_MTiles__data, sizeof(Palette3_MTiles__data));
-    writeData(WaterPaletteData, WaterPaletteData__data, sizeof(WaterPaletteData__data));
-    writeData(GroundPaletteData, GroundPaletteData__data, sizeof(GroundPaletteData__data));
-    writeData(UndergroundPaletteData, UndergroundPaletteData__data, sizeof(UndergroundPaletteData__data));
-    writeData(CastlePaletteData, CastlePaletteData__data, sizeof(CastlePaletteData__data));
-    writeData(DaySnowPaletteData, DaySnowPaletteData__data, sizeof(DaySnowPaletteData__data));
-    writeData(NightSnowPaletteData, NightSnowPaletteData__data, sizeof(NightSnowPaletteData__data));
-    writeData(MushroomPaletteData, MushroomPaletteData__data, sizeof(MushroomPaletteData__data));
-    writeData(BowserPaletteData, BowserPaletteData__data, sizeof(BowserPaletteData__data));
-    writeData(MarioThanksMessage, MarioThanksMessage__data, sizeof(MarioThanksMessage__data));
-    writeData(LuigiThanksMessage, LuigiThanksMessage__data, sizeof(LuigiThanksMessage__data));
-    writeData(MushroomRetainerSaved, MushroomRetainerSaved__data, sizeof(MushroomRetainerSaved__data));
-    writeData(PrincessSaved1, PrincessSaved1__data, sizeof(PrincessSaved1__data));
-    writeData(PrincessSaved2, PrincessSaved2__data, sizeof(PrincessSaved2__data));
-    writeData(WorldSelectMessage1, WorldSelectMessage1__data, sizeof(WorldSelectMessage1__data));
-    writeData(WorldSelectMessage2, WorldSelectMessage2__data, sizeof(WorldSelectMessage2__data));
-    writeData(StatusBarData, StatusBarData__data, sizeof(StatusBarData__data));
-    writeData(StatusBarOffset, StatusBarOffset__data, sizeof(StatusBarOffset__data));
-    writeData(DefaultSprOffsets, DefaultSprOffsets__data, sizeof(DefaultSprOffsets__data));
-    writeData(Sprite0Data, Sprite0Data__data, sizeof(Sprite0Data__data));
-    writeData(MusicSelectData, MusicSelectData__data, sizeof(MusicSelectData__data));
-    writeData(PlayerStarting_X_Pos, PlayerStarting_X_Pos__data, sizeof(PlayerStarting_X_Pos__data));
-    writeData(AltYPosOffset, AltYPosOffset__data, sizeof(AltYPosOffset__data));
-    writeData(PlayerStarting_Y_Pos, PlayerStarting_Y_Pos__data, sizeof(PlayerStarting_Y_Pos__data));
-    writeData(PlayerBGPriorityData, PlayerBGPriorityData__data, sizeof(PlayerBGPriorityData__data));
-    writeData(GameTimerData, GameTimerData__data, sizeof(GameTimerData__data));
-    writeData(HalfwayPageNybbles, HalfwayPageNybbles__data, sizeof(HalfwayPageNybbles__data));
-    writeData(BSceneDataOffsets, BSceneDataOffsets__data, sizeof(BSceneDataOffsets__data));
-    writeData(BackSceneryData, BackSceneryData__data, sizeof(BackSceneryData__data));
-    writeData(BackSceneryMetatiles, BackSceneryMetatiles__data, sizeof(BackSceneryMetatiles__data));
-    writeData(FSceneDataOffsets, FSceneDataOffsets__data, sizeof(FSceneDataOffsets__data));
-    writeData(ForeSceneryData, ForeSceneryData__data, sizeof(ForeSceneryData__data));
-    writeData(TerrainMetatiles, TerrainMetatiles__data, sizeof(TerrainMetatiles__data));
-    writeData(TerrainRenderBits, TerrainRenderBits__data, sizeof(TerrainRenderBits__data));
-    writeData(BlockBuffLowBounds, BlockBuffLowBounds__data, sizeof(BlockBuffLowBounds__data));
-    writeData(FrenzyIDData, FrenzyIDData__data, sizeof(FrenzyIDData__data));
-    writeData(PulleyRopeMetatiles, PulleyRopeMetatiles__data, sizeof(PulleyRopeMetatiles__data));
-    writeData(CastleMetatiles, CastleMetatiles__data, sizeof(CastleMetatiles__data));
-    writeData(SidePipeShaftData, SidePipeShaftData__data, sizeof(SidePipeShaftData__data));
-    writeData(SidePipeTopPart, SidePipeTopPart__data, sizeof(SidePipeTopPart__data));
-    writeData(SidePipeBottomPart, SidePipeBottomPart__data, sizeof(SidePipeBottomPart__data));
-    writeData(VerticalPipeData, VerticalPipeData__data, sizeof(VerticalPipeData__data));
-    writeData(CoinMetatileData, CoinMetatileData__data, sizeof(CoinMetatileData__data));
-    writeData(C_ObjectRow, C_ObjectRow__data, sizeof(C_ObjectRow__data));
-    writeData(C_ObjectMetatile, C_ObjectMetatile__data, sizeof(C_ObjectMetatile__data));
-    writeData(SolidBlockMetatiles, SolidBlockMetatiles__data, sizeof(SolidBlockMetatiles__data));
-    writeData(BrickMetatiles, BrickMetatiles__data, sizeof(BrickMetatiles__data));
-    writeData(StaircaseHeightData, StaircaseHeightData__data, sizeof(StaircaseHeightData__data));
-    writeData(StaircaseRowData, StaircaseRowData__data, sizeof(StaircaseRowData__data));
-    writeData(HoleMetatiles, HoleMetatiles__data, sizeof(HoleMetatiles__data));
-    writeData(BlockBufferAddr, BlockBufferAddr__data, sizeof(BlockBufferAddr__data));
-    writeData(AreaDataOfsLoopback, AreaDataOfsLoopback__data, sizeof(AreaDataOfsLoopback__data));
-    writeData(WorldAddrOffsets, WorldAddrOffsets__data, sizeof(WorldAddrOffsets__data));
-    writeData(World1Areas, World1Areas__data, sizeof(World1Areas__data));
-    writeData(World2Areas, World2Areas__data, sizeof(World2Areas__data));
-    writeData(World3Areas, World3Areas__data, sizeof(World3Areas__data));
-    writeData(World4Areas, World4Areas__data, sizeof(World4Areas__data));
-    writeData(World5Areas, World5Areas__data, sizeof(World5Areas__data));
-    writeData(World6Areas, World6Areas__data, sizeof(World6Areas__data));
-    writeData(World7Areas, World7Areas__data, sizeof(World7Areas__data));
-    writeData(World8Areas, World8Areas__data, sizeof(World8Areas__data));
-    writeData(EnemyAddrHOffsets, EnemyAddrHOffsets__data, sizeof(EnemyAddrHOffsets__data));
-    writeData(EnemyDataAddrLow, EnemyDataAddrLow__data, sizeof(EnemyDataAddrLow__data));
-    writeData(EnemyDataAddrHigh, EnemyDataAddrHigh__data, sizeof(EnemyDataAddrHigh__data));
-    writeData(AreaDataHOffsets, AreaDataHOffsets__data, sizeof(AreaDataHOffsets__data));
-    writeData(AreaDataAddrLow, AreaDataAddrLow__data, sizeof(AreaDataAddrLow__data));
-    writeData(AreaDataAddrHigh, AreaDataAddrHigh__data, sizeof(AreaDataAddrHigh__data));
-    writeData(E_CastleArea1, E_CastleArea1__data, sizeof(E_CastleArea1__data));
-    writeData(E_CastleArea2, E_CastleArea2__data, sizeof(E_CastleArea2__data));
-    writeData(E_CastleArea3, E_CastleArea3__data, sizeof(E_CastleArea3__data));
-    writeData(E_CastleArea4, E_CastleArea4__data, sizeof(E_CastleArea4__data));
-    writeData(E_CastleArea5, E_CastleArea5__data, sizeof(E_CastleArea5__data));
-    writeData(E_CastleArea6, E_CastleArea6__data, sizeof(E_CastleArea6__data));
-    writeData(E_GroundArea1, E_GroundArea1__data, sizeof(E_GroundArea1__data));
-    writeData(E_GroundArea2, E_GroundArea2__data, sizeof(E_GroundArea2__data));
-    writeData(E_GroundArea3, E_GroundArea3__data, sizeof(E_GroundArea3__data));
-    writeData(E_GroundArea4, E_GroundArea4__data, sizeof(E_GroundArea4__data));
-    writeData(E_GroundArea5, E_GroundArea5__data, sizeof(E_GroundArea5__data));
-    writeData(E_GroundArea6, E_GroundArea6__data, sizeof(E_GroundArea6__data));
-    writeData(E_GroundArea7, E_GroundArea7__data, sizeof(E_GroundArea7__data));
-    writeData(E_GroundArea8, E_GroundArea8__data, sizeof(E_GroundArea8__data));
-    writeData(E_GroundArea9, E_GroundArea9__data, sizeof(E_GroundArea9__data));
-    writeData(E_GroundArea10, E_GroundArea10__data, sizeof(E_GroundArea10__data));
-    writeData(E_GroundArea11, E_GroundArea11__data, sizeof(E_GroundArea11__data));
-    writeData(E_GroundArea12, E_GroundArea12__data, sizeof(E_GroundArea12__data));
-    writeData(E_GroundArea13, E_GroundArea13__data, sizeof(E_GroundArea13__data));
-    writeData(E_GroundArea14, E_GroundArea14__data, sizeof(E_GroundArea14__data));
-    writeData(E_GroundArea15, E_GroundArea15__data, sizeof(E_GroundArea15__data));
-    writeData(E_GroundArea16, E_GroundArea16__data, sizeof(E_GroundArea16__data));
-    writeData(E_GroundArea17, E_GroundArea17__data, sizeof(E_GroundArea17__data));
-    writeData(E_GroundArea18, E_GroundArea18__data, sizeof(E_GroundArea18__data));
-    writeData(E_GroundArea19, E_GroundArea19__data, sizeof(E_GroundArea19__data));
-    writeData(E_GroundArea20, E_GroundArea20__data, sizeof(E_GroundArea20__data));
-    writeData(E_GroundArea21, E_GroundArea21__data, sizeof(E_GroundArea21__data));
-    writeData(E_GroundArea22, E_GroundArea22__data, sizeof(E_GroundArea22__data));
-    writeData(E_UndergroundArea1, E_UndergroundArea1__data, sizeof(E_UndergroundArea1__data));
-    writeData(E_UndergroundArea2, E_UndergroundArea2__data, sizeof(E_UndergroundArea2__data));
-    writeData(E_UndergroundArea3, E_UndergroundArea3__data, sizeof(E_UndergroundArea3__data));
-    writeData(E_WaterArea1, E_WaterArea1__data, sizeof(E_WaterArea1__data));
-    writeData(E_WaterArea2, E_WaterArea2__data, sizeof(E_WaterArea2__data));
-    writeData(E_WaterArea3, E_WaterArea3__data, sizeof(E_WaterArea3__data));
-    writeData(L_CastleArea1, L_CastleArea1__data, sizeof(L_CastleArea1__data));
-    writeData(L_CastleArea2, L_CastleArea2__data, sizeof(L_CastleArea2__data));
-    writeData(L_CastleArea3, L_CastleArea3__data, sizeof(L_CastleArea3__data));
-    writeData(L_CastleArea4, L_CastleArea4__data, sizeof(L_CastleArea4__data));
-    writeData(L_CastleArea5, L_CastleArea5__data, sizeof(L_CastleArea5__data));
-    writeData(L_CastleArea6, L_CastleArea6__data, sizeof(L_CastleArea6__data));
-    writeData(L_GroundArea1, L_GroundArea1__data, sizeof(L_GroundArea1__data));
-    writeData(L_GroundArea2, L_GroundArea2__data, sizeof(L_GroundArea2__data));
-    writeData(L_GroundArea3, L_GroundArea3__data, sizeof(L_GroundArea3__data));
-    writeData(L_GroundArea4, L_GroundArea4__data, sizeof(L_GroundArea4__data));
-    writeData(L_GroundArea5, L_GroundArea5__data, sizeof(L_GroundArea5__data));
-    writeData(L_GroundArea6, L_GroundArea6__data, sizeof(L_GroundArea6__data));
-    writeData(L_GroundArea7, L_GroundArea7__data, sizeof(L_GroundArea7__data));
-    writeData(L_GroundArea8, L_GroundArea8__data, sizeof(L_GroundArea8__data));
-    writeData(L_GroundArea9, L_GroundArea9__data, sizeof(L_GroundArea9__data));
-    writeData(L_GroundArea10, L_GroundArea10__data, sizeof(L_GroundArea10__data));
-    writeData(L_GroundArea11, L_GroundArea11__data, sizeof(L_GroundArea11__data));
-    writeData(L_GroundArea12, L_GroundArea12__data, sizeof(L_GroundArea12__data));
-    writeData(L_GroundArea13, L_GroundArea13__data, sizeof(L_GroundArea13__data));
-    writeData(L_GroundArea14, L_GroundArea14__data, sizeof(L_GroundArea14__data));
-    writeData(L_GroundArea15, L_GroundArea15__data, sizeof(L_GroundArea15__data));
-    writeData(L_GroundArea16, L_GroundArea16__data, sizeof(L_GroundArea16__data));
-    writeData(L_GroundArea17, L_GroundArea17__data, sizeof(L_GroundArea17__data));
-    writeData(L_GroundArea18, L_GroundArea18__data, sizeof(L_GroundArea18__data));
-    writeData(L_GroundArea19, L_GroundArea19__data, sizeof(L_GroundArea19__data));
-    writeData(L_GroundArea20, L_GroundArea20__data, sizeof(L_GroundArea20__data));
-    writeData(L_GroundArea21, L_GroundArea21__data, sizeof(L_GroundArea21__data));
-    writeData(L_GroundArea22, L_GroundArea22__data, sizeof(L_GroundArea22__data));
-    writeData(L_UndergroundArea1, L_UndergroundArea1__data, sizeof(L_UndergroundArea1__data));
-    writeData(L_UndergroundArea2, L_UndergroundArea2__data, sizeof(L_UndergroundArea2__data));
-    writeData(L_UndergroundArea3, L_UndergroundArea3__data, sizeof(L_UndergroundArea3__data));
-    writeData(L_WaterArea1, L_WaterArea1__data, sizeof(L_WaterArea1__data));
-    writeData(L_WaterArea2, L_WaterArea2__data, sizeof(L_WaterArea2__data));
-    writeData(L_WaterArea3, L_WaterArea3__data, sizeof(L_WaterArea3__data));
-    writeData(X_SubtracterData, X_SubtracterData__data, sizeof(X_SubtracterData__data));
-    writeData(OffscrJoypadBitsData, OffscrJoypadBitsData__data, sizeof(OffscrJoypadBitsData__data));
-    writeData(Hidden1UpCoinAmts, Hidden1UpCoinAmts__data, sizeof(Hidden1UpCoinAmts__data));
-    writeData(ClimbAdderLow, ClimbAdderLow__data, sizeof(ClimbAdderLow__data));
-    writeData(ClimbAdderHigh, ClimbAdderHigh__data, sizeof(ClimbAdderHigh__data));
-    writeData(JumpMForceData, JumpMForceData__data, sizeof(JumpMForceData__data));
-    writeData(FallMForceData, FallMForceData__data, sizeof(FallMForceData__data));
-    writeData(PlayerYSpdData, PlayerYSpdData__data, sizeof(PlayerYSpdData__data));
-    writeData(InitMForceData, InitMForceData__data, sizeof(InitMForceData__data));
-    writeData(MaxLeftXSpdData, MaxLeftXSpdData__data, sizeof(MaxLeftXSpdData__data));
-    writeData(MaxRightXSpdData, MaxRightXSpdData__data, sizeof(MaxRightXSpdData__data));
-    writeData(FrictionData, FrictionData__data, sizeof(FrictionData__data));
-    writeData(Climb_Y_SpeedData, Climb_Y_SpeedData__data, sizeof(Climb_Y_SpeedData__data));
-    writeData(Climb_Y_MForceData, Climb_Y_MForceData__data, sizeof(Climb_Y_MForceData__data));
-    writeData(PlayerAnimTmrData, PlayerAnimTmrData__data, sizeof(PlayerAnimTmrData__data));
-    writeData(FireballXSpdData, FireballXSpdData__data, sizeof(FireballXSpdData__data));
-    writeData(Bubble_MForceData, Bubble_MForceData__data, sizeof(Bubble_MForceData__data));
-    writeData(BubbleTimerData, BubbleTimerData__data, sizeof(BubbleTimerData__data));
-    writeData(FlagpoleScoreMods, FlagpoleScoreMods__data, sizeof(FlagpoleScoreMods__data));
-    writeData(FlagpoleScoreDigits, FlagpoleScoreDigits__data, sizeof(FlagpoleScoreDigits__data));
-    writeData(Jumpspring_Y_PosData, Jumpspring_Y_PosData__data, sizeof(Jumpspring_Y_PosData__data));
-    writeData(VineHeightData, VineHeightData__data, sizeof(VineHeightData__data));
-    writeData(CannonBitmasks, CannonBitmasks__data, sizeof(CannonBitmasks__data));
-    writeData(BulletBillXSpdData, BulletBillXSpdData__data, sizeof(BulletBillXSpdData__data));
-    writeData(HammerEnemyOfsData, HammerEnemyOfsData__data, sizeof(HammerEnemyOfsData__data));
-    writeData(HammerXSpdData, HammerXSpdData__data, sizeof(HammerXSpdData__data));
-    writeData(CoinTallyOffsets, CoinTallyOffsets__data, sizeof(CoinTallyOffsets__data));
-    writeData(ScoreOffsets, ScoreOffsets__data, sizeof(ScoreOffsets__data));
-    writeData(StatusBarNybbles, StatusBarNybbles__data, sizeof(StatusBarNybbles__data));
-    writeData(BlockYPosAdderData, BlockYPosAdderData__data, sizeof(BlockYPosAdderData__data));
-    writeData(BrickQBlockMetatiles, BrickQBlockMetatiles__data, sizeof(BrickQBlockMetatiles__data));
-    writeData(MaxSpdBlockData, MaxSpdBlockData__data, sizeof(MaxSpdBlockData__data));
-    writeData(LoopCmdWorldNumber, LoopCmdWorldNumber__data, sizeof(LoopCmdWorldNumber__data));
-    writeData(LoopCmdPageNumber, LoopCmdPageNumber__data, sizeof(LoopCmdPageNumber__data));
-    writeData(LoopCmdYPosition, LoopCmdYPosition__data, sizeof(LoopCmdYPosition__data));
-    writeData(NormalXSpdData, NormalXSpdData__data, sizeof(NormalXSpdData__data));
-    writeData(HBroWalkingTimerData, HBroWalkingTimerData__data, sizeof(HBroWalkingTimerData__data));
-    writeData(PRDiffAdjustData, PRDiffAdjustData__data, sizeof(PRDiffAdjustData__data));
-    writeData(FirebarSpinSpdData, FirebarSpinSpdData__data, sizeof(FirebarSpinSpdData__data));
-    writeData(FirebarSpinDirData, FirebarSpinDirData__data, sizeof(FirebarSpinDirData__data));
-    writeData(FlyCCXPositionData, FlyCCXPositionData__data, sizeof(FlyCCXPositionData__data));
-    writeData(FlyCCXSpeedData, FlyCCXSpeedData__data, sizeof(FlyCCXSpeedData__data));
-    writeData(FlyCCTimerData, FlyCCTimerData__data, sizeof(FlyCCTimerData__data));
-    writeData(FlameYPosData, FlameYPosData__data, sizeof(FlameYPosData__data));
-    writeData(FlameYMFAdderData, FlameYMFAdderData__data, sizeof(FlameYMFAdderData__data));
-    writeData(FireworksXPosData, FireworksXPosData__data, sizeof(FireworksXPosData__data));
-    writeData(FireworksYPosData, FireworksYPosData__data, sizeof(FireworksYPosData__data));
-    writeData(Bitmasks, Bitmasks__data, sizeof(Bitmasks__data));
-    writeData(Enemy17YPosData, Enemy17YPosData__data, sizeof(Enemy17YPosData__data));
-    writeData(SwimCC_IDData, SwimCC_IDData__data, sizeof(SwimCC_IDData__data));
-    writeData(PlatPosDataLow, PlatPosDataLow__data, sizeof(PlatPosDataLow__data));
-    writeData(PlatPosDataHigh, PlatPosDataHigh__data, sizeof(PlatPosDataHigh__data));
-    writeData(HammerThrowTmrData, HammerThrowTmrData__data, sizeof(HammerThrowTmrData__data));
-    writeData(XSpeedAdderData, XSpeedAdderData__data, sizeof(XSpeedAdderData__data));
-    writeData(RevivedXSpeed, RevivedXSpeed__data, sizeof(RevivedXSpeed__data));
-    writeData(HammerBroJumpLData, HammerBroJumpLData__data, sizeof(HammerBroJumpLData__data));
-    writeData(BlooberBitmasks, BlooberBitmasks__data, sizeof(BlooberBitmasks__data));
-    writeData(SwimCCXMoveData, SwimCCXMoveData__data, sizeof(SwimCCXMoveData__data));
-    writeData(FirebarPosLookupTbl, FirebarPosLookupTbl__data, sizeof(FirebarPosLookupTbl__data));
-    writeData(FirebarMirrorData, FirebarMirrorData__data, sizeof(FirebarMirrorData__data));
-    writeData(FirebarTblOffsets, FirebarTblOffsets__data, sizeof(FirebarTblOffsets__data));
-    writeData(FirebarYPos, FirebarYPos__data, sizeof(FirebarYPos__data));
-    writeData(PRandomSubtracter, PRandomSubtracter__data, sizeof(PRandomSubtracter__data));
-    writeData(FlyCCBPriority, FlyCCBPriority__data, sizeof(FlyCCBPriority__data));
-    writeData(LakituDiffAdj, LakituDiffAdj__data, sizeof(LakituDiffAdj__data));
-    writeData(BridgeCollapseData, BridgeCollapseData__data, sizeof(BridgeCollapseData__data));
-    writeData(PRandomRange, PRandomRange__data, sizeof(PRandomRange__data));
-    writeData(FlameTimerData, FlameTimerData__data, sizeof(FlameTimerData__data));
-    writeData(StarFlagYPosAdder, StarFlagYPosAdder__data, sizeof(StarFlagYPosAdder__data));
-    writeData(StarFlagXPosAdder, StarFlagXPosAdder__data, sizeof(StarFlagXPosAdder__data));
-    writeData(StarFlagTileData, StarFlagTileData__data, sizeof(StarFlagTileData__data));
-    writeData(BowserIdentities, BowserIdentities__data, sizeof(BowserIdentities__data));
-    writeData(ResidualXSpdData, ResidualXSpdData__data, sizeof(ResidualXSpdData__data));
-    writeData(KickedShellXSpdData, KickedShellXSpdData__data, sizeof(KickedShellXSpdData__data));
-    writeData(DemotedKoopaXSpdData, DemotedKoopaXSpdData__data, sizeof(DemotedKoopaXSpdData__data));
-    writeData(KickedShellPtsData, KickedShellPtsData__data, sizeof(KickedShellPtsData__data));
-    writeData(StompedEnemyPtsData, StompedEnemyPtsData__data, sizeof(StompedEnemyPtsData__data));
-    writeData(RevivalRateData, RevivalRateData__data, sizeof(RevivalRateData__data));
-    writeData(SetBitsMask, SetBitsMask__data, sizeof(SetBitsMask__data));
-    writeData(ClearBitsMask, ClearBitsMask__data, sizeof(ClearBitsMask__data));
-    writeData(PlayerPosSPlatData, PlayerPosSPlatData__data, sizeof(PlayerPosSPlatData__data));
-    writeData(PlayerBGUpperExtent, PlayerBGUpperExtent__data, sizeof(PlayerBGUpperExtent__data));
-    writeData(AreaChangeTimerData, AreaChangeTimerData__data, sizeof(AreaChangeTimerData__data));
-    writeData(ClimbXPosAdder, ClimbXPosAdder__data, sizeof(ClimbXPosAdder__data));
-    writeData(ClimbPLocAdder, ClimbPLocAdder__data, sizeof(ClimbPLocAdder__data));
-    writeData(FlagpoleYPosData, FlagpoleYPosData__data, sizeof(FlagpoleYPosData__data));
-    writeData(SolidMTileUpperExt, SolidMTileUpperExt__data, sizeof(SolidMTileUpperExt__data));
-    writeData(ClimbMTileUpperExt, ClimbMTileUpperExt__data, sizeof(ClimbMTileUpperExt__data));
-    writeData(EnemyBGCStateData, EnemyBGCStateData__data, sizeof(EnemyBGCStateData__data));
-    writeData(EnemyBGCXSpdData, EnemyBGCXSpdData__data, sizeof(EnemyBGCXSpdData__data));
-    writeData(BoundBoxCtrlData, BoundBoxCtrlData__data, sizeof(BoundBoxCtrlData__data));
-    writeData(BlockBufferAdderData, BlockBufferAdderData__data, sizeof(BlockBufferAdderData__data));
-    writeData(BlockBuffer_X_Adder, BlockBuffer_X_Adder__data, sizeof(BlockBuffer_X_Adder__data));
-    writeData(BlockBuffer_Y_Adder, BlockBuffer_Y_Adder__data, sizeof(BlockBuffer_Y_Adder__data));
-    writeData(VineYPosAdder, VineYPosAdder__data, sizeof(VineYPosAdder__data));
-    writeData(FirstSprXPos, FirstSprXPos__data, sizeof(FirstSprXPos__data));
-    writeData(FirstSprYPos, FirstSprYPos__data, sizeof(FirstSprYPos__data));
-    writeData(SecondSprXPos, SecondSprXPos__data, sizeof(SecondSprXPos__data));
-    writeData(SecondSprYPos, SecondSprYPos__data, sizeof(SecondSprYPos__data));
-    writeData(FirstSprTilenum, FirstSprTilenum__data, sizeof(FirstSprTilenum__data));
-    writeData(SecondSprTilenum, SecondSprTilenum__data, sizeof(SecondSprTilenum__data));
-    writeData(HammerSprAttrib, HammerSprAttrib__data, sizeof(HammerSprAttrib__data));
-    writeData(FlagpoleScoreNumTiles, FlagpoleScoreNumTiles__data, sizeof(FlagpoleScoreNumTiles__data));
-    writeData(JumpingCoinTiles, JumpingCoinTiles__data, sizeof(JumpingCoinTiles__data));
-    writeData(PowerUpGfxTable, PowerUpGfxTable__data, sizeof(PowerUpGfxTable__data));
-    writeData(PowerUpAttributes, PowerUpAttributes__data, sizeof(PowerUpAttributes__data));
-    writeData(EnemyGraphicsTable, EnemyGraphicsTable__data, sizeof(EnemyGraphicsTable__data));
-    writeData(EnemyGfxTableOffsets, EnemyGfxTableOffsets__data, sizeof(EnemyGfxTableOffsets__data));
-    writeData(EnemyAttributeData, EnemyAttributeData__data, sizeof(EnemyAttributeData__data));
-    writeData(EnemyAnimTimingBMask, EnemyAnimTimingBMask__data, sizeof(EnemyAnimTimingBMask__data));
-    writeData(JumpspringFrameOffsets, JumpspringFrameOffsets__data, sizeof(JumpspringFrameOffsets__data));
-    writeData(DefaultBlockObjTiles, DefaultBlockObjTiles__data, sizeof(DefaultBlockObjTiles__data));
-    writeData(ExplosionTiles, ExplosionTiles__data, sizeof(ExplosionTiles__data));
-    writeData(PlayerGfxTblOffsets, PlayerGfxTblOffsets__data, sizeof(PlayerGfxTblOffsets__data));
-    writeData(PlayerGraphicsTable, PlayerGraphicsTable__data, sizeof(PlayerGraphicsTable__data));
-    writeData(SwimKickTileNum, SwimKickTileNum__data, sizeof(SwimKickTileNum__data));
-    writeData(IntermediatePlayerData, IntermediatePlayerData__data, sizeof(IntermediatePlayerData__data));
-    writeData(ChangeSizeOffsetAdder, ChangeSizeOffsetAdder__data, sizeof(ChangeSizeOffsetAdder__data));
-    writeData(ObjOffsetData, ObjOffsetData__data, sizeof(ObjOffsetData__data));
-    writeData(XOffscreenBitsData, XOffscreenBitsData__data, sizeof(XOffscreenBitsData__data));
-    writeData(DefaultXOnscreenOfs, DefaultXOnscreenOfs__data, sizeof(DefaultXOnscreenOfs__data));
-    writeData(YOffscreenBitsData, YOffscreenBitsData__data, sizeof(YOffscreenBitsData__data));
-    writeData(DefaultYOnscreenOfs, DefaultYOnscreenOfs__data, sizeof(DefaultYOnscreenOfs__data));
-    writeData(HighPosUnitData, HighPosUnitData__data, sizeof(HighPosUnitData__data));
-    writeData(SwimStompEnvelopeData, SwimStompEnvelopeData__data, sizeof(SwimStompEnvelopeData__data));
-    writeData(ExtraLifeFreqData, ExtraLifeFreqData__data, sizeof(ExtraLifeFreqData__data));
-    writeData(PowerUpGrabFreqData, PowerUpGrabFreqData__data, sizeof(PowerUpGrabFreqData__data));
-    writeData(PUp_VGrow_FreqData, PUp_VGrow_FreqData__data, sizeof(PUp_VGrow_FreqData__data));
-    writeData(BrickShatterFreqData, BrickShatterFreqData__data, sizeof(BrickShatterFreqData__data));
-    writeData(MusicHeaderData, MusicHeaderData__data, sizeof(MusicHeaderData__data));
-    writeData(TimeRunningOutHdr, TimeRunningOutHdr__data, sizeof(TimeRunningOutHdr__data));
-    writeData(Star_CloudHdr, Star_CloudHdr__data, sizeof(Star_CloudHdr__data));
-    writeData(EndOfLevelMusHdr, EndOfLevelMusHdr__data, sizeof(EndOfLevelMusHdr__data));
-    writeData(ResidualHeaderData, ResidualHeaderData__data, sizeof(ResidualHeaderData__data));
-    writeData(UndergroundMusHdr, UndergroundMusHdr__data, sizeof(UndergroundMusHdr__data));
-    writeData(SilenceHdr, SilenceHdr__data, sizeof(SilenceHdr__data));
-    writeData(CastleMusHdr, CastleMusHdr__data, sizeof(CastleMusHdr__data));
-    writeData(VictoryMusHdr, VictoryMusHdr__data, sizeof(VictoryMusHdr__data));
-    writeData(GameOverMusHdr, GameOverMusHdr__data, sizeof(GameOverMusHdr__data));
-    writeData(WaterMusHdr, WaterMusHdr__data, sizeof(WaterMusHdr__data));
-    writeData(WinCastleMusHdr, WinCastleMusHdr__data, sizeof(WinCastleMusHdr__data));
-    writeData(GroundLevelPart1Hdr, GroundLevelPart1Hdr__data, sizeof(GroundLevelPart1Hdr__data));
-    writeData(GroundLevelPart2AHdr, GroundLevelPart2AHdr__data, sizeof(GroundLevelPart2AHdr__data));
-    writeData(GroundLevelPart2BHdr, GroundLevelPart2BHdr__data, sizeof(GroundLevelPart2BHdr__data));
-    writeData(GroundLevelPart2CHdr, GroundLevelPart2CHdr__data, sizeof(GroundLevelPart2CHdr__data));
-    writeData(GroundLevelPart3AHdr, GroundLevelPart3AHdr__data, sizeof(GroundLevelPart3AHdr__data));
-    writeData(GroundLevelPart3BHdr, GroundLevelPart3BHdr__data, sizeof(GroundLevelPart3BHdr__data));
-    writeData(GroundLevelLeadInHdr, GroundLevelLeadInHdr__data, sizeof(GroundLevelLeadInHdr__data));
-    writeData(GroundLevelPart4AHdr, GroundLevelPart4AHdr__data, sizeof(GroundLevelPart4AHdr__data));
-    writeData(GroundLevelPart4BHdr, GroundLevelPart4BHdr__data, sizeof(GroundLevelPart4BHdr__data));
-    writeData(GroundLevelPart4CHdr, GroundLevelPart4CHdr__data, sizeof(GroundLevelPart4CHdr__data));
-    writeData(DeathMusHdr, DeathMusHdr__data, sizeof(DeathMusHdr__data));
-    writeData(Star_CloudMData, Star_CloudMData__data, sizeof(Star_CloudMData__data));
-    writeData(GroundM_P1Data, GroundM_P1Data__data, sizeof(GroundM_P1Data__data));
-    writeData(SilenceData, SilenceData__data, sizeof(SilenceData__data));
-    writeData(GroundM_P2AData, GroundM_P2AData__data, sizeof(GroundM_P2AData__data));
-    writeData(GroundM_P2BData, GroundM_P2BData__data, sizeof(GroundM_P2BData__data));
-    writeData(GroundM_P2CData, GroundM_P2CData__data, sizeof(GroundM_P2CData__data));
-    writeData(GroundM_P3AData, GroundM_P3AData__data, sizeof(GroundM_P3AData__data));
-    writeData(GroundM_P3BData, GroundM_P3BData__data, sizeof(GroundM_P3BData__data));
-    writeData(GroundMLdInData, GroundMLdInData__data, sizeof(GroundMLdInData__data));
-    writeData(GroundM_P4AData, GroundM_P4AData__data, sizeof(GroundM_P4AData__data));
-    writeData(GroundM_P4BData, GroundM_P4BData__data, sizeof(GroundM_P4BData__data));
-    writeData(DeathMusData, DeathMusData__data, sizeof(DeathMusData__data));
-    writeData(GroundM_P4CData, GroundM_P4CData__data, sizeof(GroundM_P4CData__data));
-    writeData(CastleMusData, CastleMusData__data, sizeof(CastleMusData__data));
-    writeData(GameOverMusData, GameOverMusData__data, sizeof(GameOverMusData__data));
-    writeData(TimeRunOutMusData, TimeRunOutMusData__data, sizeof(TimeRunOutMusData__data));
-    writeData(WinLevelMusData, WinLevelMusData__data, sizeof(WinLevelMusData__data));
-    writeData(UndergroundMusData, UndergroundMusData__data, sizeof(UndergroundMusData__data));
-    writeData(WaterMusData, WaterMusData__data, sizeof(WaterMusData__data));
-    writeData(EndOfCastleMusData, EndOfCastleMusData__data, sizeof(EndOfCastleMusData__data));
-    writeData(VictoryMusData, VictoryMusData__data, sizeof(VictoryMusData__data));
-    writeData(FreqRegLookupTbl, FreqRegLookupTbl__data, sizeof(FreqRegLookupTbl__data));
-    writeData(MusicLengthLookupTbl, MusicLengthLookupTbl__data, sizeof(MusicLengthLookupTbl__data));
-    writeData(EndOfCastleMusicEnvData, EndOfCastleMusicEnvData__data, sizeof(EndOfCastleMusicEnvData__data));
-    writeData(AreaMusicEnvData, AreaMusicEnvData__data, sizeof(AreaMusicEnvData__data));
-    writeData(WaterEventMusEnvData, WaterEventMusEnvData__data, sizeof(WaterEventMusEnvData__data));
-    writeData(BowserFlameEnvData, BowserFlameEnvData__data, sizeof(BowserFlameEnvData__data));
-    writeData(BrickShatterEnvData, BrickShatterEnvData__data, sizeof(BrickShatterEnvData__data));
-}
+    // VRAM_AddrTable_Low
+    //
+    const uint8_t VRAM_AddrTable_Low_data[] = {
+        LOBYTE(VRAM_Buffer1), LOBYTE(WaterPaletteData), LOBYTE(GroundPaletteData),
+        LOBYTE(UndergroundPaletteData), LOBYTE(CastlePaletteData), LOBYTE(VRAM_Buffer1_Offset),
+        LOBYTE(VRAM_Buffer2), LOBYTE(VRAM_Buffer2), LOBYTE(BowserPaletteData),
+        LOBYTE(DaySnowPaletteData), LOBYTE(NightSnowPaletteData), LOBYTE(MushroomPaletteData),
+        LOBYTE(MarioThanksMessage), LOBYTE(LuigiThanksMessage), LOBYTE(MushroomRetainerSaved),
+        LOBYTE(PrincessSaved1), LOBYTE(PrincessSaved2), LOBYTE(WorldSelectMessage1),
+        LOBYTE(WorldSelectMessage2)
+    };
+    writeData(VRAM_AddrTable_Low, VRAM_AddrTable_Low_data, sizeof(VRAM_AddrTable_Low_data));
 
+    // VRAM_AddrTable_High
+    //
+    const uint8_t VRAM_AddrTable_High_data[] = {
+        HIBYTE(VRAM_Buffer1), HIBYTE(WaterPaletteData), HIBYTE(GroundPaletteData),
+        HIBYTE(UndergroundPaletteData), HIBYTE(CastlePaletteData), HIBYTE(VRAM_Buffer1_Offset),
+        HIBYTE(VRAM_Buffer2), HIBYTE(VRAM_Buffer2), HIBYTE(BowserPaletteData),
+        HIBYTE(DaySnowPaletteData), HIBYTE(NightSnowPaletteData), HIBYTE(MushroomPaletteData),
+        HIBYTE(MarioThanksMessage), HIBYTE(LuigiThanksMessage), HIBYTE(MushroomRetainerSaved),
+        HIBYTE(PrincessSaved1), HIBYTE(PrincessSaved2), HIBYTE(WorldSelectMessage1),
+        HIBYTE(WorldSelectMessage2)
+    };
+    writeData(VRAM_AddrTable_High, VRAM_AddrTable_High_data, sizeof(VRAM_AddrTable_High_data));
+
+    // VRAM_Buffer_Offset
+    //
+    const uint8_t VRAM_Buffer_Offset_data[] = {
+        LOBYTE(VRAM_Buffer1_Offset), LOBYTE(VRAM_Buffer2_Offset)
+    };
+    writeData(VRAM_Buffer_Offset, VRAM_Buffer_Offset_data, sizeof(VRAM_Buffer_Offset_data));
+
+    // WSelectBufferTemplate
+    //
+    const uint8_t WSelectBufferTemplate_data[] = {
+        0x04, 0x20, 0x73, 0x01, 0x00, 0x00
+    };
+    writeData(WSelectBufferTemplate, WSelectBufferTemplate_data, sizeof(WSelectBufferTemplate_data));
+
+    // MushroomIconData
+    //
+    const uint8_t MushroomIconData_data[] = {
+        0x07, 0x22, 0x49, 0x83, 0xce, 0x24, 0x24, 0x00
+    };
+    writeData(MushroomIconData, MushroomIconData_data, sizeof(MushroomIconData_data));
+
+    // DemoActionData
+    //
+    const uint8_t DemoActionData_data[] = {
+        0x01, 0x80, 0x02, 0x81, 0x41, 0x80, 0x01,
+        0x42, 0xc2, 0x02, 0x80, 0x41, 0xc1, 0x41, 0xc1,
+        0x01, 0xc1, 0x01, 0x02, 0x80, 0x00
+    };
+    writeData(DemoActionData, DemoActionData_data, sizeof(DemoActionData_data));
+
+    // DemoTimingData
+    //
+    const uint8_t DemoTimingData_data[] = {
+        0x9b, 0x10, 0x18, 0x05, 0x2c, 0x20, 0x24,
+        0x15, 0x5a, 0x10, 0x20, 0x28, 0x30, 0x20, 0x10,
+        0x80, 0x20, 0x30, 0x30, 0x01, 0xff, 0x00
+    };
+    writeData(DemoTimingData, DemoTimingData_data, sizeof(DemoTimingData_data));
+
+    // FloateyNumTileData
+    //
+    const uint8_t FloateyNumTileData_data[] = {
+        0xff, 0xff,
+        0xf6, 0xfb,
+        0xf7, 0xfb,
+        0xf8, 0xfb,
+        0xf9, 0xfb,
+        0xfa, 0xfb,
+        0xf6, 0x50,
+        0xf7, 0x50,
+        0xf8, 0x50,
+        0xf9, 0x50,
+        0xfa, 0x50,
+        0xfd, 0xfe
+    };
+    writeData(FloateyNumTileData, FloateyNumTileData_data, sizeof(FloateyNumTileData_data));
+
+    // ScoreUpdateData
+    //
+    const uint8_t ScoreUpdateData_data[] = {
+        0xff,
+        0x41, 0x42, 0x44, 0x45, 0x48,
+        0x31, 0x32, 0x34, 0x35, 0x38, 0x00
+    };
+    writeData(ScoreUpdateData, ScoreUpdateData_data, sizeof(ScoreUpdateData_data));
+
+    // AreaPalette
+    //
+    const uint8_t AreaPalette_data[] = {
+        0x01, 0x02, 0x03, 0x04
+    };
+    writeData(AreaPalette, AreaPalette_data, sizeof(AreaPalette_data));
+
+    // BGColorCtrl_Addr
+    //
+    const uint8_t BGColorCtrl_Addr_data[] = {
+        0x00, 0x09, 0x0a, 0x04
+    };
+    writeData(BGColorCtrl_Addr, BGColorCtrl_Addr_data, sizeof(BGColorCtrl_Addr_data));
+
+    // BackgroundColors
+    //
+    const uint8_t BackgroundColors_data[] = {
+        0x22, 0x22, 0x0f, 0x0f,
+        0x0f, 0x22, 0x0f, 0x0f
+    };
+    writeData(BackgroundColors, BackgroundColors_data, sizeof(BackgroundColors_data));
+
+    // PlayerColors
+    //
+    const uint8_t PlayerColors_data[] = {
+        0x22, 0x16, 0x27, 0x18,
+        0x22, 0x30, 0x27, 0x19,
+        0x22, 0x37, 0x27, 0x16
+    };
+    writeData(PlayerColors, PlayerColors_data, sizeof(PlayerColors_data));
+
+    // TopStatusBarLine
+    //
+    const uint8_t TopStatusBarLine_data[] = {
+        0x20, 0x43, 0x05, 0x16, 0x0a, 0x1b, 0x12, 0x18,
+        0x20, 0x52, 0x0b, 0x20, 0x18, 0x1b, 0x15, 0x0d,
+        0x24, 0x24, 0x1d, 0x12, 0x16, 0x0e,
+        0x20, 0x68, 0x05, 0x00, 0x24, 0x24, 0x2e, 0x29,
+        0x23, 0xc0, 0x7f, 0xaa,
+        0x23, 0xc2, 0x01, 0xea,
+        0xff
+    };
+    writeData(TopStatusBarLine, TopStatusBarLine_data, sizeof(TopStatusBarLine_data));
+
+    // WorldLivesDisplay
+    //
+    const uint8_t WorldLivesDisplay_data[] = {
+        0x21, 0xcd, 0x07, 0x24, 0x24,
+        0x29, 0x24, 0x24, 0x24, 0x24,
+        0x21, 0x4b, 0x09, 0x20, 0x18,
+        0x1b, 0x15, 0x0d, 0x24, 0x24, 0x28, 0x24,
+        0x22, 0x0c, 0x47, 0x24,
+        0x23, 0xdc, 0x01, 0xba,
+        0xff
+    };
+    writeData(WorldLivesDisplay, WorldLivesDisplay_data, sizeof(WorldLivesDisplay_data));
+
+    // TwoPlayerTimeUp
+    //
+    const uint8_t TwoPlayerTimeUp_data[] = {
+        0x21, 0xcd, 0x05, 0x16, 0x0a, 0x1b, 0x12, 0x18
+    };
+    writeData(TwoPlayerTimeUp, TwoPlayerTimeUp_data, sizeof(TwoPlayerTimeUp_data));
+
+    // OnePlayerTimeUp
+    //
+    const uint8_t OnePlayerTimeUp_data[] = {
+        0x22, 0x0c, 0x07, 0x1d, 0x12, 0x16, 0x0e, 0x24, 0x1e, 0x19,
+        0xff
+    };
+    writeData(OnePlayerTimeUp, OnePlayerTimeUp_data, sizeof(OnePlayerTimeUp_data));
+
+    // TwoPlayerGameOver
+    //
+    const uint8_t TwoPlayerGameOver_data[] = {
+        0x21, 0xcd, 0x05, 0x16, 0x0a, 0x1b, 0x12, 0x18
+    };
+    writeData(TwoPlayerGameOver, TwoPlayerGameOver_data, sizeof(TwoPlayerGameOver_data));
+
+    // OnePlayerGameOver
+    //
+    const uint8_t OnePlayerGameOver_data[] = {
+        0x22, 0x0b, 0x09, 0x10, 0x0a, 0x16, 0x0e, 0x24,
+        0x18, 0x1f, 0x0e, 0x1b,
+        0xff
+    };
+    writeData(OnePlayerGameOver, OnePlayerGameOver_data, sizeof(OnePlayerGameOver_data));
+
+    // WarpZoneWelcome
+    //
+    const uint8_t WarpZoneWelcome_data[] = {
+        0x25, 0x84, 0x15, 0x20, 0x0e, 0x15, 0x0c, 0x18, 0x16,
+        0x0e, 0x24, 0x1d, 0x18, 0x24, 0x20, 0x0a, 0x1b, 0x19,
+        0x24, 0x23, 0x18, 0x17, 0x0e, 0x2b,
+        0x26, 0x25, 0x01, 0x24,
+        0x26, 0x2d, 0x01, 0x24,
+        0x26, 0x35, 0x01, 0x24,
+        0x27, 0xd9, 0x46, 0xaa,
+        0x27, 0xe1, 0x45, 0xaa,
+        0xff
+    };
+    writeData(WarpZoneWelcome, WarpZoneWelcome_data, sizeof(WarpZoneWelcome_data));
+
+    // LuigiName
+    //
+    const uint8_t LuigiName_data[] = {
+        0x15, 0x1e, 0x12, 0x10, 0x12
+    };
+    writeData(LuigiName, LuigiName_data, sizeof(LuigiName_data));
+
+    // WarpZoneNumbers
+    //
+    const uint8_t WarpZoneNumbers_data[] = {
+        0x04, 0x03, 0x02, 0x00,
+        0x24, 0x05, 0x24, 0x00,
+        0x08, 0x07, 0x06, 0x00
+    };
+    writeData(WarpZoneNumbers, WarpZoneNumbers_data, sizeof(WarpZoneNumbers_data));
+
+    // GameTextOffsets
+    //
+    const uint8_t GameTextOffsets_data[] = {
+        TopStatusBarLine - GameText, TopStatusBarLine - GameText,
+        WorldLivesDisplay - GameText, WorldLivesDisplay - GameText,
+        TwoPlayerTimeUp - GameText, OnePlayerTimeUp - GameText,
+        TwoPlayerGameOver - GameText, OnePlayerGameOver - GameText,
+        WarpZoneWelcome - GameText, WarpZoneWelcome - GameText
+    };
+    writeData(GameTextOffsets, GameTextOffsets_data, sizeof(GameTextOffsets_data));
+
+    // ColorRotatePalette
+    //
+    const uint8_t ColorRotatePalette_data[] = {
+        0x27, 0x27, 0x27, 0x17, 0x07, 0x17
+    };
+    writeData(ColorRotatePalette, ColorRotatePalette_data, sizeof(ColorRotatePalette_data));
+
+    // BlankPalette
+    //
+    const uint8_t BlankPalette_data[] = {
+        0x3f, 0x0c, 0x04, 0xff, 0xff, 0xff, 0xff, 0x00
+    };
+    writeData(BlankPalette, BlankPalette_data, sizeof(BlankPalette_data));
+
+    // Palette3Data
+    //
+    const uint8_t Palette3Data_data[] = {
+        0x0f, 0x07, 0x12, 0x0f,
+        0x0f, 0x07, 0x17, 0x0f,
+        0x0f, 0x07, 0x17, 0x1c,
+        0x0f, 0x07, 0x17, 0x00
+    };
+    writeData(Palette3Data, Palette3Data_data, sizeof(Palette3Data_data));
+
+    // BlockGfxData
+    //
+    const uint8_t BlockGfxData_data[] = {
+        0x45, 0x45, 0x47, 0x47,
+        0x47, 0x47, 0x47, 0x47,
+        0x57, 0x58, 0x59, 0x5a,
+        0x24, 0x24, 0x24, 0x24,
+        0x26, 0x26, 0x26, 0x26
+    };
+    writeData(BlockGfxData, BlockGfxData_data, sizeof(BlockGfxData_data));
+
+    // MetatileGraphics_Low
+    //
+    const uint8_t MetatileGraphics_Low_data[] = {
+        LOBYTE(Palette0_MTiles), LOBYTE(Palette1_MTiles), LOBYTE(Palette2_MTiles), LOBYTE(Palette3_MTiles)
+    };
+    writeData(MetatileGraphics_Low, MetatileGraphics_Low_data, sizeof(MetatileGraphics_Low_data));
+
+    // MetatileGraphics_High
+    //
+    const uint8_t MetatileGraphics_High_data[] = {
+        HIBYTE(Palette0_MTiles), HIBYTE(Palette1_MTiles), HIBYTE(Palette2_MTiles), HIBYTE(Palette3_MTiles)
+    };
+    writeData(MetatileGraphics_High, MetatileGraphics_High_data, sizeof(MetatileGraphics_High_data));
+
+    // Palette0_MTiles
+    //
+    const uint8_t Palette0_MTiles_data[] = {
+        0x24, 0x24, 0x24, 0x24,
+        0x27, 0x27, 0x27, 0x27,
+        0x24, 0x24, 0x24, 0x35,
+        0x36, 0x25, 0x37, 0x25,
+        0x24, 0x38, 0x24, 0x24,
+        0x24, 0x30, 0x30, 0x26,
+        0x26, 0x26, 0x34, 0x26,
+        0x24, 0x31, 0x24, 0x32,
+        0x33, 0x26, 0x24, 0x33,
+        0x34, 0x26, 0x26, 0x26,
+        0x26, 0x26, 0x26, 0x26,
+        0x24, 0xc0, 0x24, 0xc0,
+        0x24, 0x7f, 0x7f, 0x24,
+        0xb8, 0xba, 0xb9, 0xbb,
+        0xb8, 0xbc, 0xb9, 0xbd,
+        0xba, 0xbc, 0xbb, 0xbd,
+        0x60, 0x64, 0x61, 0x65,
+        0x62, 0x66, 0x63, 0x67,
+        0x60, 0x64, 0x61, 0x65,
+        0x62, 0x66, 0x63, 0x67,
+        0x68, 0x68, 0x69, 0x69,
+        0x26, 0x26, 0x6a, 0x6a,
+        0x4b, 0x4c, 0x4d, 0x4e,
+        0x4d, 0x4f, 0x4d, 0x4f,
+        0x4d, 0x4e, 0x50, 0x51,
+        0x6b, 0x70, 0x2c, 0x2d,
+        0x6c, 0x71, 0x6d, 0x72,
+        0x6e, 0x73, 0x6f, 0x74,
+        0x86, 0x8a, 0x87, 0x8b,
+        0x88, 0x8c, 0x88, 0x8c,
+        0x89, 0x8d, 0x69, 0x69,
+        0x8e, 0x91, 0x8f, 0x92,
+        0x26, 0x93, 0x26, 0x93,
+        0x90, 0x94, 0x69, 0x69,
+        0xa4, 0xe9, 0xea, 0xeb,
+        0x24, 0x24, 0x24, 0x24,
+        0x24, 0x2f, 0x24, 0x3d,
+        0xa2, 0xa2, 0xa3, 0xa3,
+        0x24, 0x24, 0x24, 0x24
+    };
+    writeData(Palette0_MTiles, Palette0_MTiles_data, sizeof(Palette0_MTiles_data));
+
+    // Palette1_MTiles
+    //
+    const uint8_t Palette1_MTiles_data[] = {
+        0xa2, 0xa2, 0xa3, 0xa3,
+        0x99, 0x24, 0x99, 0x24,
+        0x24, 0xa2, 0x3e, 0x3f,
+        0x5b, 0x5c, 0x24, 0xa3,
+        0x24, 0x24, 0x24, 0x24,
+        0x9d, 0x47, 0x9e, 0x47,
+        0x47, 0x47, 0x27, 0x27,
+        0x47, 0x47, 0x47, 0x47,
+        0x27, 0x27, 0x47, 0x47,
+        0xa9, 0x47, 0xaa, 0x47,
+        0x9b, 0x27, 0x9c, 0x27,
+        0x27, 0x27, 0x27, 0x27,
+        0x52, 0x52, 0x52, 0x52,
+        0x80, 0xa0, 0x81, 0xa1,
+        0xbe, 0xbe, 0xbf, 0xbf,
+        0x75, 0xba, 0x76, 0xbb,
+        0xba, 0xba, 0xbb, 0xbb,
+        0x45, 0x47, 0x45, 0x47,
+        0x47, 0x47, 0x47, 0x47,
+        0x45, 0x47, 0x45, 0x47,
+        0xb4, 0xb6, 0xb5, 0xb7,
+        0x45, 0x47, 0x45, 0x47,
+        0x45, 0x47, 0x45, 0x47,
+        0x45, 0x47, 0x45, 0x47,
+        0x45, 0x47, 0x45, 0x47,
+        0x45, 0x47, 0x45, 0x47,
+        0x47, 0x47, 0x47, 0x47,
+        0x47, 0x47, 0x47, 0x47,
+        0x47, 0x47, 0x47, 0x47,
+        0x47, 0x47, 0x47, 0x47,
+        0x47, 0x47, 0x47, 0x47,
+        0x24, 0x24, 0x24, 0x24,
+        0x24, 0x24, 0x24, 0x24,
+        0xab, 0xac, 0xad, 0xae,
+        0x5d, 0x5e, 0x5d, 0x5e,
+        0xc1, 0x24, 0xc1, 0x24,
+        0xc6, 0xc8, 0xc7, 0xc9,
+        0xca, 0xcc, 0xcb, 0xcd,
+        0x2a, 0x2a, 0x40, 0x40,
+        0x24, 0x24, 0x24, 0x24,
+        0x24, 0x47, 0x24, 0x47,
+        0x82, 0x83, 0x84, 0x85,
+        0x24, 0x47, 0x24, 0x47,
+        0x86, 0x8a, 0x87, 0x8b,
+        0x8e, 0x91, 0x8f, 0x92,
+        0x24, 0x2f, 0x24, 0x3d
+    };
+    writeData(Palette1_MTiles, Palette1_MTiles_data, sizeof(Palette1_MTiles_data));
+
+    // Palette2_MTiles
+    //
+    const uint8_t Palette2_MTiles_data[] = {
+        0x24, 0x24, 0x24, 0x35,
+        0x36, 0x25, 0x37, 0x25,
+        0x24, 0x38, 0x24, 0x24,
+        0x24, 0x24, 0x39, 0x24,
+        0x3a, 0x24, 0x3b, 0x24,
+        0x3c, 0x24, 0x24, 0x24,
+        0x41, 0x26, 0x41, 0x26,
+        0x26, 0x26, 0x26, 0x26,
+        0xb0, 0xb1, 0xb2, 0xb3,
+        0x77, 0x79, 0x77, 0x79
+    };
+    writeData(Palette2_MTiles, Palette2_MTiles_data, sizeof(Palette2_MTiles_data));
+
+    // Palette3_MTiles
+    //
+    const uint8_t Palette3_MTiles_data[] = {
+        0x53, 0x55, 0x54, 0x56,
+        0x53, 0x55, 0x54, 0x56,
+        0xa5, 0xa7, 0xa6, 0xa8,
+        0xc2, 0xc4, 0xc3, 0xc5,
+        0x57, 0x59, 0x58, 0x5a,
+        0x7b, 0x7d, 0x7c, 0x7e
+    };
+    writeData(Palette3_MTiles, Palette3_MTiles_data, sizeof(Palette3_MTiles_data));
+
+    // WaterPaletteData
+    //
+    const uint8_t WaterPaletteData_data[] = {
+        0x3f, 0x00, 0x20,
+        0x0f, 0x15, 0x12, 0x25,
+        0x0f, 0x3a, 0x1a, 0x0f,
+        0x0f, 0x30, 0x12, 0x0f,
+        0x0f, 0x27, 0x12, 0x0f,
+        0x22, 0x16, 0x27, 0x18,
+        0x0f, 0x10, 0x30, 0x27,
+        0x0f, 0x16, 0x30, 0x27,
+        0x0f, 0x0f, 0x30, 0x10,
+        0x00
+    };
+    writeData(WaterPaletteData, WaterPaletteData_data, sizeof(WaterPaletteData_data));
+
+    // GroundPaletteData
+    //
+    const uint8_t GroundPaletteData_data[] = {
+        0x3f, 0x00, 0x20,
+        0x0f, 0x29, 0x1a, 0x0f,
+        0x0f, 0x36, 0x17, 0x0f,
+        0x0f, 0x30, 0x21, 0x0f,
+        0x0f, 0x27, 0x17, 0x0f,
+        0x0f, 0x16, 0x27, 0x18,
+        0x0f, 0x1a, 0x30, 0x27,
+        0x0f, 0x16, 0x30, 0x27,
+        0x0f, 0x0f, 0x36, 0x17,
+        0x00
+    };
+    writeData(GroundPaletteData, GroundPaletteData_data, sizeof(GroundPaletteData_data));
+
+    // UndergroundPaletteData
+    //
+    const uint8_t UndergroundPaletteData_data[] = {
+        0x3f, 0x00, 0x20,
+        0x0f, 0x29, 0x1a, 0x09,
+        0x0f, 0x3c, 0x1c, 0x0f,
+        0x0f, 0x30, 0x21, 0x1c,
+        0x0f, 0x27, 0x17, 0x1c,
+        0x0f, 0x16, 0x27, 0x18,
+        0x0f, 0x1c, 0x36, 0x17,
+        0x0f, 0x16, 0x30, 0x27,
+        0x0f, 0x0c, 0x3c, 0x1c,
+        0x00
+    };
+    writeData(UndergroundPaletteData, UndergroundPaletteData_data, sizeof(UndergroundPaletteData_data));
+
+    // CastlePaletteData
+    //
+    const uint8_t CastlePaletteData_data[] = {
+        0x3f, 0x00, 0x20,
+        0x0f, 0x30, 0x10, 0x00,
+        0x0f, 0x30, 0x10, 0x00,
+        0x0f, 0x30, 0x16, 0x00,
+        0x0f, 0x27, 0x17, 0x00,
+        0x0f, 0x16, 0x27, 0x18,
+        0x0f, 0x1c, 0x36, 0x17,
+        0x0f, 0x16, 0x30, 0x27,
+        0x0f, 0x00, 0x30, 0x10,
+        0x00
+    };
+    writeData(CastlePaletteData, CastlePaletteData_data, sizeof(CastlePaletteData_data));
+
+    // DaySnowPaletteData
+    //
+    const uint8_t DaySnowPaletteData_data[] = {
+        0x3f, 0x00, 0x04,
+        0x22, 0x30, 0x00, 0x10,
+        0x00
+    };
+    writeData(DaySnowPaletteData, DaySnowPaletteData_data, sizeof(DaySnowPaletteData_data));
+
+    // NightSnowPaletteData
+    //
+    const uint8_t NightSnowPaletteData_data[] = {
+        0x3f, 0x00, 0x04,
+        0x0f, 0x30, 0x00, 0x10,
+        0x00
+    };
+    writeData(NightSnowPaletteData, NightSnowPaletteData_data, sizeof(NightSnowPaletteData_data));
+
+    // MushroomPaletteData
+    //
+    const uint8_t MushroomPaletteData_data[] = {
+        0x3f, 0x00, 0x04,
+        0x22, 0x27, 0x16, 0x0f,
+        0x00
+    };
+    writeData(MushroomPaletteData, MushroomPaletteData_data, sizeof(MushroomPaletteData_data));
+
+    // BowserPaletteData
+    //
+    const uint8_t BowserPaletteData_data[] = {
+        0x3f, 0x14, 0x04,
+        0x0f, 0x1a, 0x30, 0x27,
+        0x00
+    };
+    writeData(BowserPaletteData, BowserPaletteData_data, sizeof(BowserPaletteData_data));
+
+    // MarioThanksMessage
+    //
+    const uint8_t MarioThanksMessage_data[] = {
+        0x25, 0x48, 0x10,
+        0x1d, 0x11, 0x0a, 0x17, 0x14, 0x24,
+        0x22, 0x18, 0x1e, 0x24,
+        0x16, 0x0a, 0x1b, 0x12, 0x18, 0x2b,
+        0x00
+    };
+    writeData(MarioThanksMessage, MarioThanksMessage_data, sizeof(MarioThanksMessage_data));
+
+    // LuigiThanksMessage
+    //
+    const uint8_t LuigiThanksMessage_data[] = {
+        0x25, 0x48, 0x10,
+        0x1d, 0x11, 0x0a, 0x17, 0x14, 0x24,
+        0x22, 0x18, 0x1e, 0x24,
+        0x15, 0x1e, 0x12, 0x10, 0x12, 0x2b,
+        0x00
+    };
+    writeData(LuigiThanksMessage, LuigiThanksMessage_data, sizeof(LuigiThanksMessage_data));
+
+    // MushroomRetainerSaved
+    //
+    const uint8_t MushroomRetainerSaved_data[] = {
+        0x25, 0xc5, 0x16,
+        0x0b, 0x1e, 0x1d, 0x24, 0x18, 0x1e, 0x1b, 0x24,
+        0x19, 0x1b, 0x12, 0x17, 0x0c, 0x0e, 0x1c, 0x1c, 0x24,
+        0x12, 0x1c, 0x24, 0x12, 0x17,
+        0x26, 0x05, 0x0f,
+        0x0a, 0x17, 0x18, 0x1d, 0x11, 0x0e, 0x1b, 0x24,
+        0x0c, 0x0a, 0x1c, 0x1d, 0x15, 0x0e, 0x2b, 0x00
+    };
+    writeData(MushroomRetainerSaved, MushroomRetainerSaved_data, sizeof(MushroomRetainerSaved_data));
+
+    // PrincessSaved1
+    //
+    const uint8_t PrincessSaved1_data[] = {
+        0x25, 0xa7, 0x13,
+        0x22, 0x18, 0x1e, 0x1b, 0x24,
+        0x1a, 0x1e, 0x0e, 0x1c, 0x1d, 0x24,
+        0x12, 0x1c, 0x24, 0x18, 0x1f, 0x0e, 0x1b, 0xaf,
+        0x00
+    };
+    writeData(PrincessSaved1, PrincessSaved1_data, sizeof(PrincessSaved1_data));
+
+    // PrincessSaved2
+    //
+    const uint8_t PrincessSaved2_data[] = {
+        0x25, 0xe3, 0x1b,
+        0x20, 0x0e, 0x24,
+        0x19, 0x1b, 0x0e, 0x1c, 0x0e, 0x17, 0x1d, 0x24,
+        0x22, 0x18, 0x1e, 0x24, 0x0a, 0x24, 0x17, 0x0e, 0x20, 0x24,
+        0x1a, 0x1e, 0x0e, 0x1c, 0x1d, 0xaf,
+        0x00
+    };
+    writeData(PrincessSaved2, PrincessSaved2_data, sizeof(PrincessSaved2_data));
+
+    // WorldSelectMessage1
+    //
+    const uint8_t WorldSelectMessage1_data[] = {
+        0x26, 0x4a, 0x0d,
+        0x19, 0x1e, 0x1c, 0x11, 0x24,
+        0x0b, 0x1e, 0x1d, 0x1d, 0x18, 0x17, 0x24, 0x0b,
+        0x00
+    };
+    writeData(WorldSelectMessage1, WorldSelectMessage1_data, sizeof(WorldSelectMessage1_data));
+
+    // WorldSelectMessage2
+    //
+    const uint8_t WorldSelectMessage2_data[] = {
+        0x26, 0x88, 0x11,
+        0x1d, 0x18, 0x24, 0x1c, 0x0e, 0x15, 0x0e, 0x0c, 0x1d, 0x24,
+        0x0a, 0x24, 0x20, 0x18, 0x1b, 0x15, 0x0d,
+        0x00
+    };
+    writeData(WorldSelectMessage2, WorldSelectMessage2_data, sizeof(WorldSelectMessage2_data));
+
+    // StatusBarData
+    //
+    const uint8_t StatusBarData_data[] = {
+        0xf0, 0x06,
+        0x62, 0x06,
+        0x62, 0x06,
+        0x6d, 0x02,
+        0x6d, 0x02,
+        0x7a, 0x03
+    };
+    writeData(StatusBarData, StatusBarData_data, sizeof(StatusBarData_data));
+
+    // StatusBarOffset
+    //
+    const uint8_t StatusBarOffset_data[] = {
+        0x06, 0x0c, 0x12, 0x18, 0x1e, 0x24
+    };
+    writeData(StatusBarOffset, StatusBarOffset_data, sizeof(StatusBarOffset_data));
+
+    // DefaultSprOffsets
+    //
+    const uint8_t DefaultSprOffsets_data[] = {
+        0x04, 0x30, 0x48, 0x60, 0x78, 0x90, 0xa8, 0xc0,
+        0xd8, 0xe8, 0x24, 0xf8, 0xfc, 0x28, 0x2c
+    };
+    writeData(DefaultSprOffsets, DefaultSprOffsets_data, sizeof(DefaultSprOffsets_data));
+
+    // Sprite0Data
+    //
+    const uint8_t Sprite0Data_data[] = {
+        0x18, 0xff, 0x23, 0x58
+    };
+    writeData(Sprite0Data, Sprite0Data_data, sizeof(Sprite0Data_data));
+
+    // MusicSelectData
+    //
+    const uint8_t MusicSelectData_data[] = {
+        WaterMusic, GroundMusic, UndergroundMusic, CastleMusic,
+        CloudMusic, PipeIntroMusic
+    };
+    writeData(MusicSelectData, MusicSelectData_data, sizeof(MusicSelectData_data));
+
+    // PlayerStarting_X_Pos
+    //
+    const uint8_t PlayerStarting_X_Pos_data[] = {
+        0x28, 0x18,
+        0x38, 0x28
+    };
+    writeData(PlayerStarting_X_Pos, PlayerStarting_X_Pos_data, sizeof(PlayerStarting_X_Pos_data));
+
+    // AltYPosOffset
+    //
+    const uint8_t AltYPosOffset_data[] = {
+        0x08, 0x00
+    };
+    writeData(AltYPosOffset, AltYPosOffset_data, sizeof(AltYPosOffset_data));
+
+    // PlayerStarting_Y_Pos
+    //
+    const uint8_t PlayerStarting_Y_Pos_data[] = {
+        0x00, 0x20, 0xb0, 0x50, 0x00, 0x00, 0xb0, 0xb0,
+        0xf0
+    };
+    writeData(PlayerStarting_Y_Pos, PlayerStarting_Y_Pos_data, sizeof(PlayerStarting_Y_Pos_data));
+
+    // PlayerBGPriorityData
+    //
+    const uint8_t PlayerBGPriorityData_data[] = {
+        0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+    writeData(PlayerBGPriorityData, PlayerBGPriorityData_data, sizeof(PlayerBGPriorityData_data));
+
+    // GameTimerData
+    //
+    const uint8_t GameTimerData_data[] = {
+        0x20,
+        0x04, 0x03, 0x02
+    };
+    writeData(GameTimerData, GameTimerData_data, sizeof(GameTimerData_data));
+
+    // HalfwayPageNybbles
+    //
+    const uint8_t HalfwayPageNybbles_data[] = {
+        0x56, 0x40,
+        0x65, 0x70,
+        0x66, 0x40,
+        0x66, 0x40,
+        0x66, 0x40,
+        0x66, 0x60,
+        0x65, 0x70,
+        0x00, 0x00
+    };
+    writeData(HalfwayPageNybbles, HalfwayPageNybbles_data, sizeof(HalfwayPageNybbles_data));
+
+    // BSceneDataOffsets
+    //
+    const uint8_t BSceneDataOffsets_data[] = {
+        0x00, 0x30, 0x60
+    };
+    writeData(BSceneDataOffsets, BSceneDataOffsets_data, sizeof(BSceneDataOffsets_data));
+
+    // BackSceneryData
+    //
+    const uint8_t BackSceneryData_data[] = {
+        0x93, 0x00, 0x00, 0x11, 0x12, 0x12, 0x13, 0x00,
+        0x00, 0x51, 0x52, 0x53, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x01, 0x02, 0x02, 0x03, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x91, 0x92, 0x93, 0x00,
+        0x00, 0x00, 0x00, 0x51, 0x52, 0x53, 0x41, 0x42,
+        0x43, 0x00, 0x00, 0x00, 0x00, 0x00, 0x91, 0x92,
+        0x97, 0x87, 0x88, 0x89, 0x99, 0x00, 0x00, 0x00,
+        0x11, 0x12, 0x13, 0xa4, 0xa5, 0xa5, 0xa5, 0xa6,
+        0x97, 0x98, 0x99, 0x01, 0x02, 0x03, 0x00, 0xa4,
+        0xa5, 0xa6, 0x00, 0x11, 0x12, 0x12, 0x12, 0x13,
+        0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x02, 0x03,
+        0x00, 0xa4, 0xa5, 0xa5, 0xa6, 0x00, 0x00, 0x00,
+        0x11, 0x12, 0x12, 0x13, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x9c, 0x00, 0x8b, 0xaa, 0xaa,
+        0xaa, 0xaa, 0x11, 0x12, 0x13, 0x8b, 0x00, 0x9c,
+        0x9c, 0x00, 0x00, 0x01, 0x02, 0x03, 0x11, 0x12,
+        0x12, 0x13, 0x00, 0x00, 0x00, 0x00, 0xaa, 0xaa,
+        0x9c, 0xaa, 0x00, 0x8b, 0x00, 0x01, 0x02, 0x03
+    };
+    writeData(BackSceneryData, BackSceneryData_data, sizeof(BackSceneryData_data));
+
+    // BackSceneryMetatiles
+    //
+    const uint8_t BackSceneryMetatiles_data[] = {
+        0x80, 0x83, 0x00,
+        0x81, 0x84, 0x00,
+        0x82, 0x85, 0x00,
+        0x02, 0x00, 0x00,
+        0x03, 0x00, 0x00,
+        0x04, 0x00, 0x00,
+        0x00, 0x05, 0x06,
+        0x07, 0x06, 0x0a,
+        0x00, 0x08, 0x09,
+        0x4d, 0x00, 0x00,
+        0x0d, 0x0f, 0x4e,
+        0x0e, 0x4e, 0x4e
+    };
+    writeData(BackSceneryMetatiles, BackSceneryMetatiles_data, sizeof(BackSceneryMetatiles_data));
+
+    // FSceneDataOffsets
+    //
+    const uint8_t FSceneDataOffsets_data[] = {
+        0x00, 0x0d, 0x1a
+    };
+    writeData(FSceneDataOffsets, FSceneDataOffsets_data, sizeof(FSceneDataOffsets_data));
+
+    // ForeSceneryData
+    //
+    const uint8_t ForeSceneryData_data[] = {
+        0x86, 0x87, 0x87, 0x87, 0x87, 0x87, 0x87,
+        0x87, 0x87, 0x87, 0x87, 0x69, 0x69,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x45, 0x47,
+        0x47, 0x47, 0x47, 0x47, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x86, 0x87
+    };
+    writeData(ForeSceneryData, ForeSceneryData_data, sizeof(ForeSceneryData_data));
+
+    // TerrainMetatiles
+    //
+    const uint8_t TerrainMetatiles_data[] = {
+        0x69, 0x54, 0x52, 0x62
+    };
+    writeData(TerrainMetatiles, TerrainMetatiles_data, sizeof(TerrainMetatiles_data));
+
+    // TerrainRenderBits
+    //
+    const uint8_t TerrainRenderBits_data[] = {
+        BOOST_BINARY(00000000), BOOST_BINARY(00000000),
+        BOOST_BINARY(00000000), BOOST_BINARY(00011000),
+        BOOST_BINARY(00000001), BOOST_BINARY(00011000),
+        BOOST_BINARY(00000111), BOOST_BINARY(00011000),
+        BOOST_BINARY(00001111), BOOST_BINARY(00011000),
+        BOOST_BINARY(11111111), BOOST_BINARY(00011000),
+        BOOST_BINARY(00000001), BOOST_BINARY(00011111),
+        BOOST_BINARY(00000111), BOOST_BINARY(00011111),
+        BOOST_BINARY(00001111), BOOST_BINARY(00011111),
+        BOOST_BINARY(10000001), BOOST_BINARY(00011111),
+        BOOST_BINARY(00000001), BOOST_BINARY(00000000),
+        BOOST_BINARY(10001111), BOOST_BINARY(00011111),
+        BOOST_BINARY(11110001), BOOST_BINARY(00011111),
+        BOOST_BINARY(11111001), BOOST_BINARY(00011000),
+        BOOST_BINARY(11110001), BOOST_BINARY(00011000),
+        BOOST_BINARY(11111111), BOOST_BINARY(00011111)
+    };
+    writeData(TerrainRenderBits, TerrainRenderBits_data, sizeof(TerrainRenderBits_data));
+
+    // BlockBuffLowBounds
+    //
+    const uint8_t BlockBuffLowBounds_data[] = {
+        0x10, 0x51, 0x88, 0xc0
+    };
+    writeData(BlockBuffLowBounds, BlockBuffLowBounds_data, sizeof(BlockBuffLowBounds_data));
+
+    // FrenzyIDData
+    //
+    const uint8_t FrenzyIDData_data[] = {
+        FlyCheepCheepFrenzy, BBill_CCheep_Frenzy, Stop_Frenzy
+    };
+    writeData(FrenzyIDData, FrenzyIDData_data, sizeof(FrenzyIDData_data));
+
+    // PulleyRopeMetatiles
+    //
+    const uint8_t PulleyRopeMetatiles_data[] = {
+        0x42, 0x41, 0x43
+    };
+    writeData(PulleyRopeMetatiles, PulleyRopeMetatiles_data, sizeof(PulleyRopeMetatiles_data));
+
+    // CastleMetatiles
+    //
+    const uint8_t CastleMetatiles_data[] = {
+        0x00, 0x45, 0x45, 0x45, 0x00,
+        0x00, 0x48, 0x47, 0x46, 0x00,
+        0x45, 0x49, 0x49, 0x49, 0x45,
+        0x47, 0x47, 0x4a, 0x47, 0x47,
+        0x47, 0x47, 0x4b, 0x47, 0x47,
+        0x49, 0x49, 0x49, 0x49, 0x49,
+        0x47, 0x4a, 0x47, 0x4a, 0x47,
+        0x47, 0x4b, 0x47, 0x4b, 0x47,
+        0x47, 0x47, 0x47, 0x47, 0x47,
+        0x4a, 0x47, 0x4a, 0x47, 0x4a,
+        0x4b, 0x47, 0x4b, 0x47, 0x4b
+    };
+    writeData(CastleMetatiles, CastleMetatiles_data, sizeof(CastleMetatiles_data));
+
+    // SidePipeShaftData
+    //
+    const uint8_t SidePipeShaftData_data[] = {
+        0x15, 0x14,
+        0x00, 0x00
+    };
+    writeData(SidePipeShaftData, SidePipeShaftData_data, sizeof(SidePipeShaftData_data));
+
+    // SidePipeTopPart
+    //
+    const uint8_t SidePipeTopPart_data[] = {
+        0x15, 0x1e,
+        0x1d, 0x1c
+    };
+    writeData(SidePipeTopPart, SidePipeTopPart_data, sizeof(SidePipeTopPart_data));
+
+    // SidePipeBottomPart
+    //
+    const uint8_t SidePipeBottomPart_data[] = {
+        0x15, 0x21,
+        0x20, 0x1f
+    };
+    writeData(SidePipeBottomPart, SidePipeBottomPart_data, sizeof(SidePipeBottomPart_data));
+
+    // VerticalPipeData
+    //
+    const uint8_t VerticalPipeData_data[] = {
+        0x11, 0x10,
+        0x15, 0x14,
+        0x13, 0x12,
+        0x15, 0x14
+    };
+    writeData(VerticalPipeData, VerticalPipeData_data, sizeof(VerticalPipeData_data));
+
+    // CoinMetatileData
+    //
+    const uint8_t CoinMetatileData_data[] = {
+        0xc3, 0xc2, 0xc2, 0xc2
+    };
+    writeData(CoinMetatileData, CoinMetatileData_data, sizeof(CoinMetatileData_data));
+
+    // C_ObjectRow
+    //
+    const uint8_t C_ObjectRow_data[] = {
+        0x06, 0x07, 0x08
+    };
+    writeData(C_ObjectRow, C_ObjectRow_data, sizeof(C_ObjectRow_data));
+
+    // C_ObjectMetatile
+    //
+    const uint8_t C_ObjectMetatile_data[] = {
+        0xc5, 0x0c, 0x89
+    };
+    writeData(C_ObjectMetatile, C_ObjectMetatile_data, sizeof(C_ObjectMetatile_data));
+
+    // SolidBlockMetatiles
+    //
+    const uint8_t SolidBlockMetatiles_data[] = {
+        0x69, 0x61, 0x61, 0x62
+    };
+    writeData(SolidBlockMetatiles, SolidBlockMetatiles_data, sizeof(SolidBlockMetatiles_data));
+
+    // BrickMetatiles
+    //
+    const uint8_t BrickMetatiles_data[] = {
+        0x22, 0x51, 0x52, 0x52,
+        0x88
+    };
+    writeData(BrickMetatiles, BrickMetatiles_data, sizeof(BrickMetatiles_data));
+
+    // StaircaseHeightData
+    //
+    const uint8_t StaircaseHeightData_data[] = {
+        0x07, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00
+    };
+    writeData(StaircaseHeightData, StaircaseHeightData_data, sizeof(StaircaseHeightData_data));
+
+    // StaircaseRowData
+    //
+    const uint8_t StaircaseRowData_data[] = {
+        0x03, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a
+    };
+    writeData(StaircaseRowData, StaircaseRowData_data, sizeof(StaircaseRowData_data));
+
+    // HoleMetatiles
+    //
+    const uint8_t HoleMetatiles_data[] = {
+        0x87, 0x00, 0x00, 0x00
+    };
+    writeData(HoleMetatiles, HoleMetatiles_data, sizeof(HoleMetatiles_data));
+
+    // BlockBufferAddr
+    //
+    const uint8_t BlockBufferAddr_data[] = {
+        LOBYTE(Block_Buffer_1), LOBYTE(Block_Buffer_2),
+        HIBYTE(Block_Buffer_1), HIBYTE(Block_Buffer_2)
+    };
+    writeData(BlockBufferAddr, BlockBufferAddr_data, sizeof(BlockBufferAddr_data));
+
+    // AreaDataOfsLoopback
+    //
+    const uint8_t AreaDataOfsLoopback_data[] = {
+        0x12, 0x36, 0x0e, 0x0e, 0x0e, 0x32, 0x32, 0x32, 0x0a, 0x26, 0x40
+    };
+    writeData(AreaDataOfsLoopback, AreaDataOfsLoopback_data, sizeof(AreaDataOfsLoopback_data));
+
+    // WorldAddrOffsets
+    //
+    const uint8_t WorldAddrOffsets_data[] = {
+        World1Areas - AreaAddrOffsets, World2Areas - AreaAddrOffsets,
+        World3Areas - AreaAddrOffsets, World4Areas - AreaAddrOffsets,
+        World5Areas - AreaAddrOffsets, World6Areas - AreaAddrOffsets,
+        World7Areas - AreaAddrOffsets, World8Areas - AreaAddrOffsets
+    };
+    writeData(WorldAddrOffsets, WorldAddrOffsets_data, sizeof(WorldAddrOffsets_data));
+
+    // World1Areas
+    //
+    const uint8_t World1Areas_data[] = {
+        0x25, 0x29, 0xc0, 0x26, 0x60
+    };
+    writeData(World1Areas, World1Areas_data, sizeof(World1Areas_data));
+
+    // World2Areas
+    //
+    const uint8_t World2Areas_data[] = {
+        0x28, 0x29, 0x01, 0x27, 0x62
+    };
+    writeData(World2Areas, World2Areas_data, sizeof(World2Areas_data));
+
+    // World3Areas
+    //
+    const uint8_t World3Areas_data[] = {
+        0x24, 0x35, 0x20, 0x63
+    };
+    writeData(World3Areas, World3Areas_data, sizeof(World3Areas_data));
+
+    // World4Areas
+    //
+    const uint8_t World4Areas_data[] = {
+        0x22, 0x29, 0x41, 0x2c, 0x61
+    };
+    writeData(World4Areas, World4Areas_data, sizeof(World4Areas_data));
+
+    // World5Areas
+    //
+    const uint8_t World5Areas_data[] = {
+        0x2a, 0x31, 0x26, 0x62
+    };
+    writeData(World5Areas, World5Areas_data, sizeof(World5Areas_data));
+
+    // World6Areas
+    //
+    const uint8_t World6Areas_data[] = {
+        0x2e, 0x23, 0x2d, 0x60
+    };
+    writeData(World6Areas, World6Areas_data, sizeof(World6Areas_data));
+
+    // World7Areas
+    //
+    const uint8_t World7Areas_data[] = {
+        0x33, 0x29, 0x01, 0x27, 0x64
+    };
+    writeData(World7Areas, World7Areas_data, sizeof(World7Areas_data));
+
+    // World8Areas
+    //
+    const uint8_t World8Areas_data[] = {
+        0x30, 0x32, 0x21, 0x65
+    };
+    writeData(World8Areas, World8Areas_data, sizeof(World8Areas_data));
+
+    // EnemyAddrHOffsets
+    //
+    const uint8_t EnemyAddrHOffsets_data[] = {
+        0x1f, 0x06, 0x1c, 0x00
+    };
+    writeData(EnemyAddrHOffsets, EnemyAddrHOffsets_data, sizeof(EnemyAddrHOffsets_data));
+
+    // EnemyDataAddrLow
+    //
+    const uint8_t EnemyDataAddrLow_data[] = {
+        LOBYTE(E_CastleArea1), LOBYTE(E_CastleArea2), LOBYTE(E_CastleArea3), LOBYTE(E_CastleArea4), LOBYTE(E_CastleArea5), LOBYTE(E_CastleArea6),
+        LOBYTE(E_GroundArea1), LOBYTE(E_GroundArea2), LOBYTE(E_GroundArea3), LOBYTE(E_GroundArea4), LOBYTE(E_GroundArea5), LOBYTE(E_GroundArea6),
+        LOBYTE(E_GroundArea7), LOBYTE(E_GroundArea8), LOBYTE(E_GroundArea9), LOBYTE(E_GroundArea10), LOBYTE(E_GroundArea11), LOBYTE(E_GroundArea12),
+        LOBYTE(E_GroundArea13), LOBYTE(E_GroundArea14), LOBYTE(E_GroundArea15), LOBYTE(E_GroundArea16), LOBYTE(E_GroundArea17), LOBYTE(E_GroundArea18),
+        LOBYTE(E_GroundArea19), LOBYTE(E_GroundArea20), LOBYTE(E_GroundArea21), LOBYTE(E_GroundArea22), LOBYTE(E_UndergroundArea1),
+        LOBYTE(E_UndergroundArea2), LOBYTE(E_UndergroundArea3), LOBYTE(E_WaterArea1), LOBYTE(E_WaterArea2), LOBYTE(E_WaterArea3)
+    };
+    writeData(EnemyDataAddrLow, EnemyDataAddrLow_data, sizeof(EnemyDataAddrLow_data));
+
+    // EnemyDataAddrHigh
+    //
+    const uint8_t EnemyDataAddrHigh_data[] = {
+        HIBYTE(E_CastleArea1), HIBYTE(E_CastleArea2), HIBYTE(E_CastleArea3), HIBYTE(E_CastleArea4), HIBYTE(E_CastleArea5), HIBYTE(E_CastleArea6),
+        HIBYTE(E_GroundArea1), HIBYTE(E_GroundArea2), HIBYTE(E_GroundArea3), HIBYTE(E_GroundArea4), HIBYTE(E_GroundArea5), HIBYTE(E_GroundArea6),
+        HIBYTE(E_GroundArea7), HIBYTE(E_GroundArea8), HIBYTE(E_GroundArea9), HIBYTE(E_GroundArea10), HIBYTE(E_GroundArea11), HIBYTE(E_GroundArea12),
+        HIBYTE(E_GroundArea13), HIBYTE(E_GroundArea14), HIBYTE(E_GroundArea15), HIBYTE(E_GroundArea16), HIBYTE(E_GroundArea17), HIBYTE(E_GroundArea18),
+        HIBYTE(E_GroundArea19), HIBYTE(E_GroundArea20), HIBYTE(E_GroundArea21), HIBYTE(E_GroundArea22), HIBYTE(E_UndergroundArea1),
+        HIBYTE(E_UndergroundArea2), HIBYTE(E_UndergroundArea3), HIBYTE(E_WaterArea1), HIBYTE(E_WaterArea2), HIBYTE(E_WaterArea3)
+    };
+    writeData(EnemyDataAddrHigh, EnemyDataAddrHigh_data, sizeof(EnemyDataAddrHigh_data));
+
+    // AreaDataHOffsets
+    //
+    const uint8_t AreaDataHOffsets_data[] = {
+        0x00, 0x03, 0x19, 0x1c
+    };
+    writeData(AreaDataHOffsets, AreaDataHOffsets_data, sizeof(AreaDataHOffsets_data));
+
+    // AreaDataAddrLow
+    //
+    const uint8_t AreaDataAddrLow_data[] = {
+        LOBYTE(L_WaterArea1), LOBYTE(L_WaterArea2), LOBYTE(L_WaterArea3), LOBYTE(L_GroundArea1), LOBYTE(L_GroundArea2), LOBYTE(L_GroundArea3),
+        LOBYTE(L_GroundArea4), LOBYTE(L_GroundArea5), LOBYTE(L_GroundArea6), LOBYTE(L_GroundArea7), LOBYTE(L_GroundArea8), LOBYTE(L_GroundArea9),
+        LOBYTE(L_GroundArea10), LOBYTE(L_GroundArea11), LOBYTE(L_GroundArea12), LOBYTE(L_GroundArea13), LOBYTE(L_GroundArea14), LOBYTE(L_GroundArea15),
+        LOBYTE(L_GroundArea16), LOBYTE(L_GroundArea17), LOBYTE(L_GroundArea18), LOBYTE(L_GroundArea19), LOBYTE(L_GroundArea20), LOBYTE(L_GroundArea21),
+        LOBYTE(L_GroundArea22), LOBYTE(L_UndergroundArea1), LOBYTE(L_UndergroundArea2), LOBYTE(L_UndergroundArea3), LOBYTE(L_CastleArea1),
+        LOBYTE(L_CastleArea2), LOBYTE(L_CastleArea3), LOBYTE(L_CastleArea4), LOBYTE(L_CastleArea5), LOBYTE(L_CastleArea6)
+    };
+    writeData(AreaDataAddrLow, AreaDataAddrLow_data, sizeof(AreaDataAddrLow_data));
+
+    // AreaDataAddrHigh
+    //
+    const uint8_t AreaDataAddrHigh_data[] = {
+        HIBYTE(L_WaterArea1), HIBYTE(L_WaterArea2), HIBYTE(L_WaterArea3), HIBYTE(L_GroundArea1), HIBYTE(L_GroundArea2), HIBYTE(L_GroundArea3),
+        HIBYTE(L_GroundArea4), HIBYTE(L_GroundArea5), HIBYTE(L_GroundArea6), HIBYTE(L_GroundArea7), HIBYTE(L_GroundArea8), HIBYTE(L_GroundArea9),
+        HIBYTE(L_GroundArea10), HIBYTE(L_GroundArea11), HIBYTE(L_GroundArea12), HIBYTE(L_GroundArea13), HIBYTE(L_GroundArea14), HIBYTE(L_GroundArea15),
+        HIBYTE(L_GroundArea16), HIBYTE(L_GroundArea17), HIBYTE(L_GroundArea18), HIBYTE(L_GroundArea19), HIBYTE(L_GroundArea20), HIBYTE(L_GroundArea21),
+        HIBYTE(L_GroundArea22), HIBYTE(L_UndergroundArea1), HIBYTE(L_UndergroundArea2), HIBYTE(L_UndergroundArea3), HIBYTE(L_CastleArea1),
+        HIBYTE(L_CastleArea2), HIBYTE(L_CastleArea3), HIBYTE(L_CastleArea4), HIBYTE(L_CastleArea5), HIBYTE(L_CastleArea6)
+    };
+    writeData(AreaDataAddrHigh, AreaDataAddrHigh_data, sizeof(AreaDataAddrHigh_data));
+
+    // E_CastleArea1
+    //
+    const uint8_t E_CastleArea1_data[] = {
+        0x76, 0xdd, 0xbb, 0x4c, 0xea, 0x1d, 0x1b, 0xcc, 0x56, 0x5d,
+        0x16, 0x9d, 0xc6, 0x1d, 0x36, 0x9d, 0xc9, 0x1d, 0x04, 0xdb,
+        0x49, 0x1d, 0x84, 0x1b, 0xc9, 0x5d, 0x88, 0x95, 0x0f, 0x08,
+        0x30, 0x4c, 0x78, 0x2d, 0xa6, 0x28, 0x90, 0xb5,
+        0xff
+    };
+    writeData(E_CastleArea1, E_CastleArea1_data, sizeof(E_CastleArea1_data));
+
+    // E_CastleArea2
+    //
+    const uint8_t E_CastleArea2_data[] = {
+        0x0f, 0x03, 0x56, 0x1b, 0xc9, 0x1b, 0x0f, 0x07, 0x36, 0x1b,
+        0xaa, 0x1b, 0x48, 0x95, 0x0f, 0x0a, 0x2a, 0x1b, 0x5b, 0x0c,
+        0x78, 0x2d, 0x90, 0xb5,
+        0xff
+    };
+    writeData(E_CastleArea2, E_CastleArea2_data, sizeof(E_CastleArea2_data));
+
+    // E_CastleArea3
+    //
+    const uint8_t E_CastleArea3_data[] = {
+        0x0b, 0x8c, 0x4b, 0x4c, 0x77, 0x5f, 0xeb, 0x0c, 0xbd, 0xdb,
+        0x19, 0x9d, 0x75, 0x1d, 0x7d, 0x5b, 0xd9, 0x1d, 0x3d, 0xdd,
+        0x99, 0x1d, 0x26, 0x9d, 0x5a, 0x2b, 0x8a, 0x2c, 0xca, 0x1b,
+        0x20, 0x95, 0x7b, 0x5c, 0xdb, 0x4c, 0x1b, 0xcc, 0x3b, 0xcc,
+        0x78, 0x2d, 0xa6, 0x28, 0x90, 0xb5,
+        0xff
+    };
+    writeData(E_CastleArea3, E_CastleArea3_data, sizeof(E_CastleArea3_data));
+
+    // E_CastleArea4
+    //
+    const uint8_t E_CastleArea4_data[] = {
+        0x0b, 0x8c, 0x3b, 0x1d, 0x8b, 0x1d, 0xab, 0x0c, 0xdb, 0x1d,
+        0x0f, 0x03, 0x65, 0x1d, 0x6b, 0x1b, 0x05, 0x9d, 0x0b, 0x1b,
+        0x05, 0x9b, 0x0b, 0x1d, 0x8b, 0x0c, 0x1b, 0x8c, 0x70, 0x15,
+        0x7b, 0x0c, 0xdb, 0x0c, 0x0f, 0x08, 0x78, 0x2d, 0xa6, 0x28,
+        0x90, 0xb5,
+        0xff
+    };
+    writeData(E_CastleArea4, E_CastleArea4_data, sizeof(E_CastleArea4_data));
+
+    // E_CastleArea5
+    //
+    const uint8_t E_CastleArea5_data[] = {
+        0x27, 0xa9, 0x4b, 0x0c, 0x68, 0x29, 0x0f, 0x06, 0x77, 0x1b,
+        0x0f, 0x0b, 0x60, 0x15, 0x4b, 0x8c, 0x78, 0x2d, 0x90, 0xb5,
+        0xff
+    };
+    writeData(E_CastleArea5, E_CastleArea5_data, sizeof(E_CastleArea5_data));
+
+    // E_CastleArea6
+    //
+    const uint8_t E_CastleArea6_data[] = {
+        0x0f, 0x03, 0x8e, 0x65, 0xe1, 0xbb, 0x38, 0x6d, 0xa8, 0x3e, 0xe5, 0xe7,
+        0x0f, 0x08, 0x0b, 0x02, 0x2b, 0x02, 0x5e, 0x65, 0xe1, 0xbb, 0x0e,
+        0xdb, 0x0e, 0xbb, 0x8e, 0xdb, 0x0e, 0xfe, 0x65, 0xec, 0x0f, 0x0d,
+        0x4e, 0x65, 0xe1, 0x0f, 0x0e, 0x4e, 0x02, 0xe0, 0x0f, 0x10, 0xfe, 0xe5, 0xe1,
+        0x1b, 0x85, 0x7b, 0x0c, 0x5b, 0x95, 0x78, 0x2d, 0x90, 0xb5,
+        0xff
+    };
+    writeData(E_CastleArea6, E_CastleArea6_data, sizeof(E_CastleArea6_data));
+
+    // E_GroundArea1
+    //
+    const uint8_t E_GroundArea1_data[] = {
+        0xa5, 0x86, 0xe4, 0x28, 0x18, 0xa8, 0x45, 0x83, 0x69, 0x03,
+        0xc6, 0x29, 0x9b, 0x83, 0x16, 0xa4, 0x88, 0x24, 0xe9, 0x28,
+        0x05, 0xa8, 0x7b, 0x28, 0x24, 0x8f, 0xc8, 0x03, 0xe8, 0x03,
+        0x46, 0xa8, 0x85, 0x24, 0xc8, 0x24,
+        0xff
+    };
+    writeData(E_GroundArea1, E_GroundArea1_data, sizeof(E_GroundArea1_data));
+
+    // E_GroundArea2
+    //
+    const uint8_t E_GroundArea2_data[] = {
+        0xeb, 0x8e, 0x0f, 0x03, 0xfb, 0x05, 0x17, 0x85, 0xdb, 0x8e,
+        0x0f, 0x07, 0x57, 0x05, 0x7b, 0x05, 0x9b, 0x80, 0x2b, 0x85,
+        0xfb, 0x05, 0x0f, 0x0b, 0x1b, 0x05, 0x9b, 0x05,
+        0xff
+    };
+    writeData(E_GroundArea2, E_GroundArea2_data, sizeof(E_GroundArea2_data));
+
+    // E_GroundArea3
+    //
+    const uint8_t E_GroundArea3_data[] = {
+        0x2e, 0xc2, 0x66, 0xe2, 0x11, 0x0f, 0x07, 0x02, 0x11, 0x0f, 0x0c,
+        0x12, 0x11,
+        0xff
+    };
+    writeData(E_GroundArea3, E_GroundArea3_data, sizeof(E_GroundArea3_data));
+
+    // E_GroundArea4
+    //
+    const uint8_t E_GroundArea4_data[] = {
+        0x0e, 0xc2, 0xa8, 0xab, 0x00, 0xbb, 0x8e, 0x6b, 0x82, 0xde, 0x00, 0xa0,
+        0x33, 0x86, 0x43, 0x06, 0x3e, 0xb4, 0xa0, 0xcb, 0x02, 0x0f, 0x07,
+        0x7e, 0x42, 0xa6, 0x83, 0x02, 0x0f, 0x0a, 0x3b, 0x02, 0xcb, 0x37,
+        0x0f, 0x0c, 0xe3, 0x0e,
+        0xff
+    };
+    writeData(E_GroundArea4, E_GroundArea4_data, sizeof(E_GroundArea4_data));
+
+    // E_GroundArea5
+    //
+    const uint8_t E_GroundArea5_data[] = {
+        0x9b, 0x8e, 0xca, 0x0e, 0xee, 0x42, 0x44, 0x5b, 0x86, 0x80, 0xb8,
+        0x1b, 0x80, 0x50, 0xba, 0x10, 0xb7, 0x5b, 0x00, 0x17, 0x85,
+        0x4b, 0x05, 0xfe, 0x34, 0x40, 0xb7, 0x86, 0xc6, 0x06, 0x5b, 0x80,
+        0x83, 0x00, 0xd0, 0x38, 0x5b, 0x8e, 0x8a, 0x0e, 0xa6, 0x00,
+        0xbb, 0x0e, 0xc5, 0x80, 0xf3, 0x00,
+        0xff
+    };
+    writeData(E_GroundArea5, E_GroundArea5_data, sizeof(E_GroundArea5_data));
+
+    // E_GroundArea6
+    //
+    const uint8_t E_GroundArea6_data[] = {
+        0x1e, 0xc2, 0x00, 0x6b, 0x06, 0x8b, 0x86, 0x63, 0xb7, 0x0f, 0x05,
+        0x03, 0x06, 0x23, 0x06, 0x4b, 0xb7, 0xbb, 0x00, 0x5b, 0xb7,
+        0xfb, 0x37, 0x3b, 0xb7, 0x0f, 0x0b, 0x1b, 0x37,
+        0xff
+    };
+    writeData(E_GroundArea6, E_GroundArea6_data, sizeof(E_GroundArea6_data));
+
+    // E_GroundArea7
+    //
+    const uint8_t E_GroundArea7_data[] = {
+        0x2b, 0xd7, 0xe3, 0x03, 0xc2, 0x86, 0xe2, 0x06, 0x76, 0xa5,
+        0xa3, 0x8f, 0x03, 0x86, 0x2b, 0x57, 0x68, 0x28, 0xe9, 0x28,
+        0xe5, 0x83, 0x24, 0x8f, 0x36, 0xa8, 0x5b, 0x03,
+        0xff
+    };
+    writeData(E_GroundArea7, E_GroundArea7_data, sizeof(E_GroundArea7_data));
+
+    // E_GroundArea8
+    //
+    const uint8_t E_GroundArea8_data[] = {
+        0x0f, 0x02, 0x78, 0x40, 0x48, 0xce, 0xf8, 0xc3, 0xf8, 0xc3,
+        0x0f, 0x07, 0x7b, 0x43, 0xc6, 0xd0, 0x0f, 0x8a, 0xc8, 0x50,
+        0xff
+    };
+    writeData(E_GroundArea8, E_GroundArea8_data, sizeof(E_GroundArea8_data));
+
+    // E_GroundArea9
+    //
+    const uint8_t E_GroundArea9_data[] = {
+        0x85, 0x86, 0x0b, 0x80, 0x1b, 0x00, 0xdb, 0x37, 0x77, 0x80,
+        0xeb, 0x37, 0xfe, 0x2b, 0x20, 0x2b, 0x80, 0x7b, 0x38, 0xab, 0xb8,
+        0x77, 0x86, 0xfe, 0x42, 0x20, 0x49, 0x86, 0x8b, 0x06, 0x9b, 0x80,
+        0x7b, 0x8e, 0x5b, 0xb7, 0x9b, 0x0e, 0xbb, 0x0e, 0x9b, 0x80
+    };
+    writeData(E_GroundArea9, E_GroundArea9_data, sizeof(E_GroundArea9_data));
+
+    // E_GroundArea10
+    //
+    const uint8_t E_GroundArea10_data[] = {
+        0xff
+    };
+    writeData(E_GroundArea10, E_GroundArea10_data, sizeof(E_GroundArea10_data));
+
+    // E_GroundArea11
+    //
+    const uint8_t E_GroundArea11_data[] = {
+        0x0b, 0x80, 0x60, 0x38, 0x10, 0xb8, 0xc0, 0x3b, 0xdb, 0x8e,
+        0x40, 0xb8, 0xf0, 0x38, 0x7b, 0x8e, 0xa0, 0xb8, 0xc0, 0xb8,
+        0xfb, 0x00, 0xa0, 0xb8, 0x30, 0xbb, 0xee, 0x42, 0x88, 0x0f, 0x0b,
+        0x2b, 0x0e, 0x67, 0x0e,
+        0xff
+    };
+    writeData(E_GroundArea11, E_GroundArea11_data, sizeof(E_GroundArea11_data));
+
+    // E_GroundArea12
+    //
+    const uint8_t E_GroundArea12_data[] = {
+        0x0a, 0xaa, 0x0e, 0x28, 0x2a, 0x0e, 0x31, 0x88,
+        0xff
+    };
+    writeData(E_GroundArea12, E_GroundArea12_data, sizeof(E_GroundArea12_data));
+
+    // E_GroundArea13
+    //
+    const uint8_t E_GroundArea13_data[] = {
+        0xc7, 0x83, 0xd7, 0x03, 0x42, 0x8f, 0x7a, 0x03, 0x05, 0xa4,
+        0x78, 0x24, 0xa6, 0x25, 0xe4, 0x25, 0x4b, 0x83, 0xe3, 0x03,
+        0x05, 0xa4, 0x89, 0x24, 0xb5, 0x24, 0x09, 0xa4, 0x65, 0x24,
+        0xc9, 0x24, 0x0f, 0x08, 0x85, 0x25,
+        0xff
+    };
+    writeData(E_GroundArea13, E_GroundArea13_data, sizeof(E_GroundArea13_data));
+
+    // E_GroundArea14
+    //
+    const uint8_t E_GroundArea14_data[] = {
+        0xcd, 0xa5, 0xb5, 0xa8, 0x07, 0xa8, 0x76, 0x28, 0xcc, 0x25,
+        0x65, 0xa4, 0xa9, 0x24, 0xe5, 0x24, 0x19, 0xa4, 0x0f, 0x07,
+        0x95, 0x28, 0xe6, 0x24, 0x19, 0xa4, 0xd7, 0x29, 0x16, 0xa9,
+        0x58, 0x29, 0x97, 0x29,
+        0xff
+    };
+    writeData(E_GroundArea14, E_GroundArea14_data, sizeof(E_GroundArea14_data));
+
+    // E_GroundArea15
+    //
+    const uint8_t E_GroundArea15_data[] = {
+        0x0f, 0x02, 0x02, 0x11, 0x0f, 0x07, 0x02, 0x11,
+        0xff
+    };
+    writeData(E_GroundArea15, E_GroundArea15_data, sizeof(E_GroundArea15_data));
+
+    // E_GroundArea16
+    //
+    const uint8_t E_GroundArea16_data[] = {
+        0xff
+    };
+    writeData(E_GroundArea16, E_GroundArea16_data, sizeof(E_GroundArea16_data));
+
+    // E_GroundArea17
+    //
+    const uint8_t E_GroundArea17_data[] = {
+        0x2b, 0x82, 0xab, 0x38, 0xde, 0x42, 0xe2, 0x1b, 0xb8, 0xeb,
+        0x3b, 0xdb, 0x80, 0x8b, 0xb8, 0x1b, 0x82, 0xfb, 0xb8, 0x7b,
+        0x80, 0xfb, 0x3c, 0x5b, 0xbc, 0x7b, 0xb8, 0x1b, 0x8e, 0xcb,
+        0x0e, 0x1b, 0x8e, 0x0f, 0x0d, 0x2b, 0x3b, 0xbb, 0xb8, 0xeb, 0x82,
+        0x4b, 0xb8, 0xbb, 0x38, 0x3b, 0xb7, 0xbb, 0x02, 0x0f, 0x13,
+        0x1b, 0x00, 0xcb, 0x80, 0x6b, 0xbc,
+        0xff
+    };
+    writeData(E_GroundArea17, E_GroundArea17_data, sizeof(E_GroundArea17_data));
+
+    // E_GroundArea18
+    //
+    const uint8_t E_GroundArea18_data[] = {
+        0x7b, 0x80, 0xae, 0x00, 0x80, 0x8b, 0x8e, 0xe8, 0x05, 0xf9, 0x86,
+        0x17, 0x86, 0x16, 0x85, 0x4e, 0x2b, 0x80, 0xab, 0x8e, 0x87, 0x85,
+        0xc3, 0x05, 0x8b, 0x82, 0x9b, 0x02, 0xab, 0x02, 0xbb, 0x86,
+        0xcb, 0x06, 0xd3, 0x03, 0x3b, 0x8e, 0x6b, 0x0e, 0xa7, 0x8e,
+        0xff
+    };
+    writeData(E_GroundArea18, E_GroundArea18_data, sizeof(E_GroundArea18_data));
+
+    // E_GroundArea19
+    //
+    const uint8_t E_GroundArea19_data[] = {
+        0x29, 0x8e, 0x52, 0x11, 0x83, 0x0e, 0x0f, 0x03, 0x9b, 0x0e,
+        0x2b, 0x8e, 0x5b, 0x0e, 0xcb, 0x8e, 0xfb, 0x0e, 0xfb, 0x82,
+        0x9b, 0x82, 0xbb, 0x02, 0xfe, 0x42, 0xe8, 0xbb, 0x8e, 0x0f, 0x0a,
+        0xab, 0x0e, 0xcb, 0x0e, 0xf9, 0x0e, 0x88, 0x86, 0xa6, 0x06,
+        0xdb, 0x02, 0xb6, 0x8e,
+        0xff
+    };
+    writeData(E_GroundArea19, E_GroundArea19_data, sizeof(E_GroundArea19_data));
+
+    // E_GroundArea20
+    //
+    const uint8_t E_GroundArea20_data[] = {
+        0xab, 0xce, 0xde, 0x42, 0xc0, 0xcb, 0xce, 0x5b, 0x8e, 0x1b, 0xce,
+        0x4b, 0x85, 0x67, 0x45, 0x0f, 0x07, 0x2b, 0x00, 0x7b, 0x85,
+        0x97, 0x05, 0x0f, 0x0a, 0x92, 0x02,
+        0xff
+    };
+    writeData(E_GroundArea20, E_GroundArea20_data, sizeof(E_GroundArea20_data));
+
+    // E_GroundArea21
+    //
+    const uint8_t E_GroundArea21_data[] = {
+        0x0a, 0xaa, 0x0e, 0x24, 0x4a, 0x1e, 0x23, 0xaa,
+        0xff
+    };
+    writeData(E_GroundArea21, E_GroundArea21_data, sizeof(E_GroundArea21_data));
+
+    // E_GroundArea22
+    //
+    const uint8_t E_GroundArea22_data[] = {
+        0x1b, 0x80, 0xbb, 0x38, 0x4b, 0xbc, 0xeb, 0x3b, 0x0f, 0x04,
+        0x2b, 0x00, 0xab, 0x38, 0xeb, 0x00, 0xcb, 0x8e, 0xfb, 0x80,
+        0xab, 0xb8, 0x6b, 0x80, 0xfb, 0x3c, 0x9b, 0xbb, 0x5b, 0xbc,
+        0xfb, 0x00, 0x6b, 0xb8, 0xfb, 0x38,
+        0xff
+    };
+    writeData(E_GroundArea22, E_GroundArea22_data, sizeof(E_GroundArea22_data));
+
+    // E_UndergroundArea1
+    //
+    const uint8_t E_UndergroundArea1_data[] = {
+        0x0b, 0x86, 0x1a, 0x06, 0xdb, 0x06, 0xde, 0xc2, 0x02, 0xf0, 0x3b,
+        0xbb, 0x80, 0xeb, 0x06, 0x0b, 0x86, 0x93, 0x06, 0xf0, 0x39,
+        0x0f, 0x06, 0x60, 0xb8, 0x1b, 0x86, 0xa0, 0xb9, 0xb7, 0x27,
+        0xbd, 0x27, 0x2b, 0x83, 0xa1, 0x26, 0xa9, 0x26, 0xee, 0x25, 0x0b,
+        0x27, 0xb4,
+        0xff
+    };
+    writeData(E_UndergroundArea1, E_UndergroundArea1_data, sizeof(E_UndergroundArea1_data));
+
+    // E_UndergroundArea2
+    //
+    const uint8_t E_UndergroundArea2_data[] = {
+        0x0f, 0x02, 0x1e, 0x2f, 0x60, 0xe0, 0x3a, 0xa5, 0xa7, 0xdb, 0x80,
+        0x3b, 0x82, 0x8b, 0x02, 0xfe, 0x42, 0x68, 0x70, 0xbb, 0x25, 0xa7,
+        0x2c, 0x27, 0xb2, 0x26, 0xb9, 0x26, 0x9b, 0x80, 0xa8, 0x82,
+        0xb5, 0x27, 0xbc, 0x27, 0xb0, 0xbb, 0x3b, 0x82, 0x87, 0x34,
+        0xee, 0x25, 0x6b,
+        0xff
+    };
+    writeData(E_UndergroundArea2, E_UndergroundArea2_data, sizeof(E_UndergroundArea2_data));
+
+    // E_UndergroundArea3
+    //
+    const uint8_t E_UndergroundArea3_data[] = {
+        0x1e, 0xa5, 0x0a, 0x2e, 0x28, 0x27, 0x2e, 0x33, 0xc7, 0x0f, 0x03, 0x1e, 0x40, 0x07,
+        0x2e, 0x30, 0xe7, 0x0f, 0x05, 0x1e, 0x24, 0x44, 0x0f, 0x07, 0x1e, 0x22, 0x6a,
+        0x2e, 0x23, 0xab, 0x0f, 0x09, 0x1e, 0x41, 0x68, 0x1e, 0x2a, 0x8a, 0x2e, 0x23, 0xa2,
+        0x2e, 0x32, 0xea,
+        0xff
+    };
+    writeData(E_UndergroundArea3, E_UndergroundArea3_data, sizeof(E_UndergroundArea3_data));
+
+    // E_WaterArea1
+    //
+    const uint8_t E_WaterArea1_data[] = {
+        0x3b, 0x87, 0x66, 0x27, 0xcc, 0x27, 0xee, 0x31, 0x87, 0xee, 0x23, 0xa7,
+        0x3b, 0x87, 0xdb, 0x07,
+        0xff
+    };
+    writeData(E_WaterArea1, E_WaterArea1_data, sizeof(E_WaterArea1_data));
+
+    // E_WaterArea2
+    //
+    const uint8_t E_WaterArea2_data[] = {
+        0x0f, 0x01, 0x2e, 0x25, 0x2b, 0x2e, 0x25, 0x4b, 0x4e, 0x25, 0xcb, 0x6b, 0x07,
+        0x97, 0x47, 0xe9, 0x87, 0x47, 0xc7, 0x7a, 0x07, 0xd6, 0xc7,
+        0x78, 0x07, 0x38, 0x87, 0xab, 0x47, 0xe3, 0x07, 0x9b, 0x87,
+        0x0f, 0x09, 0x68, 0x47, 0xdb, 0xc7, 0x3b, 0xc7,
+        0xff
+    };
+    writeData(E_WaterArea2, E_WaterArea2_data, sizeof(E_WaterArea2_data));
+
+    // E_WaterArea3
+    //
+    const uint8_t E_WaterArea3_data[] = {
+        0x47, 0x9b, 0xcb, 0x07, 0xfa, 0x1d, 0x86, 0x9b, 0x3a, 0x87,
+        0x56, 0x07, 0x88, 0x1b, 0x07, 0x9d, 0x2e, 0x65, 0xf0,
+        0xff
+    };
+    writeData(E_WaterArea3, E_WaterArea3_data, sizeof(E_WaterArea3_data));
+
+    // L_CastleArea1
+    //
+    const uint8_t L_CastleArea1_data[] = {
+        0x9b, 0x07,
+        0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xce, 0x03, 0xdc, 0x51,
+        0xee, 0x07, 0x73, 0xe0, 0x74, 0x0a, 0x7e, 0x06, 0x9e, 0x0a,
+        0xce, 0x06, 0xe4, 0x00, 0xe8, 0x0a, 0xfe, 0x0a, 0x2e, 0x89,
+        0x4e, 0x0b, 0x54, 0x0a, 0x14, 0x8a, 0xc4, 0x0a, 0x34, 0x8a,
+        0x7e, 0x06, 0xc7, 0x0a, 0x01, 0xe0, 0x02, 0x0a, 0x47, 0x0a,
+        0x81, 0x60, 0x82, 0x0a, 0xc7, 0x0a, 0x0e, 0x87, 0x7e, 0x02,
+        0xa7, 0x02, 0xb3, 0x02, 0xd7, 0x02, 0xe3, 0x02, 0x07, 0x82,
+        0x13, 0x02, 0x3e, 0x06, 0x7e, 0x02, 0xae, 0x07, 0xfe, 0x0a,
+        0x0d, 0xc4, 0xcd, 0x43, 0xce, 0x09, 0xde, 0x0b, 0xdd, 0x42,
+        0xfe, 0x02, 0x5d, 0xc7,
+        0xfd
+    };
+    writeData(L_CastleArea1, L_CastleArea1_data, sizeof(L_CastleArea1_data));
+
+    // L_CastleArea2
+    //
+    const uint8_t L_CastleArea2_data[] = {
+        0x5b, 0x07,
+        0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0x5e, 0x0a, 0x68, 0x64,
+        0x98, 0x64, 0xa8, 0x64, 0xce, 0x06, 0xfe, 0x02, 0x0d, 0x01,
+        0x1e, 0x0e, 0x7e, 0x02, 0x94, 0x63, 0xb4, 0x63, 0xd4, 0x63,
+        0xf4, 0x63, 0x14, 0xe3, 0x2e, 0x0e, 0x5e, 0x02, 0x64, 0x35,
+        0x88, 0x72, 0xbe, 0x0e, 0x0d, 0x04, 0xae, 0x02, 0xce, 0x08,
+        0xcd, 0x4b, 0xfe, 0x02, 0x0d, 0x05, 0x68, 0x31, 0x7e, 0x0a,
+        0x96, 0x31, 0xa9, 0x63, 0xa8, 0x33, 0xd5, 0x30, 0xee, 0x02,
+        0xe6, 0x62, 0xf4, 0x61, 0x04, 0xb1, 0x08, 0x3f, 0x44, 0x33,
+        0x94, 0x63, 0xa4, 0x31, 0xe4, 0x31, 0x04, 0xbf, 0x08, 0x3f,
+        0x04, 0xbf, 0x08, 0x3f, 0xcd, 0x4b, 0x03, 0xe4, 0x0e, 0x03,
+        0x2e, 0x01, 0x7e, 0x06, 0xbe, 0x02, 0xde, 0x06, 0xfe, 0x0a,
+        0x0d, 0xc4, 0xcd, 0x43, 0xce, 0x09, 0xde, 0x0b, 0xdd, 0x42,
+        0xfe, 0x02, 0x5d, 0xc7,
+        0xfd
+    };
+    writeData(L_CastleArea2, L_CastleArea2_data, sizeof(L_CastleArea2_data));
+
+    // L_CastleArea3
+    //
+    const uint8_t L_CastleArea3_data[] = {
+        0x9b, 0x07,
+        0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xfe, 0x00, 0x27, 0xb1,
+        0x65, 0x32, 0x75, 0x0a, 0x71, 0x00, 0xb7, 0x31, 0x08, 0xe4,
+        0x18, 0x64, 0x1e, 0x04, 0x57, 0x3b, 0xbb, 0x0a, 0x17, 0x8a,
+        0x27, 0x3a, 0x73, 0x0a, 0x7b, 0x0a, 0xd7, 0x0a, 0xe7, 0x3a,
+        0x3b, 0x8a, 0x97, 0x0a, 0xfe, 0x08, 0x24, 0x8a, 0x2e, 0x00,
+        0x3e, 0x40, 0x38, 0x64, 0x6f, 0x00, 0x9f, 0x00, 0xbe, 0x43,
+        0xc8, 0x0a, 0xc9, 0x63, 0xce, 0x07, 0xfe, 0x07, 0x2e, 0x81,
+        0x66, 0x42, 0x6a, 0x42, 0x79, 0x0a, 0xbe, 0x00, 0xc8, 0x64,
+        0xf8, 0x64, 0x08, 0xe4, 0x2e, 0x07, 0x7e, 0x03, 0x9e, 0x07,
+        0xbe, 0x03, 0xde, 0x07, 0xfe, 0x0a, 0x03, 0xa5, 0x0d, 0x44,
+        0xcd, 0x43, 0xce, 0x09, 0xdd, 0x42, 0xde, 0x0b, 0xfe, 0x02,
+        0x5d, 0xc7,
+        0xfd
+    };
+    writeData(L_CastleArea3, L_CastleArea3_data, sizeof(L_CastleArea3_data));
+
+    // L_CastleArea4
+    //
+    const uint8_t L_CastleArea4_data[] = {
+        0x9b, 0x07,
+        0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xfe, 0x06, 0x0c, 0x81,
+        0x39, 0x0a, 0x5c, 0x01, 0x89, 0x0a, 0xac, 0x01, 0xd9, 0x0a,
+        0xfc, 0x01, 0x2e, 0x83, 0xa7, 0x01, 0xb7, 0x00, 0xc7, 0x01,
+        0xde, 0x0a, 0xfe, 0x02, 0x4e, 0x83, 0x5a, 0x32, 0x63, 0x0a,
+        0x69, 0x0a, 0x7e, 0x02, 0xee, 0x03, 0xfa, 0x32, 0x03, 0x8a,
+        0x09, 0x0a, 0x1e, 0x02, 0xee, 0x03, 0xfa, 0x32, 0x03, 0x8a,
+        0x09, 0x0a, 0x14, 0x42, 0x1e, 0x02, 0x7e, 0x0a, 0x9e, 0x07,
+        0xfe, 0x0a, 0x2e, 0x86, 0x5e, 0x0a, 0x8e, 0x06, 0xbe, 0x0a,
+        0xee, 0x07, 0x3e, 0x83, 0x5e, 0x07, 0xfe, 0x0a, 0x0d, 0xc4,
+        0x41, 0x52, 0x51, 0x52, 0xcd, 0x43, 0xce, 0x09, 0xde, 0x0b,
+        0xdd, 0x42, 0xfe, 0x02, 0x5d, 0xc7,
+        0xfd
+    };
+    writeData(L_CastleArea4, L_CastleArea4_data, sizeof(L_CastleArea4_data));
+
+    // L_CastleArea5
+    //
+    const uint8_t L_CastleArea5_data[] = {
+        0x5b, 0x07,
+        0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xfe, 0x0a, 0xae, 0x86,
+        0xbe, 0x07, 0xfe, 0x02, 0x0d, 0x02, 0x27, 0x32, 0x46, 0x61,
+        0x55, 0x62, 0x5e, 0x0e, 0x1e, 0x82, 0x68, 0x3c, 0x74, 0x3a,
+        0x7d, 0x4b, 0x5e, 0x8e, 0x7d, 0x4b, 0x7e, 0x82, 0x84, 0x62,
+        0x94, 0x61, 0xa4, 0x31, 0xbd, 0x4b, 0xce, 0x06, 0xfe, 0x02,
+        0x0d, 0x06, 0x34, 0x31, 0x3e, 0x0a, 0x64, 0x32, 0x75, 0x0a,
+        0x7b, 0x61, 0xa4, 0x33, 0xae, 0x02, 0xde, 0x0e, 0x3e, 0x82,
+        0x64, 0x32, 0x78, 0x32, 0xb4, 0x36, 0xc8, 0x36, 0xdd, 0x4b,
+        0x44, 0xb2, 0x58, 0x32, 0x94, 0x63, 0xa4, 0x3e, 0xba, 0x30,
+        0xc9, 0x61, 0xce, 0x06, 0xdd, 0x4b, 0xce, 0x86, 0xdd, 0x4b,
+        0xfe, 0x02, 0x2e, 0x86, 0x5e, 0x02, 0x7e, 0x06, 0xfe, 0x02,
+        0x1e, 0x86, 0x3e, 0x02, 0x5e, 0x06, 0x7e, 0x02, 0x9e, 0x06,
+        0xfe, 0x0a, 0x0d, 0xc4, 0xcd, 0x43, 0xce, 0x09, 0xde, 0x0b,
+        0xdd, 0x42, 0xfe, 0x02, 0x5d, 0xc7,
+        0xfd
+    };
+    writeData(L_CastleArea5, L_CastleArea5_data, sizeof(L_CastleArea5_data));
+
+    // L_CastleArea6
+    //
+    const uint8_t L_CastleArea6_data[] = {
+        0x5b, 0x06,
+        0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0x5e, 0x0a, 0xae, 0x02,
+        0x0d, 0x01, 0x39, 0x73, 0x0d, 0x03, 0x39, 0x7b, 0x4d, 0x4b,
+        0xde, 0x06, 0x1e, 0x8a, 0xae, 0x06, 0xc4, 0x33, 0x16, 0xfe,
+        0xa5, 0x77, 0xfe, 0x02, 0xfe, 0x82, 0x0d, 0x07, 0x39, 0x73,
+        0xa8, 0x74, 0xed, 0x4b, 0x49, 0xfb, 0xe8, 0x74, 0xfe, 0x0a,
+        0x2e, 0x82, 0x67, 0x02, 0x84, 0x7a, 0x87, 0x31, 0x0d, 0x0b,
+        0xfe, 0x02, 0x0d, 0x0c, 0x39, 0x73, 0x5e, 0x06, 0xc6, 0x76,
+        0x45, 0xff, 0xbe, 0x0a, 0xdd, 0x48, 0xfe, 0x06, 0x3d, 0xcb,
+        0x46, 0x7e, 0xad, 0x4a, 0xfe, 0x82, 0x39, 0xf3, 0xa9, 0x7b,
+        0x4e, 0x8a, 0x9e, 0x07, 0xfe, 0x0a, 0x0d, 0xc4, 0xcd, 0x43,
+        0xce, 0x09, 0xde, 0x0b, 0xdd, 0x42, 0xfe, 0x02, 0x5d, 0xc7,
+        0xfd
+    };
+    writeData(L_CastleArea6, L_CastleArea6_data, sizeof(L_CastleArea6_data));
+
+    // L_GroundArea1
+    //
+    const uint8_t L_GroundArea1_data[] = {
+        0x94, 0x11,
+        0x0f, 0x26, 0xfe, 0x10, 0x28, 0x94, 0x65, 0x15, 0xeb, 0x12,
+        0xfa, 0x41, 0x4a, 0x96, 0x54, 0x40, 0xa4, 0x42, 0xb7, 0x13,
+        0xe9, 0x19, 0xf5, 0x15, 0x11, 0x80, 0x47, 0x42, 0x71, 0x13,
+        0x80, 0x41, 0x15, 0x92, 0x1b, 0x1f, 0x24, 0x40, 0x55, 0x12,
+        0x64, 0x40, 0x95, 0x12, 0xa4, 0x40, 0xd2, 0x12, 0xe1, 0x40,
+        0x13, 0xc0, 0x2c, 0x17, 0x2f, 0x12, 0x49, 0x13, 0x83, 0x40,
+        0x9f, 0x14, 0xa3, 0x40, 0x17, 0x92, 0x83, 0x13, 0x92, 0x41,
+        0xb9, 0x14, 0xc5, 0x12, 0xc8, 0x40, 0xd4, 0x40, 0x4b, 0x92,
+        0x78, 0x1b, 0x9c, 0x94, 0x9f, 0x11, 0xdf, 0x14, 0xfe, 0x11,
+        0x7d, 0xc1, 0x9e, 0x42, 0xcf, 0x20,
+        0xfd
+    };
+    writeData(L_GroundArea1, L_GroundArea1_data, sizeof(L_GroundArea1_data));
+
+    // L_GroundArea2
+    //
+    const uint8_t L_GroundArea2_data[] = {
+        0x90, 0xb1,
+        0x0f, 0x26, 0x29, 0x91, 0x7e, 0x42, 0xfe, 0x40, 0x28, 0x92,
+        0x4e, 0x42, 0x2e, 0xc0, 0x57, 0x73, 0xc3, 0x25, 0xc7, 0x27,
+        0x23, 0x84, 0x33, 0x20, 0x5c, 0x01, 0x77, 0x63, 0x88, 0x62,
+        0x99, 0x61, 0xaa, 0x60, 0xbc, 0x01, 0xee, 0x42, 0x4e, 0xc0,
+        0x69, 0x11, 0x7e, 0x42, 0xde, 0x40, 0xf8, 0x62, 0x0e, 0xc2,
+        0xae, 0x40, 0xd7, 0x63, 0xe7, 0x63, 0x33, 0xa7, 0x37, 0x27,
+        0x43, 0x04, 0xcc, 0x01, 0xe7, 0x73, 0x0c, 0x81, 0x3e, 0x42,
+        0x0d, 0x0a, 0x5e, 0x40, 0x88, 0x72, 0xbe, 0x42, 0xe7, 0x87,
+        0xfe, 0x40, 0x39, 0xe1, 0x4e, 0x00, 0x69, 0x60, 0x87, 0x60,
+        0xa5, 0x60, 0xc3, 0x31, 0xfe, 0x31, 0x6d, 0xc1, 0xbe, 0x42,
+        0xef, 0x20,
+        0xfd
+    };
+    writeData(L_GroundArea2, L_GroundArea2_data, sizeof(L_GroundArea2_data));
+
+    // L_GroundArea3
+    //
+    const uint8_t L_GroundArea3_data[] = {
+        0x52, 0x21,
+        0x0f, 0x20, 0x6e, 0x40, 0x58, 0xf2, 0x93, 0x01, 0x97, 0x00,
+        0x0c, 0x81, 0x97, 0x40, 0xa6, 0x41, 0xc7, 0x40, 0x0d, 0x04,
+        0x03, 0x01, 0x07, 0x01, 0x23, 0x01, 0x27, 0x01, 0xec, 0x03,
+        0xac, 0xf3, 0xc3, 0x03, 0x78, 0xe2, 0x94, 0x43, 0x47, 0xf3,
+        0x74, 0x43, 0x47, 0xfb, 0x74, 0x43, 0x2c, 0xf1, 0x4c, 0x63,
+        0x47, 0x00, 0x57, 0x21, 0x5c, 0x01, 0x7c, 0x72, 0x39, 0xf1,
+        0xec, 0x02, 0x4c, 0x81, 0xd8, 0x62, 0xec, 0x01, 0x0d, 0x0d,
+        0x0f, 0x38, 0xc7, 0x07, 0xed, 0x4a, 0x1d, 0xc1, 0x5f, 0x26,
+        0xfd
+    };
+    writeData(L_GroundArea3, L_GroundArea3_data, sizeof(L_GroundArea3_data));
+
+    // L_GroundArea4
+    //
+    const uint8_t L_GroundArea4_data[] = {
+        0x54, 0x21,
+        0x0f, 0x26, 0xa7, 0x22, 0x37, 0xfb, 0x73, 0x20, 0x83, 0x07,
+        0x87, 0x02, 0x93, 0x20, 0xc7, 0x73, 0x04, 0xf1, 0x06, 0x31,
+        0x39, 0x71, 0x59, 0x71, 0xe7, 0x73, 0x37, 0xa0, 0x47, 0x04,
+        0x86, 0x7c, 0xe5, 0x71, 0xe7, 0x31, 0x33, 0xa4, 0x39, 0x71,
+        0xa9, 0x71, 0xd3, 0x23, 0x08, 0xf2, 0x13, 0x05, 0x27, 0x02,
+        0x49, 0x71, 0x75, 0x75, 0xe8, 0x72, 0x67, 0xf3, 0x99, 0x71,
+        0xe7, 0x20, 0xf4, 0x72, 0xf7, 0x31, 0x17, 0xa0, 0x33, 0x20,
+        0x39, 0x71, 0x73, 0x28, 0xbc, 0x05, 0x39, 0xf1, 0x79, 0x71,
+        0xa6, 0x21, 0xc3, 0x06, 0xd3, 0x20, 0xdc, 0x00, 0xfc, 0x00,
+        0x07, 0xa2, 0x13, 0x21, 0x5f, 0x32, 0x8c, 0x00, 0x98, 0x7a,
+        0xc7, 0x63, 0xd9, 0x61, 0x03, 0xa2, 0x07, 0x22, 0x74, 0x72,
+        0x77, 0x31, 0xe7, 0x73, 0x39, 0xf1, 0x58, 0x72, 0x77, 0x73,
+        0xd8, 0x72, 0x7f, 0xb1, 0x97, 0x73, 0xb6, 0x64, 0xc5, 0x65,
+        0xd4, 0x66, 0xe3, 0x67, 0xf3, 0x67, 0x8d, 0xc1, 0xcf, 0x26,
+        0xfd
+    };
+    writeData(L_GroundArea4, L_GroundArea4_data, sizeof(L_GroundArea4_data));
+
+    // L_GroundArea5
+    //
+    const uint8_t L_GroundArea5_data[] = {
+        0x52, 0x31,
+        0x0f, 0x20, 0x6e, 0x66, 0x07, 0x81, 0x36, 0x01, 0x66, 0x00,
+        0xa7, 0x22, 0x08, 0xf2, 0x67, 0x7b, 0xdc, 0x02, 0x98, 0xf2,
+        0xd7, 0x20, 0x39, 0xf1, 0x9f, 0x33, 0xdc, 0x27, 0xdc, 0x57,
+        0x23, 0x83, 0x57, 0x63, 0x6c, 0x51, 0x87, 0x63, 0x99, 0x61,
+        0xa3, 0x06, 0xb3, 0x21, 0x77, 0xf3, 0xf3, 0x21, 0xf7, 0x2a,
+        0x13, 0x81, 0x23, 0x22, 0x53, 0x00, 0x63, 0x22, 0xe9, 0x0b,
+        0x0c, 0x83, 0x13, 0x21, 0x16, 0x22, 0x33, 0x05, 0x8f, 0x35,
+        0xec, 0x01, 0x63, 0xa0, 0x67, 0x20, 0x73, 0x01, 0x77, 0x01,
+        0x83, 0x20, 0x87, 0x20, 0xb3, 0x20, 0xb7, 0x20, 0xc3, 0x01,
+        0xc7, 0x00, 0xd3, 0x20, 0xd7, 0x20, 0x67, 0xa0, 0x77, 0x07,
+        0x87, 0x22, 0xe8, 0x62, 0xf5, 0x65, 0x1c, 0x82, 0x7f, 0x38,
+        0x8d, 0xc1, 0xcf, 0x26,
+        0xfd
+    };
+    writeData(L_GroundArea5, L_GroundArea5_data, sizeof(L_GroundArea5_data));
+
+    // L_GroundArea6
+    //
+    const uint8_t L_GroundArea6_data[] = {
+        0x50, 0x21,
+        0x07, 0x81, 0x47, 0x24, 0x57, 0x00, 0x63, 0x01, 0x77, 0x01,
+        0xc9, 0x71, 0x68, 0xf2, 0xe7, 0x73, 0x97, 0xfb, 0x06, 0x83,
+        0x5c, 0x01, 0xd7, 0x22, 0xe7, 0x00, 0x03, 0xa7, 0x6c, 0x02,
+        0xb3, 0x22, 0xe3, 0x01, 0xe7, 0x07, 0x47, 0xa0, 0x57, 0x06,
+        0xa7, 0x01, 0xd3, 0x00, 0xd7, 0x01, 0x07, 0x81, 0x67, 0x20,
+        0x93, 0x22, 0x03, 0xa3, 0x1c, 0x61, 0x17, 0x21, 0x6f, 0x33,
+        0xc7, 0x63, 0xd8, 0x62, 0xe9, 0x61, 0xfa, 0x60, 0x4f, 0xb3,
+        0x87, 0x63, 0x9c, 0x01, 0xb7, 0x63, 0xc8, 0x62, 0xd9, 0x61,
+        0xea, 0x60, 0x39, 0xf1, 0x87, 0x21, 0xa7, 0x01, 0xb7, 0x20,
+        0x39, 0xf1, 0x5f, 0x38, 0x6d, 0xc1, 0xaf, 0x26,
+        0xfd
+    };
+    writeData(L_GroundArea6, L_GroundArea6_data, sizeof(L_GroundArea6_data));
+
+    // L_GroundArea7
+    //
+    const uint8_t L_GroundArea7_data[] = {
+        0x90, 0x11,
+        0x0f, 0x26, 0xfe, 0x10, 0x2a, 0x93, 0x87, 0x17, 0xa3, 0x14,
+        0xb2, 0x42, 0x0a, 0x92, 0x19, 0x40, 0x36, 0x14, 0x50, 0x41,
+        0x82, 0x16, 0x2b, 0x93, 0x24, 0x41, 0xbb, 0x14, 0xb8, 0x00,
+        0xc2, 0x43, 0xc3, 0x13, 0x1b, 0x94, 0x67, 0x12, 0xc4, 0x15,
+        0x53, 0xc1, 0xd2, 0x41, 0x12, 0xc1, 0x29, 0x13, 0x85, 0x17,
+        0x1b, 0x92, 0x1a, 0x42, 0x47, 0x13, 0x83, 0x41, 0xa7, 0x13,
+        0x0e, 0x91, 0xa7, 0x63, 0xb7, 0x63, 0xc5, 0x65, 0xd5, 0x65,
+        0xdd, 0x4a, 0xe3, 0x67, 0xf3, 0x67, 0x8d, 0xc1, 0xae, 0x42,
+        0xdf, 0x20,
+        0xfd
+    };
+    writeData(L_GroundArea7, L_GroundArea7_data, sizeof(L_GroundArea7_data));
+
+    // L_GroundArea8
+    //
+    const uint8_t L_GroundArea8_data[] = {
+        0x90, 0x11,
+        0x0f, 0x26, 0x6e, 0x10, 0x8b, 0x17, 0xaf, 0x32, 0xd8, 0x62,
+        0xe8, 0x62, 0xfc, 0x3f, 0xad, 0xc8, 0xf8, 0x64, 0x0c, 0xbe,
+        0x43, 0x43, 0xf8, 0x64, 0x0c, 0xbf, 0x73, 0x40, 0x84, 0x40,
+        0x93, 0x40, 0xa4, 0x40, 0xb3, 0x40, 0xf8, 0x64, 0x48, 0xe4,
+        0x5c, 0x39, 0x83, 0x40, 0x92, 0x41, 0xb3, 0x40, 0xf8, 0x64,
+        0x48, 0xe4, 0x5c, 0x39, 0xf8, 0x64, 0x13, 0xc2, 0x37, 0x65,
+        0x4c, 0x24, 0x63, 0x00, 0x97, 0x65, 0xc3, 0x42, 0x0b, 0x97,
+        0xac, 0x32, 0xf8, 0x64, 0x0c, 0xbe, 0x53, 0x45, 0x9d, 0x48,
+        0xf8, 0x64, 0x2a, 0xe2, 0x3c, 0x47, 0x56, 0x43, 0xba, 0x62,
+        0xf8, 0x64, 0x0c, 0xb7, 0x88, 0x64, 0xbc, 0x31, 0xd4, 0x45,
+        0xfc, 0x31, 0x3c, 0xb1, 0x78, 0x64, 0x8c, 0x38, 0x0b, 0x9c,
+        0x1a, 0x33, 0x18, 0x61, 0x28, 0x61, 0x39, 0x60, 0x5d, 0x4a,
+        0xee, 0x11, 0x0f, 0xb8, 0x1d, 0xc1, 0x3e, 0x42, 0x6f, 0x20,
+        0xfd
+    };
+    writeData(L_GroundArea8, L_GroundArea8_data, sizeof(L_GroundArea8_data));
+
+    // L_GroundArea9
+    //
+    const uint8_t L_GroundArea9_data[] = {
+        0x52, 0x31,
+        0x0f, 0x20, 0x6e, 0x40, 0xf7, 0x20, 0x07, 0x84, 0x17, 0x20,
+        0x4f, 0x34, 0xc3, 0x03, 0xc7, 0x02, 0xd3, 0x22, 0x27, 0xe3,
+        0x39, 0x61, 0xe7, 0x73, 0x5c, 0xe4, 0x57, 0x00, 0x6c, 0x73,
+        0x47, 0xa0, 0x53, 0x06, 0x63, 0x22, 0xa7, 0x73, 0xfc, 0x73,
+        0x13, 0xa1, 0x33, 0x05, 0x43, 0x21, 0x5c, 0x72, 0xc3, 0x23,
+        0xcc, 0x03, 0x77, 0xfb, 0xac, 0x02, 0x39, 0xf1, 0xa7, 0x73,
+        0xd3, 0x04, 0xe8, 0x72, 0xe3, 0x22, 0x26, 0xf4, 0xbc, 0x02,
+        0x8c, 0x81, 0xa8, 0x62, 0x17, 0x87, 0x43, 0x24, 0xa7, 0x01,
+        0xc3, 0x04, 0x08, 0xf2, 0x97, 0x21, 0xa3, 0x02, 0xc9, 0x0b,
+        0xe1, 0x69, 0xf1, 0x69, 0x8d, 0xc1, 0xcf, 0x26,
+        0xfd
+    };
+    writeData(L_GroundArea9, L_GroundArea9_data, sizeof(L_GroundArea9_data));
+
+    // L_GroundArea10
+    //
+    const uint8_t L_GroundArea10_data[] = {
+        0x38, 0x11,
+        0x0f, 0x26, 0xad, 0x40, 0x3d, 0xc7,
+        0xfd
+    };
+    writeData(L_GroundArea10, L_GroundArea10_data, sizeof(L_GroundArea10_data));
+
+    // L_GroundArea11
+    //
+    const uint8_t L_GroundArea11_data[] = {
+        0x95, 0xb1,
+        0x0f, 0x26, 0x0d, 0x02, 0xc8, 0x72, 0x1c, 0x81, 0x38, 0x72,
+        0x0d, 0x05, 0x97, 0x34, 0x98, 0x62, 0xa3, 0x20, 0xb3, 0x06,
+        0xc3, 0x20, 0xcc, 0x03, 0xf9, 0x91, 0x2c, 0x81, 0x48, 0x62,
+        0x0d, 0x09, 0x37, 0x63, 0x47, 0x03, 0x57, 0x21, 0x8c, 0x02,
+        0xc5, 0x79, 0xc7, 0x31, 0xf9, 0x11, 0x39, 0xf1, 0xa9, 0x11,
+        0x6f, 0xb4, 0xd3, 0x65, 0xe3, 0x65, 0x7d, 0xc1, 0xbf, 0x26,
+        0xfd
+    };
+    writeData(L_GroundArea11, L_GroundArea11_data, sizeof(L_GroundArea11_data));
+
+    // L_GroundArea12
+    //
+    const uint8_t L_GroundArea12_data[] = {
+        0x00, 0xc1,
+        0x4c, 0x00, 0xf4, 0x4f, 0x0d, 0x02, 0x02, 0x42, 0x43, 0x4f,
+        0x52, 0xc2, 0xde, 0x00, 0x5a, 0xc2, 0x4d, 0xc7,
+        0xfd
+    };
+    writeData(L_GroundArea12, L_GroundArea12_data, sizeof(L_GroundArea12_data));
+
+    // L_GroundArea13
+    //
+    const uint8_t L_GroundArea13_data[] = {
+        0x90, 0x51,
+        0x0f, 0x26, 0xee, 0x10, 0x0b, 0x94, 0x33, 0x14, 0x42, 0x42,
+        0x77, 0x16, 0x86, 0x44, 0x02, 0x92, 0x4a, 0x16, 0x69, 0x42,
+        0x73, 0x14, 0xb0, 0x00, 0xc7, 0x12, 0x05, 0xc0, 0x1c, 0x17,
+        0x1f, 0x11, 0x36, 0x12, 0x8f, 0x14, 0x91, 0x40, 0x1b, 0x94,
+        0x35, 0x12, 0x34, 0x42, 0x60, 0x42, 0x61, 0x12, 0x87, 0x12,
+        0x96, 0x40, 0xa3, 0x14, 0x1c, 0x98, 0x1f, 0x11, 0x47, 0x12,
+        0x9f, 0x15, 0xcc, 0x15, 0xcf, 0x11, 0x05, 0xc0, 0x1f, 0x15,
+        0x39, 0x12, 0x7c, 0x16, 0x7f, 0x11, 0x82, 0x40, 0x98, 0x12,
+        0xdf, 0x15, 0x16, 0xc4, 0x17, 0x14, 0x54, 0x12, 0x9b, 0x16,
+        0x28, 0x94, 0xce, 0x01, 0x3d, 0xc1, 0x5e, 0x42, 0x8f, 0x20,
+        0xfd
+    };
+    writeData(L_GroundArea13, L_GroundArea13_data, sizeof(L_GroundArea13_data));
+
+    // L_GroundArea14
+    //
+    const uint8_t L_GroundArea14_data[] = {
+        0x97, 0x11,
+        0x0f, 0x26, 0xfe, 0x10, 0x2b, 0x92, 0x57, 0x12, 0x8b, 0x12,
+        0xc0, 0x41, 0xf7, 0x13, 0x5b, 0x92, 0x69, 0x0b, 0xbb, 0x12,
+        0xb2, 0x46, 0x19, 0x93, 0x71, 0x00, 0x17, 0x94, 0x7c, 0x14,
+        0x7f, 0x11, 0x93, 0x41, 0xbf, 0x15, 0xfc, 0x13, 0xff, 0x11,
+        0x2f, 0x95, 0x50, 0x42, 0x51, 0x12, 0x58, 0x14, 0xa6, 0x12,
+        0xdb, 0x12, 0x1b, 0x93, 0x46, 0x43, 0x7b, 0x12, 0x8d, 0x49,
+        0xb7, 0x14, 0x1b, 0x94, 0x49, 0x0b, 0xbb, 0x12, 0xfc, 0x13,
+        0xff, 0x12, 0x03, 0xc1, 0x2f, 0x15, 0x43, 0x12, 0x4b, 0x13,
+        0x77, 0x13, 0x9d, 0x4a, 0x15, 0xc1, 0xa1, 0x41, 0xc3, 0x12,
+        0xfe, 0x01, 0x7d, 0xc1, 0x9e, 0x42, 0xcf, 0x20,
+        0xfd
+    };
+    writeData(L_GroundArea14, L_GroundArea14_data, sizeof(L_GroundArea14_data));
+
+    // L_GroundArea15
+    //
+    const uint8_t L_GroundArea15_data[] = {
+        0x52, 0x21,
+        0x0f, 0x20, 0x6e, 0x44, 0x0c, 0xf1, 0x4c, 0x01, 0xaa, 0x35,
+        0xd9, 0x34, 0xee, 0x20, 0x08, 0xb3, 0x37, 0x32, 0x43, 0x04,
+        0x4e, 0x21, 0x53, 0x20, 0x7c, 0x01, 0x97, 0x21, 0xb7, 0x07,
+        0x9c, 0x81, 0xe7, 0x42, 0x5f, 0xb3, 0x97, 0x63, 0xac, 0x02,
+        0xc5, 0x41, 0x49, 0xe0, 0x58, 0x61, 0x76, 0x64, 0x85, 0x65,
+        0x94, 0x66, 0xa4, 0x22, 0xa6, 0x03, 0xc8, 0x22, 0xdc, 0x02,
+        0x68, 0xf2, 0x96, 0x42, 0x13, 0x82, 0x17, 0x02, 0xaf, 0x34,
+        0xf6, 0x21, 0xfc, 0x06, 0x26, 0x80, 0x2a, 0x24, 0x36, 0x01,
+        0x8c, 0x00, 0xff, 0x35, 0x4e, 0xa0, 0x55, 0x21, 0x77, 0x20,
+        0x87, 0x07, 0x89, 0x22, 0xae, 0x21, 0x4c, 0x82, 0x9f, 0x34,
+        0xec, 0x01, 0x03, 0xe7, 0x13, 0x67, 0x8d, 0x4a, 0xad, 0x41,
+        0x0f, 0xa6,
+        0xfd
+    };
+    writeData(L_GroundArea15, L_GroundArea15_data, sizeof(L_GroundArea15_data));
+
+    // L_GroundArea16
+    //
+    const uint8_t L_GroundArea16_data[] = {
+        0x10, 0x51,
+        0x4c, 0x00, 0xc7, 0x12, 0xc6, 0x42, 0x03, 0x92, 0x02, 0x42,
+        0x29, 0x12, 0x63, 0x12, 0x62, 0x42, 0x69, 0x14, 0xa5, 0x12,
+        0xa4, 0x42, 0xe2, 0x14, 0xe1, 0x44, 0xf8, 0x16, 0x37, 0xc1,
+        0x8f, 0x38, 0x02, 0xbb, 0x28, 0x7a, 0x68, 0x7a, 0xa8, 0x7a,
+        0xe0, 0x6a, 0xf0, 0x6a, 0x6d, 0xc5,
+        0xfd
+    };
+    writeData(L_GroundArea16, L_GroundArea16_data, sizeof(L_GroundArea16_data));
+
+    // L_GroundArea17
+    //
+    const uint8_t L_GroundArea17_data[] = {
+        0x92, 0x31,
+        0x0f, 0x20, 0x6e, 0x40, 0x0d, 0x02, 0x37, 0x73, 0xec, 0x00,
+        0x0c, 0x80, 0x3c, 0x00, 0x6c, 0x00, 0x9c, 0x00, 0x06, 0xc0,
+        0xc7, 0x73, 0x06, 0x83, 0x28, 0x72, 0x96, 0x40, 0xe7, 0x73,
+        0x26, 0xc0, 0x87, 0x7b, 0xd2, 0x41, 0x39, 0xf1, 0xc8, 0xf2,
+        0x97, 0xe3, 0xa3, 0x23, 0xe7, 0x02, 0xe3, 0x07, 0xf3, 0x22,
+        0x37, 0xe3, 0x9c, 0x00, 0xbc, 0x00, 0xec, 0x00, 0x0c, 0x80,
+        0x3c, 0x00, 0x86, 0x21, 0xa6, 0x06, 0xb6, 0x24, 0x5c, 0x80,
+        0x7c, 0x00, 0x9c, 0x00, 0x29, 0xe1, 0xdc, 0x05, 0xf6, 0x41,
+        0xdc, 0x80, 0xe8, 0x72, 0x0c, 0x81, 0x27, 0x73, 0x4c, 0x01,
+        0x66, 0x74, 0x0d, 0x11, 0x3f, 0x35, 0xb6, 0x41, 0x2c, 0x82,
+        0x36, 0x40, 0x7c, 0x02, 0x86, 0x40, 0xf9, 0x61, 0x39, 0xe1,
+        0xac, 0x04, 0xc6, 0x41, 0x0c, 0x83, 0x16, 0x41, 0x88, 0xf2,
+        0x39, 0xf1, 0x7c, 0x00, 0x89, 0x61, 0x9c, 0x00, 0xa7, 0x63,
+        0xbc, 0x00, 0xc5, 0x65, 0xdc, 0x00, 0xe3, 0x67, 0xf3, 0x67,
+        0x8d, 0xc1, 0xcf, 0x26,
+        0xfd
+    };
+    writeData(L_GroundArea17, L_GroundArea17_data, sizeof(L_GroundArea17_data));
+
+    // L_GroundArea18
+    //
+    const uint8_t L_GroundArea18_data[] = {
+        0x55, 0xb1,
+        0x0f, 0x26, 0xcf, 0x33, 0x07, 0xb2, 0x15, 0x11, 0x52, 0x42,
+        0x99, 0x0b, 0xac, 0x02, 0xd3, 0x24, 0xd6, 0x42, 0xd7, 0x25,
+        0x23, 0x84, 0xcf, 0x33, 0x07, 0xe3, 0x19, 0x61, 0x78, 0x7a,
+        0xef, 0x33, 0x2c, 0x81, 0x46, 0x64, 0x55, 0x65, 0x65, 0x65,
+        0xec, 0x74, 0x47, 0x82, 0x53, 0x05, 0x63, 0x21, 0x62, 0x41,
+        0x96, 0x22, 0x9a, 0x41, 0xcc, 0x03, 0xb9, 0x91, 0x39, 0xf1,
+        0x63, 0x26, 0x67, 0x27, 0xd3, 0x06, 0xfc, 0x01, 0x18, 0xe2,
+        0xd9, 0x07, 0xe9, 0x04, 0x0c, 0x86, 0x37, 0x22, 0x93, 0x24,
+        0x87, 0x84, 0xac, 0x02, 0xc2, 0x41, 0xc3, 0x23, 0xd9, 0x71,
+        0xfc, 0x01, 0x7f, 0xb1, 0x9c, 0x00, 0xa7, 0x63, 0xb6, 0x64,
+        0xcc, 0x00, 0xd4, 0x66, 0xe3, 0x67, 0xf3, 0x67, 0x8d, 0xc1,
+        0xcf, 0x26,
+        0xfd
+    };
+    writeData(L_GroundArea18, L_GroundArea18_data, sizeof(L_GroundArea18_data));
+
+    // L_GroundArea19
+    //
+    const uint8_t L_GroundArea19_data[] = {
+        0x50, 0xb1,
+        0x0f, 0x26, 0xfc, 0x00, 0x1f, 0xb3, 0x5c, 0x00, 0x65, 0x65,
+        0x74, 0x66, 0x83, 0x67, 0x93, 0x67, 0xdc, 0x73, 0x4c, 0x80,
+        0xb3, 0x20, 0xc9, 0x0b, 0xc3, 0x08, 0xd3, 0x2f, 0xdc, 0x00,
+        0x2c, 0x80, 0x4c, 0x00, 0x8c, 0x00, 0xd3, 0x2e, 0xed, 0x4a,
+        0xfc, 0x00, 0xd7, 0xa1, 0xec, 0x01, 0x4c, 0x80, 0x59, 0x11,
+        0xd8, 0x11, 0xda, 0x10, 0x37, 0xa0, 0x47, 0x04, 0x99, 0x11,
+        0xe7, 0x21, 0x3a, 0x90, 0x67, 0x20, 0x76, 0x10, 0x77, 0x60,
+        0x87, 0x07, 0xd8, 0x12, 0x39, 0xf1, 0xac, 0x00, 0xe9, 0x71,
+        0x0c, 0x80, 0x2c, 0x00, 0x4c, 0x05, 0xc7, 0x7b, 0x39, 0xf1,
+        0xec, 0x00, 0xf9, 0x11, 0x0c, 0x82, 0x6f, 0x34, 0xf8, 0x11,
+        0xfa, 0x10, 0x7f, 0xb2, 0xac, 0x00, 0xb6, 0x64, 0xcc, 0x01,
+        0xe3, 0x67, 0xf3, 0x67, 0x8d, 0xc1, 0xcf, 0x26,
+        0xfd
+    };
+    writeData(L_GroundArea19, L_GroundArea19_data, sizeof(L_GroundArea19_data));
+
+    // L_GroundArea20
+    //
+    const uint8_t L_GroundArea20_data[] = {
+        0x52, 0xb1,
+        0x0f, 0x20, 0x6e, 0x45, 0x39, 0x91, 0xb3, 0x04, 0xc3, 0x21,
+        0xc8, 0x11, 0xca, 0x10, 0x49, 0x91, 0x7c, 0x73, 0xe8, 0x12,
+        0x88, 0x91, 0x8a, 0x10, 0xe7, 0x21, 0x05, 0x91, 0x07, 0x30,
+        0x17, 0x07, 0x27, 0x20, 0x49, 0x11, 0x9c, 0x01, 0xc8, 0x72,
+        0x23, 0xa6, 0x27, 0x26, 0xd3, 0x03, 0xd8, 0x7a, 0x89, 0x91,
+        0xd8, 0x72, 0x39, 0xf1, 0xa9, 0x11, 0x09, 0xf1, 0x63, 0x24,
+        0x67, 0x24, 0xd8, 0x62, 0x28, 0x91, 0x2a, 0x10, 0x56, 0x21,
+        0x70, 0x04, 0x79, 0x0b, 0x8c, 0x00, 0x94, 0x21, 0x9f, 0x35,
+        0x2f, 0xb8, 0x3d, 0xc1, 0x7f, 0x26,
+        0xfd
+    };
+    writeData(L_GroundArea20, L_GroundArea20_data, sizeof(L_GroundArea20_data));
+
+    // L_GroundArea21
+    //
+    const uint8_t L_GroundArea21_data[] = {
+        0x06, 0xc1,
+        0x4c, 0x00, 0xf4, 0x4f, 0x0d, 0x02, 0x06, 0x20, 0x24, 0x4f,
+        0x35, 0xa0, 0x36, 0x20, 0x53, 0x46, 0xd5, 0x20, 0xd6, 0x20,
+        0x34, 0xa1, 0x73, 0x49, 0x74, 0x20, 0x94, 0x20, 0xb4, 0x20,
+        0xd4, 0x20, 0xf4, 0x20, 0x2e, 0x80, 0x59, 0x42, 0x4d, 0xc7,
+        0xfd
+    };
+    writeData(L_GroundArea21, L_GroundArea21_data, sizeof(L_GroundArea21_data));
+
+    // L_GroundArea22
+    //
+    const uint8_t L_GroundArea22_data[] = {
+        0x96, 0x31,
+        0x0f, 0x26, 0x0d, 0x03, 0x1a, 0x60, 0x77, 0x42, 0xc4, 0x00,
+        0xc8, 0x62, 0xb9, 0xe1, 0xd3, 0x06, 0xd7, 0x07, 0xf9, 0x61,
+        0x0c, 0x81, 0x4e, 0xb1, 0x8e, 0xb1, 0xbc, 0x01, 0xe4, 0x50,
+        0xe9, 0x61, 0x0c, 0x81, 0x0d, 0x0a, 0x84, 0x43, 0x98, 0x72,
+        0x0d, 0x0c, 0x0f, 0x38, 0x1d, 0xc1, 0x5f, 0x26,
+        0xfd
+    };
+    writeData(L_GroundArea22, L_GroundArea22_data, sizeof(L_GroundArea22_data));
+
+    // L_UndergroundArea1
+    //
+    const uint8_t L_UndergroundArea1_data[] = {
+        0x48, 0x0f,
+        0x0e, 0x01, 0x5e, 0x02, 0xa7, 0x00, 0xbc, 0x73, 0x1a, 0xe0,
+        0x39, 0x61, 0x58, 0x62, 0x77, 0x63, 0x97, 0x63, 0xb8, 0x62,
+        0xd6, 0x07, 0xf8, 0x62, 0x19, 0xe1, 0x75, 0x52, 0x86, 0x40,
+        0x87, 0x50, 0x95, 0x52, 0x93, 0x43, 0xa5, 0x21, 0xc5, 0x52,
+        0xd6, 0x40, 0xd7, 0x20, 0xe5, 0x06, 0xe6, 0x51, 0x3e, 0x8d,
+        0x5e, 0x03, 0x67, 0x52, 0x77, 0x52, 0x7e, 0x02, 0x9e, 0x03,
+        0xa6, 0x43, 0xa7, 0x23, 0xde, 0x05, 0xfe, 0x02, 0x1e, 0x83,
+        0x33, 0x54, 0x46, 0x40, 0x47, 0x21, 0x56, 0x04, 0x5e, 0x02,
+        0x83, 0x54, 0x93, 0x52, 0x96, 0x07, 0x97, 0x50, 0xbe, 0x03,
+        0xc7, 0x23, 0xfe, 0x02, 0x0c, 0x82, 0x43, 0x45, 0x45, 0x24,
+        0x46, 0x24, 0x90, 0x08, 0x95, 0x51, 0x78, 0xfa, 0xd7, 0x73,
+        0x39, 0xf1, 0x8c, 0x01, 0xa8, 0x52, 0xb8, 0x52, 0xcc, 0x01,
+        0x5f, 0xb3, 0x97, 0x63, 0x9e, 0x00, 0x0e, 0x81, 0x16, 0x24,
+        0x66, 0x04, 0x8e, 0x00, 0xfe, 0x01, 0x08, 0xd2, 0x0e, 0x06,
+        0x6f, 0x47, 0x9e, 0x0f, 0x0e, 0x82, 0x2d, 0x47, 0x28, 0x7a,
+        0x68, 0x7a, 0xa8, 0x7a, 0xae, 0x01, 0xde, 0x0f, 0x6d, 0xc5,
+        0xfd
+    };
+    writeData(L_UndergroundArea1, L_UndergroundArea1_data, sizeof(L_UndergroundArea1_data));
+
+    // L_UndergroundArea2
+    //
+    const uint8_t L_UndergroundArea2_data[] = {
+        0x48, 0x0f,
+        0x0e, 0x01, 0x5e, 0x02, 0xbc, 0x01, 0xfc, 0x01, 0x2c, 0x82,
+        0x41, 0x52, 0x4e, 0x04, 0x67, 0x25, 0x68, 0x24, 0x69, 0x24,
+        0xba, 0x42, 0xc7, 0x04, 0xde, 0x0b, 0xb2, 0x87, 0xfe, 0x02,
+        0x2c, 0xe1, 0x2c, 0x71, 0x67, 0x01, 0x77, 0x00, 0x87, 0x01,
+        0x8e, 0x00, 0xee, 0x01, 0xf6, 0x02, 0x03, 0x85, 0x05, 0x02,
+        0x13, 0x21, 0x16, 0x02, 0x27, 0x02, 0x2e, 0x02, 0x88, 0x72,
+        0xc7, 0x20, 0xd7, 0x07, 0xe4, 0x76, 0x07, 0xa0, 0x17, 0x06,
+        0x48, 0x7a, 0x76, 0x20, 0x98, 0x72, 0x79, 0xe1, 0x88, 0x62,
+        0x9c, 0x01, 0xb7, 0x73, 0xdc, 0x01, 0xf8, 0x62, 0xfe, 0x01,
+        0x08, 0xe2, 0x0e, 0x00, 0x6e, 0x02, 0x73, 0x20, 0x77, 0x23,
+        0x83, 0x04, 0x93, 0x20, 0xae, 0x00, 0xfe, 0x0a, 0x0e, 0x82,
+        0x39, 0x71, 0xa8, 0x72, 0xe7, 0x73, 0x0c, 0x81, 0x8f, 0x32,
+        0xae, 0x00, 0xfe, 0x04, 0x04, 0xd1, 0x17, 0x04, 0x26, 0x49,
+        0x27, 0x29, 0xdf, 0x33, 0xfe, 0x02, 0x44, 0xf6, 0x7c, 0x01,
+        0x8e, 0x06, 0xbf, 0x47, 0xee, 0x0f, 0x4d, 0xc7, 0x0e, 0x82,
+        0x68, 0x7a, 0xae, 0x01, 0xde, 0x0f, 0x6d, 0xc5,
+        0xfd
+    };
+    writeData(L_UndergroundArea2, L_UndergroundArea2_data, sizeof(L_UndergroundArea2_data));
+
+    // L_UndergroundArea3
+    //
+    const uint8_t L_UndergroundArea3_data[] = {
+        0x48, 0x01,
+        0x0e, 0x01, 0x00, 0x5a, 0x3e, 0x06, 0x45, 0x46, 0x47, 0x46,
+        0x53, 0x44, 0xae, 0x01, 0xdf, 0x4a, 0x4d, 0xc7, 0x0e, 0x81,
+        0x00, 0x5a, 0x2e, 0x04, 0x37, 0x28, 0x3a, 0x48, 0x46, 0x47,
+        0xc7, 0x07, 0xce, 0x0f, 0xdf, 0x4a, 0x4d, 0xc7, 0x0e, 0x81,
+        0x00, 0x5a, 0x33, 0x53, 0x43, 0x51, 0x46, 0x40, 0x47, 0x50,
+        0x53, 0x04, 0x55, 0x40, 0x56, 0x50, 0x62, 0x43, 0x64, 0x40,
+        0x65, 0x50, 0x71, 0x41, 0x73, 0x51, 0x83, 0x51, 0x94, 0x40,
+        0x95, 0x50, 0xa3, 0x50, 0xa5, 0x40, 0xa6, 0x50, 0xb3, 0x51,
+        0xb6, 0x40, 0xb7, 0x50, 0xc3, 0x53, 0xdf, 0x4a, 0x4d, 0xc7,
+        0x0e, 0x81, 0x00, 0x5a, 0x2e, 0x02, 0x36, 0x47, 0x37, 0x52,
+        0x3a, 0x49, 0x47, 0x25, 0xa7, 0x52, 0xd7, 0x04, 0xdf, 0x4a,
+        0x4d, 0xc7, 0x0e, 0x81, 0x00, 0x5a, 0x3e, 0x02, 0x44, 0x51,
+        0x53, 0x44, 0x54, 0x44, 0x55, 0x24, 0xa1, 0x54, 0xae, 0x01,
+        0xb4, 0x21, 0xdf, 0x4a, 0xe5, 0x07, 0x4d, 0xc7,
+        0xfd
+    };
+    writeData(L_UndergroundArea3, L_UndergroundArea3_data, sizeof(L_UndergroundArea3_data));
+
+    // L_WaterArea1
+    //
+    const uint8_t L_WaterArea1_data[] = {
+        0x41, 0x01,
+        0xb4, 0x34, 0xc8, 0x52, 0xf2, 0x51, 0x47, 0xd3, 0x6c, 0x03,
+        0x65, 0x49, 0x9e, 0x07, 0xbe, 0x01, 0xcc, 0x03, 0xfe, 0x07,
+        0x0d, 0xc9, 0x1e, 0x01, 0x6c, 0x01, 0x62, 0x35, 0x63, 0x53,
+        0x8a, 0x41, 0xac, 0x01, 0xb3, 0x53, 0xe9, 0x51, 0x26, 0xc3,
+        0x27, 0x33, 0x63, 0x43, 0x64, 0x33, 0xba, 0x60, 0xc9, 0x61,
+        0xce, 0x0b, 0xe5, 0x09, 0xee, 0x0f, 0x7d, 0xca, 0x7d, 0x47,
+        0xfd
+    };
+    writeData(L_WaterArea1, L_WaterArea1_data, sizeof(L_WaterArea1_data));
+
+    // L_WaterArea2
+    //
+    const uint8_t L_WaterArea2_data[] = {
+        0x41, 0x01,
+        0xb8, 0x52, 0xea, 0x41, 0x27, 0xb2, 0xb3, 0x42, 0x16, 0xd4,
+        0x4a, 0x42, 0xa5, 0x51, 0xa7, 0x31, 0x27, 0xd3, 0x08, 0xe2,
+        0x16, 0x64, 0x2c, 0x04, 0x38, 0x42, 0x76, 0x64, 0x88, 0x62,
+        0xde, 0x07, 0xfe, 0x01, 0x0d, 0xc9, 0x23, 0x32, 0x31, 0x51,
+        0x98, 0x52, 0x0d, 0xc9, 0x59, 0x42, 0x63, 0x53, 0x67, 0x31,
+        0x14, 0xc2, 0x36, 0x31, 0x87, 0x53, 0x17, 0xe3, 0x29, 0x61,
+        0x30, 0x62, 0x3c, 0x08, 0x42, 0x37, 0x59, 0x40, 0x6a, 0x42,
+        0x99, 0x40, 0xc9, 0x61, 0xd7, 0x63, 0x39, 0xd1, 0x58, 0x52,
+        0xc3, 0x67, 0xd3, 0x31, 0xdc, 0x06, 0xf7, 0x42, 0xfa, 0x42,
+        0x23, 0xb1, 0x43, 0x67, 0xc3, 0x34, 0xc7, 0x34, 0xd1, 0x51,
+        0x43, 0xb3, 0x47, 0x33, 0x9a, 0x30, 0xa9, 0x61, 0xb8, 0x62,
+        0xbe, 0x0b, 0xd5, 0x09, 0xde, 0x0f, 0x0d, 0xca, 0x7d, 0x47,
+        0xfd
+    };
+    writeData(L_WaterArea2, L_WaterArea2_data, sizeof(L_WaterArea2_data));
+
+    // L_WaterArea3
+    //
+    const uint8_t L_WaterArea3_data[] = {
+        0x49, 0x0f,
+        0x1e, 0x01, 0x39, 0x73, 0x5e, 0x07, 0xae, 0x0b, 0x1e, 0x82,
+        0x6e, 0x88, 0x9e, 0x02, 0x0d, 0x04, 0x2e, 0x0b, 0x45, 0x09,
+        0x4e, 0x0f, 0xed, 0x47,
+        0xfd,
+        0xff
+    };
+    writeData(L_WaterArea3, L_WaterArea3_data, sizeof(L_WaterArea3_data));
+
+    // X_SubtracterData
+    //
+    const uint8_t X_SubtracterData_data[] = {
+        0x00, 0x10
+    };
+    writeData(X_SubtracterData, X_SubtracterData_data, sizeof(X_SubtracterData_data));
+
+    // OffscrJoypadBitsData
+    //
+    const uint8_t OffscrJoypadBitsData_data[] = {
+        0x01, 0x02
+    };
+    writeData(OffscrJoypadBitsData, OffscrJoypadBitsData_data, sizeof(OffscrJoypadBitsData_data));
+
+    // Hidden1UpCoinAmts
+    //
+    const uint8_t Hidden1UpCoinAmts_data[] = {
+        0x15, 0x23, 0x16, 0x1b, 0x17, 0x18, 0x23, 0x63
+    };
+    writeData(Hidden1UpCoinAmts, Hidden1UpCoinAmts_data, sizeof(Hidden1UpCoinAmts_data));
+
+    // ClimbAdderLow
+    //
+    const uint8_t ClimbAdderLow_data[] = {
+        0x0e, 0x04, 0xfc, 0xf2
+    };
+    writeData(ClimbAdderLow, ClimbAdderLow_data, sizeof(ClimbAdderLow_data));
+
+    // ClimbAdderHigh
+    //
+    const uint8_t ClimbAdderHigh_data[] = {
+        0x00, 0x00, 0xff, 0xff
+    };
+    writeData(ClimbAdderHigh, ClimbAdderHigh_data, sizeof(ClimbAdderHigh_data));
+
+    // JumpMForceData
+    //
+    const uint8_t JumpMForceData_data[] = {
+        0x20, 0x20, 0x1e, 0x28, 0x28, 0x0d, 0x04
+    };
+    writeData(JumpMForceData, JumpMForceData_data, sizeof(JumpMForceData_data));
+
+    // FallMForceData
+    //
+    const uint8_t FallMForceData_data[] = {
+        0x70, 0x70, 0x60, 0x90, 0x90, 0x0a, 0x09
+    };
+    writeData(FallMForceData, FallMForceData_data, sizeof(FallMForceData_data));
+
+    // PlayerYSpdData
+    //
+    const uint8_t PlayerYSpdData_data[] = {
+        0xfc, 0xfc, 0xfc, 0xfb, 0xfb, 0xfe, 0xff
+    };
+    writeData(PlayerYSpdData, PlayerYSpdData_data, sizeof(PlayerYSpdData_data));
+
+    // InitMForceData
+    //
+    const uint8_t InitMForceData_data[] = {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00
+    };
+    writeData(InitMForceData, InitMForceData_data, sizeof(InitMForceData_data));
+
+    // MaxLeftXSpdData
+    //
+    const uint8_t MaxLeftXSpdData_data[] = {
+        0xd8, 0xe8, 0xf0
+    };
+    writeData(MaxLeftXSpdData, MaxLeftXSpdData_data, sizeof(MaxLeftXSpdData_data));
+
+    // MaxRightXSpdData
+    //
+    const uint8_t MaxRightXSpdData_data[] = {
+        0x28, 0x18, 0x10,
+        0x0c
+    };
+    writeData(MaxRightXSpdData, MaxRightXSpdData_data, sizeof(MaxRightXSpdData_data));
+
+    // FrictionData
+    //
+    const uint8_t FrictionData_data[] = {
+        0xe4, 0x98, 0xd0
+    };
+    writeData(FrictionData, FrictionData_data, sizeof(FrictionData_data));
+
+    // Climb_Y_SpeedData
+    //
+    const uint8_t Climb_Y_SpeedData_data[] = {
+        0x00, 0xff, 0x01
+    };
+    writeData(Climb_Y_SpeedData, Climb_Y_SpeedData_data, sizeof(Climb_Y_SpeedData_data));
+
+    // Climb_Y_MForceData
+    //
+    const uint8_t Climb_Y_MForceData_data[] = {
+        0x00, 0x20, 0xff
+    };
+    writeData(Climb_Y_MForceData, Climb_Y_MForceData_data, sizeof(Climb_Y_MForceData_data));
+
+    // PlayerAnimTmrData
+    //
+    const uint8_t PlayerAnimTmrData_data[] = {
+        0x02, 0x04, 0x07
+    };
+    writeData(PlayerAnimTmrData, PlayerAnimTmrData_data, sizeof(PlayerAnimTmrData_data));
+
+    // FireballXSpdData
+    //
+    const uint8_t FireballXSpdData_data[] = {
+        0x40, 0xc0
+    };
+    writeData(FireballXSpdData, FireballXSpdData_data, sizeof(FireballXSpdData_data));
+
+    // Bubble_MForceData
+    //
+    const uint8_t Bubble_MForceData_data[] = {
+        0xff, 0x50
+    };
+    writeData(Bubble_MForceData, Bubble_MForceData_data, sizeof(Bubble_MForceData_data));
+
+    // BubbleTimerData
+    //
+    const uint8_t BubbleTimerData_data[] = {
+        0x40, 0x20
+    };
+    writeData(BubbleTimerData, BubbleTimerData_data, sizeof(BubbleTimerData_data));
+
+    // FlagpoleScoreMods
+    //
+    const uint8_t FlagpoleScoreMods_data[] = {
+        0x05, 0x02, 0x08, 0x04, 0x01
+    };
+    writeData(FlagpoleScoreMods, FlagpoleScoreMods_data, sizeof(FlagpoleScoreMods_data));
+
+    // FlagpoleScoreDigits
+    //
+    const uint8_t FlagpoleScoreDigits_data[] = {
+        0x03, 0x03, 0x04, 0x04, 0x04
+    };
+    writeData(FlagpoleScoreDigits, FlagpoleScoreDigits_data, sizeof(FlagpoleScoreDigits_data));
+
+    // Jumpspring_Y_PosData
+    //
+    const uint8_t Jumpspring_Y_PosData_data[] = {
+        0x08, 0x10, 0x08, 0x00
+    };
+    writeData(Jumpspring_Y_PosData, Jumpspring_Y_PosData_data, sizeof(Jumpspring_Y_PosData_data));
+
+    // VineHeightData
+    //
+    const uint8_t VineHeightData_data[] = {
+        0x30, 0x60
+    };
+    writeData(VineHeightData, VineHeightData_data, sizeof(VineHeightData_data));
+
+    // CannonBitmasks
+    //
+    const uint8_t CannonBitmasks_data[] = {
+        BOOST_BINARY(00001111), BOOST_BINARY(00000111)
+    };
+    writeData(CannonBitmasks, CannonBitmasks_data, sizeof(CannonBitmasks_data));
+
+    // BulletBillXSpdData
+    //
+    const uint8_t BulletBillXSpdData_data[] = {
+        0x18, 0xe8
+    };
+    writeData(BulletBillXSpdData, BulletBillXSpdData_data, sizeof(BulletBillXSpdData_data));
+
+    // HammerEnemyOfsData
+    //
+    const uint8_t HammerEnemyOfsData_data[] = {
+        0x04, 0x04, 0x04, 0x05, 0x05, 0x05,
+        0x06, 0x06, 0x06
+    };
+    writeData(HammerEnemyOfsData, HammerEnemyOfsData_data, sizeof(HammerEnemyOfsData_data));
+
+    // HammerXSpdData
+    //
+    const uint8_t HammerXSpdData_data[] = {
+        0x10, 0xf0
+    };
+    writeData(HammerXSpdData, HammerXSpdData_data, sizeof(HammerXSpdData_data));
+
+    // CoinTallyOffsets
+    //
+    const uint8_t CoinTallyOffsets_data[] = {
+        0x17, 0x1d
+    };
+    writeData(CoinTallyOffsets, CoinTallyOffsets_data, sizeof(CoinTallyOffsets_data));
+
+    // ScoreOffsets
+    //
+    const uint8_t ScoreOffsets_data[] = {
+        0x0b, 0x11
+    };
+    writeData(ScoreOffsets, ScoreOffsets_data, sizeof(ScoreOffsets_data));
+
+    // StatusBarNybbles
+    //
+    const uint8_t StatusBarNybbles_data[] = {
+        0x02, 0x13
+    };
+    writeData(StatusBarNybbles, StatusBarNybbles_data, sizeof(StatusBarNybbles_data));
+
+    // BlockYPosAdderData
+    //
+    const uint8_t BlockYPosAdderData_data[] = {
+        0x04, 0x12
+    };
+    writeData(BlockYPosAdderData, BlockYPosAdderData_data, sizeof(BlockYPosAdderData_data));
+
+    // BrickQBlockMetatiles
+    //
+    const uint8_t BrickQBlockMetatiles_data[] = {
+        0xc1, 0xc0, 0x5f, 0x60,
+        0x55, 0x56, 0x57, 0x58, 0x59,
+        0x5a, 0x5b, 0x5c, 0x5d, 0x5e
+    };
+    writeData(BrickQBlockMetatiles, BrickQBlockMetatiles_data, sizeof(BrickQBlockMetatiles_data));
+
+    // MaxSpdBlockData
+    //
+    const uint8_t MaxSpdBlockData_data[] = {
+        0x06, 0x08
+    };
+    writeData(MaxSpdBlockData, MaxSpdBlockData_data, sizeof(MaxSpdBlockData_data));
+
+    // LoopCmdWorldNumber
+    //
+    const uint8_t LoopCmdWorldNumber_data[] = {
+        0x03, 0x03, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x07, 0x07, 0x07
+    };
+    writeData(LoopCmdWorldNumber, LoopCmdWorldNumber_data, sizeof(LoopCmdWorldNumber_data));
+
+    // LoopCmdPageNumber
+    //
+    const uint8_t LoopCmdPageNumber_data[] = {
+        0x05, 0x09, 0x04, 0x05, 0x06, 0x08, 0x09, 0x0a, 0x06, 0x0b, 0x10
+    };
+    writeData(LoopCmdPageNumber, LoopCmdPageNumber_data, sizeof(LoopCmdPageNumber_data));
+
+    // LoopCmdYPosition
+    //
+    const uint8_t LoopCmdYPosition_data[] = {
+        0x40, 0xb0, 0xb0, 0x80, 0x40, 0x40, 0x80, 0x40, 0xf0, 0xf0, 0xf0
+    };
+    writeData(LoopCmdYPosition, LoopCmdYPosition_data, sizeof(LoopCmdYPosition_data));
+
+    // NormalXSpdData
+    //
+    const uint8_t NormalXSpdData_data[] = {
+        0xf8, 0xf4
+    };
+    writeData(NormalXSpdData, NormalXSpdData_data, sizeof(NormalXSpdData_data));
+
+    // HBroWalkingTimerData
+    //
+    const uint8_t HBroWalkingTimerData_data[] = {
+        0x80, 0x50
+    };
+    writeData(HBroWalkingTimerData, HBroWalkingTimerData_data, sizeof(HBroWalkingTimerData_data));
+
+    // PRDiffAdjustData
+    //
+    const uint8_t PRDiffAdjustData_data[] = {
+        0x26, 0x2c, 0x32, 0x38,
+        0x20, 0x22, 0x24, 0x26,
+        0x13, 0x14, 0x15, 0x16
+    };
+    writeData(PRDiffAdjustData, PRDiffAdjustData_data, sizeof(PRDiffAdjustData_data));
+
+    // FirebarSpinSpdData
+    //
+    const uint8_t FirebarSpinSpdData_data[] = {
+        0x28, 0x38, 0x28, 0x38, 0x28
+    };
+    writeData(FirebarSpinSpdData, FirebarSpinSpdData_data, sizeof(FirebarSpinSpdData_data));
+
+    // FirebarSpinDirData
+    //
+    const uint8_t FirebarSpinDirData_data[] = {
+        0x00, 0x00, 0x10, 0x10, 0x00
+    };
+    writeData(FirebarSpinDirData, FirebarSpinDirData_data, sizeof(FirebarSpinDirData_data));
+
+    // FlyCCXPositionData
+    //
+    const uint8_t FlyCCXPositionData_data[] = {
+        0x80, 0x30, 0x40, 0x80,
+        0x30, 0x50, 0x50, 0x70,
+        0x20, 0x40, 0x80, 0xa0,
+        0x70, 0x40, 0x90, 0x68
+    };
+    writeData(FlyCCXPositionData, FlyCCXPositionData_data, sizeof(FlyCCXPositionData_data));
+
+    // FlyCCXSpeedData
+    //
+    const uint8_t FlyCCXSpeedData_data[] = {
+        0x0e, 0x05, 0x06, 0x0e,
+        0x1c, 0x20, 0x10, 0x0c,
+        0x1e, 0x22, 0x18, 0x14
+    };
+    writeData(FlyCCXSpeedData, FlyCCXSpeedData_data, sizeof(FlyCCXSpeedData_data));
+
+    // FlyCCTimerData
+    //
+    const uint8_t FlyCCTimerData_data[] = {
+        0x10, 0x60, 0x20, 0x48
+    };
+    writeData(FlyCCTimerData, FlyCCTimerData_data, sizeof(FlyCCTimerData_data));
+
+    // FlameYPosData
+    //
+    const uint8_t FlameYPosData_data[] = {
+        0x90, 0x80, 0x70, 0x90
+    };
+    writeData(FlameYPosData, FlameYPosData_data, sizeof(FlameYPosData_data));
+
+    // FlameYMFAdderData
+    //
+    const uint8_t FlameYMFAdderData_data[] = {
+        0xff, 0x01
+    };
+    writeData(FlameYMFAdderData, FlameYMFAdderData_data, sizeof(FlameYMFAdderData_data));
+
+    // FireworksXPosData
+    //
+    const uint8_t FireworksXPosData_data[] = {
+        0x00, 0x30, 0x60, 0x60, 0x00, 0x20
+    };
+    writeData(FireworksXPosData, FireworksXPosData_data, sizeof(FireworksXPosData_data));
+
+    // FireworksYPosData
+    //
+    const uint8_t FireworksYPosData_data[] = {
+        0x60, 0x40, 0x70, 0x40, 0x60, 0x30
+    };
+    writeData(FireworksYPosData, FireworksYPosData_data, sizeof(FireworksYPosData_data));
+
+    // Bitmasks
+    //
+    const uint8_t Bitmasks_data[] = {
+        BOOST_BINARY(00000001), BOOST_BINARY(00000010), BOOST_BINARY(00000100), BOOST_BINARY(00001000), BOOST_BINARY(00010000), BOOST_BINARY(00100000), BOOST_BINARY(01000000), BOOST_BINARY(10000000)
+    };
+    writeData(Bitmasks, Bitmasks_data, sizeof(Bitmasks_data));
+
+    // Enemy17YPosData
+    //
+    const uint8_t Enemy17YPosData_data[] = {
+        0x40, 0x30, 0x90, 0x50, 0x20, 0x60, 0xa0, 0x70
+    };
+    writeData(Enemy17YPosData, Enemy17YPosData_data, sizeof(Enemy17YPosData_data));
+
+    // SwimCC_IDData
+    //
+    const uint8_t SwimCC_IDData_data[] = {
+        0x0a, 0x0b
+    };
+    writeData(SwimCC_IDData, SwimCC_IDData_data, sizeof(SwimCC_IDData_data));
+
+    // PlatPosDataLow
+    //
+    const uint8_t PlatPosDataLow_data[] = {
+        0x08, 0x0c, 0xf8
+    };
+    writeData(PlatPosDataLow, PlatPosDataLow_data, sizeof(PlatPosDataLow_data));
+
+    // PlatPosDataHigh
+    //
+    const uint8_t PlatPosDataHigh_data[] = {
+        0x00, 0x00, 0xff
+    };
+    writeData(PlatPosDataHigh, PlatPosDataHigh_data, sizeof(PlatPosDataHigh_data));
+
+    // HammerThrowTmrData
+    //
+    const uint8_t HammerThrowTmrData_data[] = {
+        0x30, 0x1c
+    };
+    writeData(HammerThrowTmrData, HammerThrowTmrData_data, sizeof(HammerThrowTmrData_data));
+
+    // XSpeedAdderData
+    //
+    const uint8_t XSpeedAdderData_data[] = {
+        0x00, 0xe8, 0x00, 0x18
+    };
+    writeData(XSpeedAdderData, XSpeedAdderData_data, sizeof(XSpeedAdderData_data));
+
+    // RevivedXSpeed
+    //
+    const uint8_t RevivedXSpeed_data[] = {
+        0x08, 0xf8, 0x0c, 0xf4
+    };
+    writeData(RevivedXSpeed, RevivedXSpeed_data, sizeof(RevivedXSpeed_data));
+
+    // HammerBroJumpLData
+    //
+    const uint8_t HammerBroJumpLData_data[] = {
+        0x20, 0x37
+    };
+    writeData(HammerBroJumpLData, HammerBroJumpLData_data, sizeof(HammerBroJumpLData_data));
+
+    // BlooberBitmasks
+    //
+    const uint8_t BlooberBitmasks_data[] = {
+        BOOST_BINARY(00111111), BOOST_BINARY(00000011)
+    };
+    writeData(BlooberBitmasks, BlooberBitmasks_data, sizeof(BlooberBitmasks_data));
+
+    // SwimCCXMoveData
+    //
+    const uint8_t SwimCCXMoveData_data[] = {
+        0x40, 0x80,
+        0x04, 0x04
+    };
+    writeData(SwimCCXMoveData, SwimCCXMoveData_data, sizeof(SwimCCXMoveData_data));
+
+    // FirebarPosLookupTbl
+    //
+    const uint8_t FirebarPosLookupTbl_data[] = {
+        0x00, 0x01, 0x03, 0x04, 0x05, 0x06, 0x07, 0x07, 0x08,
+        0x00, 0x03, 0x06, 0x09, 0x0b, 0x0d, 0x0e, 0x0f, 0x10,
+        0x00, 0x04, 0x09, 0x0d, 0x10, 0x13, 0x16, 0x17, 0x18,
+        0x00, 0x06, 0x0c, 0x12, 0x16, 0x1a, 0x1d, 0x1f, 0x20,
+        0x00, 0x07, 0x0f, 0x16, 0x1c, 0x21, 0x25, 0x27, 0x28,
+        0x00, 0x09, 0x12, 0x1b, 0x21, 0x27, 0x2c, 0x2f, 0x30,
+        0x00, 0x0b, 0x15, 0x1f, 0x27, 0x2e, 0x33, 0x37, 0x38,
+        0x00, 0x0c, 0x18, 0x24, 0x2d, 0x35, 0x3b, 0x3e, 0x40,
+        0x00, 0x0e, 0x1b, 0x28, 0x32, 0x3b, 0x42, 0x46, 0x48,
+        0x00, 0x0f, 0x1f, 0x2d, 0x38, 0x42, 0x4a, 0x4e, 0x50,
+        0x00, 0x11, 0x22, 0x31, 0x3e, 0x49, 0x51, 0x56, 0x58
+    };
+    writeData(FirebarPosLookupTbl, FirebarPosLookupTbl_data, sizeof(FirebarPosLookupTbl_data));
+
+    // FirebarMirrorData
+    //
+    const uint8_t FirebarMirrorData_data[] = {
+        0x01, 0x03, 0x02, 0x00
+    };
+    writeData(FirebarMirrorData, FirebarMirrorData_data, sizeof(FirebarMirrorData_data));
+
+    // FirebarTblOffsets
+    //
+    const uint8_t FirebarTblOffsets_data[] = {
+        0x00, 0x09, 0x12, 0x1b, 0x24, 0x2d,
+        0x36, 0x3f, 0x48, 0x51, 0x5a, 0x63
+    };
+    writeData(FirebarTblOffsets, FirebarTblOffsets_data, sizeof(FirebarTblOffsets_data));
+
+    // FirebarYPos
+    //
+    const uint8_t FirebarYPos_data[] = {
+        0x0c, 0x18
+    };
+    writeData(FirebarYPos, FirebarYPos_data, sizeof(FirebarYPos_data));
+
+    // PRandomSubtracter
+    //
+    const uint8_t PRandomSubtracter_data[] = {
+        0xf8, 0xa0, 0x70, 0xbd, 0x00
+    };
+    writeData(PRandomSubtracter, PRandomSubtracter_data, sizeof(PRandomSubtracter_data));
+
+    // FlyCCBPriority
+    //
+    const uint8_t FlyCCBPriority_data[] = {
+        0x20, 0x20, 0x20, 0x00, 0x00
+    };
+    writeData(FlyCCBPriority, FlyCCBPriority_data, sizeof(FlyCCBPriority_data));
+
+    // LakituDiffAdj
+    //
+    const uint8_t LakituDiffAdj_data[] = {
+        0x15, 0x30, 0x40
+    };
+    writeData(LakituDiffAdj, LakituDiffAdj_data, sizeof(LakituDiffAdj_data));
+
+    // BridgeCollapseData
+    //
+    const uint8_t BridgeCollapseData_data[] = {
+        0x1a,
+        0x58,
+        0x98, 0x96, 0x94, 0x92, 0x90, 0x8e, 0x8c,
+        0x8a, 0x88, 0x86, 0x84, 0x82, 0x80
+    };
+    writeData(BridgeCollapseData, BridgeCollapseData_data, sizeof(BridgeCollapseData_data));
+
+    // PRandomRange
+    //
+    const uint8_t PRandomRange_data[] = {
+        0x21, 0x41, 0x11, 0x31
+    };
+    writeData(PRandomRange, PRandomRange_data, sizeof(PRandomRange_data));
+
+    // FlameTimerData
+    //
+    const uint8_t FlameTimerData_data[] = {
+        0xbf, 0x40, 0xbf, 0xbf, 0xbf, 0x40, 0x40, 0xbf
+    };
+    writeData(FlameTimerData, FlameTimerData_data, sizeof(FlameTimerData_data));
+
+    // StarFlagYPosAdder
+    //
+    const uint8_t StarFlagYPosAdder_data[] = {
+        0x00, 0x00, 0x08, 0x08
+    };
+    writeData(StarFlagYPosAdder, StarFlagYPosAdder_data, sizeof(StarFlagYPosAdder_data));
+
+    // StarFlagXPosAdder
+    //
+    const uint8_t StarFlagXPosAdder_data[] = {
+        0x00, 0x08, 0x00, 0x08
+    };
+    writeData(StarFlagXPosAdder, StarFlagXPosAdder_data, sizeof(StarFlagXPosAdder_data));
+
+    // StarFlagTileData
+    //
+    const uint8_t StarFlagTileData_data[] = {
+        0x54, 0x55, 0x56, 0x57
+    };
+    writeData(StarFlagTileData, StarFlagTileData_data, sizeof(StarFlagTileData_data));
+
+    // BowserIdentities
+    //
+    const uint8_t BowserIdentities_data[] = {
+        Goomba, GreenKoopa, BuzzyBeetle, Spiny, Lakitu, Bloober, HammerBro, Bowser
+    };
+    writeData(BowserIdentities, BowserIdentities_data, sizeof(BowserIdentities_data));
+
+    // ResidualXSpdData
+    //
+    const uint8_t ResidualXSpdData_data[] = {
+        0x18, 0xe8
+    };
+    writeData(ResidualXSpdData, ResidualXSpdData_data, sizeof(ResidualXSpdData_data));
+
+    // KickedShellXSpdData
+    //
+    const uint8_t KickedShellXSpdData_data[] = {
+        0x30, 0xd0
+    };
+    writeData(KickedShellXSpdData, KickedShellXSpdData_data, sizeof(KickedShellXSpdData_data));
+
+    // DemotedKoopaXSpdData
+    //
+    const uint8_t DemotedKoopaXSpdData_data[] = {
+        0x08, 0xf8
+    };
+    writeData(DemotedKoopaXSpdData, DemotedKoopaXSpdData_data, sizeof(DemotedKoopaXSpdData_data));
+
+    // KickedShellPtsData
+    //
+    const uint8_t KickedShellPtsData_data[] = {
+        0x0a, 0x06, 0x04
+    };
+    writeData(KickedShellPtsData, KickedShellPtsData_data, sizeof(KickedShellPtsData_data));
+
+    // StompedEnemyPtsData
+    //
+    const uint8_t StompedEnemyPtsData_data[] = {
+        0x02, 0x06, 0x05, 0x06
+    };
+    writeData(StompedEnemyPtsData, StompedEnemyPtsData_data, sizeof(StompedEnemyPtsData_data));
+
+    // RevivalRateData
+    //
+    const uint8_t RevivalRateData_data[] = {
+        0x10, 0x0b
+    };
+    writeData(RevivalRateData, RevivalRateData_data, sizeof(RevivalRateData_data));
+
+    // SetBitsMask
+    //
+    const uint8_t SetBitsMask_data[] = {
+        BOOST_BINARY(10000000), BOOST_BINARY(01000000), BOOST_BINARY(00100000), BOOST_BINARY(00010000), BOOST_BINARY(00001000), BOOST_BINARY(00000100), BOOST_BINARY(00000010)
+    };
+    writeData(SetBitsMask, SetBitsMask_data, sizeof(SetBitsMask_data));
+
+    // ClearBitsMask
+    //
+    const uint8_t ClearBitsMask_data[] = {
+        BOOST_BINARY(01111111), BOOST_BINARY(10111111), BOOST_BINARY(11011111), BOOST_BINARY(11101111), BOOST_BINARY(11110111), BOOST_BINARY(11111011), BOOST_BINARY(11111101)
+    };
+    writeData(ClearBitsMask, ClearBitsMask_data, sizeof(ClearBitsMask_data));
+
+    // PlayerPosSPlatData
+    //
+    const uint8_t PlayerPosSPlatData_data[] = {
+        0x80, 0x00
+    };
+    writeData(PlayerPosSPlatData, PlayerPosSPlatData_data, sizeof(PlayerPosSPlatData_data));
+
+    // PlayerBGUpperExtent
+    //
+    const uint8_t PlayerBGUpperExtent_data[] = {
+        0x20, 0x10
+    };
+    writeData(PlayerBGUpperExtent, PlayerBGUpperExtent_data, sizeof(PlayerBGUpperExtent_data));
+
+    // AreaChangeTimerData
+    //
+    const uint8_t AreaChangeTimerData_data[] = {
+        0xa0, 0x34
+    };
+    writeData(AreaChangeTimerData, AreaChangeTimerData_data, sizeof(AreaChangeTimerData_data));
+
+    // ClimbXPosAdder
+    //
+    const uint8_t ClimbXPosAdder_data[] = {
+        0xf9, 0x07
+    };
+    writeData(ClimbXPosAdder, ClimbXPosAdder_data, sizeof(ClimbXPosAdder_data));
+
+    // ClimbPLocAdder
+    //
+    const uint8_t ClimbPLocAdder_data[] = {
+        0xff, 0x00
+    };
+    writeData(ClimbPLocAdder, ClimbPLocAdder_data, sizeof(ClimbPLocAdder_data));
+
+    // FlagpoleYPosData
+    //
+    const uint8_t FlagpoleYPosData_data[] = {
+        0x18, 0x22, 0x50, 0x68, 0x90
+    };
+    writeData(FlagpoleYPosData, FlagpoleYPosData_data, sizeof(FlagpoleYPosData_data));
+
+    // SolidMTileUpperExt
+    //
+    const uint8_t SolidMTileUpperExt_data[] = {
+        0x10, 0x61, 0x88, 0xc4
+    };
+    writeData(SolidMTileUpperExt, SolidMTileUpperExt_data, sizeof(SolidMTileUpperExt_data));
+
+    // ClimbMTileUpperExt
+    //
+    const uint8_t ClimbMTileUpperExt_data[] = {
+        0x24, 0x6d, 0x8a, 0xc6
+    };
+    writeData(ClimbMTileUpperExt, ClimbMTileUpperExt_data, sizeof(ClimbMTileUpperExt_data));
+
+    // EnemyBGCStateData
+    //
+    const uint8_t EnemyBGCStateData_data[] = {
+        0x01, 0x01, 0x02, 0x02, 0x02, 0x05
+    };
+    writeData(EnemyBGCStateData, EnemyBGCStateData_data, sizeof(EnemyBGCStateData_data));
+
+    // EnemyBGCXSpdData
+    //
+    const uint8_t EnemyBGCXSpdData_data[] = {
+        0x10, 0xf0
+    };
+    writeData(EnemyBGCXSpdData, EnemyBGCXSpdData_data, sizeof(EnemyBGCXSpdData_data));
+
+    // BoundBoxCtrlData
+    //
+    const uint8_t BoundBoxCtrlData_data[] = {
+        0x02, 0x08, 0x0e, 0x20,
+        0x03, 0x14, 0x0d, 0x20,
+        0x02, 0x14, 0x0e, 0x20,
+        0x02, 0x09, 0x0e, 0x15,
+        0x00, 0x00, 0x18, 0x06,
+        0x00, 0x00, 0x20, 0x0d,
+        0x00, 0x00, 0x30, 0x0d,
+        0x00, 0x00, 0x08, 0x08,
+        0x06, 0x04, 0x0a, 0x08,
+        0x03, 0x0e, 0x0d, 0x14,
+        0x00, 0x02, 0x10, 0x15,
+        0x04, 0x04, 0x0c, 0x1c
+    };
+    writeData(BoundBoxCtrlData, BoundBoxCtrlData_data, sizeof(BoundBoxCtrlData_data));
+
+    // BlockBufferAdderData
+    //
+    const uint8_t BlockBufferAdderData_data[] = {
+        0x00, 0x07, 0x0e
+    };
+    writeData(BlockBufferAdderData, BlockBufferAdderData_data, sizeof(BlockBufferAdderData_data));
+
+    // BlockBuffer_X_Adder
+    //
+    const uint8_t BlockBuffer_X_Adder_data[] = {
+        0x08, 0x03, 0x0c, 0x02, 0x02, 0x0d, 0x0d, 0x08,
+        0x03, 0x0c, 0x02, 0x02, 0x0d, 0x0d, 0x08, 0x03,
+        0x0c, 0x02, 0x02, 0x0d, 0x0d, 0x08, 0x00, 0x10,
+        0x04, 0x14, 0x04, 0x04
+    };
+    writeData(BlockBuffer_X_Adder, BlockBuffer_X_Adder_data, sizeof(BlockBuffer_X_Adder_data));
+
+    // BlockBuffer_Y_Adder
+    //
+    const uint8_t BlockBuffer_Y_Adder_data[] = {
+        0x04, 0x20, 0x20, 0x08, 0x18, 0x08, 0x18, 0x02,
+        0x20, 0x20, 0x08, 0x18, 0x08, 0x18, 0x12, 0x20,
+        0x20, 0x18, 0x18, 0x18, 0x18, 0x18, 0x14, 0x14,
+        0x06, 0x06, 0x08, 0x10
+    };
+    writeData(BlockBuffer_Y_Adder, BlockBuffer_Y_Adder_data, sizeof(BlockBuffer_Y_Adder_data));
+
+    // VineYPosAdder
+    //
+    const uint8_t VineYPosAdder_data[] = {
+        0x00, 0x30
+    };
+    writeData(VineYPosAdder, VineYPosAdder_data, sizeof(VineYPosAdder_data));
+
+    // FirstSprXPos
+    //
+    const uint8_t FirstSprXPos_data[] = {
+        0x04, 0x00, 0x04, 0x00
+    };
+    writeData(FirstSprXPos, FirstSprXPos_data, sizeof(FirstSprXPos_data));
+
+    // FirstSprYPos
+    //
+    const uint8_t FirstSprYPos_data[] = {
+        0x00, 0x04, 0x00, 0x04
+    };
+    writeData(FirstSprYPos, FirstSprYPos_data, sizeof(FirstSprYPos_data));
+
+    // SecondSprXPos
+    //
+    const uint8_t SecondSprXPos_data[] = {
+        0x00, 0x08, 0x00, 0x08
+    };
+    writeData(SecondSprXPos, SecondSprXPos_data, sizeof(SecondSprXPos_data));
+
+    // SecondSprYPos
+    //
+    const uint8_t SecondSprYPos_data[] = {
+        0x08, 0x00, 0x08, 0x00
+    };
+    writeData(SecondSprYPos, SecondSprYPos_data, sizeof(SecondSprYPos_data));
+
+    // FirstSprTilenum
+    //
+    const uint8_t FirstSprTilenum_data[] = {
+        0x80, 0x82, 0x81, 0x83
+    };
+    writeData(FirstSprTilenum, FirstSprTilenum_data, sizeof(FirstSprTilenum_data));
+
+    // SecondSprTilenum
+    //
+    const uint8_t SecondSprTilenum_data[] = {
+        0x81, 0x83, 0x80, 0x82
+    };
+    writeData(SecondSprTilenum, SecondSprTilenum_data, sizeof(SecondSprTilenum_data));
+
+    // HammerSprAttrib
+    //
+    const uint8_t HammerSprAttrib_data[] = {
+        0x03, 0x03, 0xc3, 0xc3
+    };
+    writeData(HammerSprAttrib, HammerSprAttrib_data, sizeof(HammerSprAttrib_data));
+
+    // FlagpoleScoreNumTiles
+    //
+    const uint8_t FlagpoleScoreNumTiles_data[] = {
+        0xf9, 0x50,
+        0xf7, 0x50,
+        0xfa, 0xfb,
+        0xf8, 0xfb,
+        0xf6, 0xfb
+    };
+    writeData(FlagpoleScoreNumTiles, FlagpoleScoreNumTiles_data, sizeof(FlagpoleScoreNumTiles_data));
+
+    // JumpingCoinTiles
+    //
+    const uint8_t JumpingCoinTiles_data[] = {
+        0x60, 0x61, 0x62, 0x63
+    };
+    writeData(JumpingCoinTiles, JumpingCoinTiles_data, sizeof(JumpingCoinTiles_data));
+
+    // PowerUpGfxTable
+    //
+    const uint8_t PowerUpGfxTable_data[] = {
+        0x76, 0x77, 0x78, 0x79,
+        0xd6, 0xd6, 0xd9, 0xd9,
+        0x8d, 0x8d, 0xe4, 0xe4,
+        0x76, 0x77, 0x78, 0x79
+    };
+    writeData(PowerUpGfxTable, PowerUpGfxTable_data, sizeof(PowerUpGfxTable_data));
+
+    // PowerUpAttributes
+    //
+    const uint8_t PowerUpAttributes_data[] = {
+        0x02, 0x01, 0x02, 0x01
+    };
+    writeData(PowerUpAttributes, PowerUpAttributes_data, sizeof(PowerUpAttributes_data));
+
+    // EnemyGraphicsTable
+    //
+    const uint8_t EnemyGraphicsTable_data[] = {
+        0xfc, 0xfc, 0xaa, 0xab, 0xac, 0xad,
+        0xfc, 0xfc, 0xae, 0xaf, 0xb0, 0xb1,
+        0xfc, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9,
+        0xfc, 0xa0, 0xa1, 0xa2, 0xa3, 0xa4,
+        0x69, 0xa5, 0x6a, 0xa7, 0xa8, 0xa9,
+        0x6b, 0xa0, 0x6c, 0xa2, 0xa3, 0xa4,
+        0xfc, 0xfc, 0x96, 0x97, 0x98, 0x99,
+        0xfc, 0xfc, 0x9a, 0x9b, 0x9c, 0x9d,
+        0xfc, 0xfc, 0x8f, 0x8e, 0x8e, 0x8f,
+        0xfc, 0xfc, 0x95, 0x94, 0x94, 0x95,
+        0xfc, 0xfc, 0xdc, 0xdc, 0xdf, 0xdf,
+        0xdc, 0xdc, 0xdd, 0xdd, 0xde, 0xde,
+        0xfc, 0xfc, 0xb2, 0xb3, 0xb4, 0xb5,
+        0xfc, 0xfc, 0xb6, 0xb3, 0xb7, 0xb5,
+        0xfc, 0xfc, 0x70, 0x71, 0x72, 0x73,
+        0xfc, 0xfc, 0x6e, 0x6e, 0x6f, 0x6f,
+        0xfc, 0xfc, 0x6d, 0x6d, 0x6f, 0x6f,
+        0xfc, 0xfc, 0x6f, 0x6f, 0x6e, 0x6e,
+        0xfc, 0xfc, 0x6f, 0x6f, 0x6d, 0x6d,
+        0xfc, 0xfc, 0xf4, 0xf4, 0xf5, 0xf5,
+        0xfc, 0xfc, 0xf4, 0xf4, 0xf5, 0xf5,
+        0xfc, 0xfc, 0xf5, 0xf5, 0xf4, 0xf4,
+        0xfc, 0xfc, 0xf5, 0xf5, 0xf4, 0xf4,
+        0xfc, 0xfc, 0xfc, 0xfc, 0xef, 0xef,
+        0xb9, 0xb8, 0xbb, 0xba, 0xbc, 0xbc,
+        0xfc, 0xfc, 0xbd, 0xbd, 0xbc, 0xbc,
+        0x7a, 0x7b, 0xda, 0xdb, 0xd8, 0xd8,
+        0xcd, 0xcd, 0xce, 0xce, 0xcf, 0xcf,
+        0x7d, 0x7c, 0xd1, 0x8c, 0xd3, 0xd2,
+        0x7d, 0x7c, 0x89, 0x88, 0x8b, 0x8a,
+        0xd5, 0xd4, 0xe3, 0xe2, 0xd3, 0xd2,
+        0xd5, 0xd4, 0xe3, 0xe2, 0x8b, 0x8a,
+        0xe5, 0xe5, 0xe6, 0xe6, 0xeb, 0xeb,
+        0xec, 0xec, 0xed, 0xed, 0xee, 0xee,
+        0xfc, 0xfc, 0xd0, 0xd0, 0xd7, 0xd7,
+        0xbf, 0xbe, 0xc1, 0xc0, 0xc2, 0xfc,
+        0xc4, 0xc3, 0xc6, 0xc5, 0xc8, 0xc7,
+        0xbf, 0xbe, 0xca, 0xc9, 0xc2, 0xfc,
+        0xc4, 0xc3, 0xc6, 0xc5, 0xcc, 0xcb,
+        0xfc, 0xfc, 0xe8, 0xe7, 0xea, 0xe9,
+        0xf2, 0xf2, 0xf3, 0xf3, 0xf2, 0xf2,
+        0xf1, 0xf1, 0xf1, 0xf1, 0xfc, 0xfc,
+        0xf0, 0xf0, 0xfc, 0xfc, 0xfc, 0xfc
+    };
+    writeData(EnemyGraphicsTable, EnemyGraphicsTable_data, sizeof(EnemyGraphicsTable_data));
+
+    // EnemyGfxTableOffsets
+    //
+    const uint8_t EnemyGfxTableOffsets_data[] = {
+        0x0c, 0x0c, 0x00, 0x0c, 0x0c, 0xa8, 0x54, 0x3c,
+        0xea, 0x18, 0x48, 0x48, 0xcc, 0xc0, 0x18, 0x18,
+        0x18, 0x90, 0x24, 0xff, 0x48, 0x9c, 0xd2, 0xd8,
+        0xf0, 0xf6, 0xfc
+    };
+    writeData(EnemyGfxTableOffsets, EnemyGfxTableOffsets_data, sizeof(EnemyGfxTableOffsets_data));
+
+    // EnemyAttributeData
+    //
+    const uint8_t EnemyAttributeData_data[] = {
+        0x01, 0x02, 0x03, 0x02, 0x01, 0x01, 0x03, 0x03,
+        0x03, 0x01, 0x01, 0x02, 0x02, 0x21, 0x01, 0x02,
+        0x01, 0x01, 0x02, 0xff, 0x02, 0x02, 0x01, 0x01,
+        0x02, 0x02, 0x02
+    };
+    writeData(EnemyAttributeData, EnemyAttributeData_data, sizeof(EnemyAttributeData_data));
+
+    // EnemyAnimTimingBMask
+    //
+    const uint8_t EnemyAnimTimingBMask_data[] = {
+        0x08, 0x18
+    };
+    writeData(EnemyAnimTimingBMask, EnemyAnimTimingBMask_data, sizeof(EnemyAnimTimingBMask_data));
+
+    // JumpspringFrameOffsets
+    //
+    const uint8_t JumpspringFrameOffsets_data[] = {
+        0x18, 0x19, 0x1a, 0x19, 0x18
+    };
+    writeData(JumpspringFrameOffsets, JumpspringFrameOffsets_data, sizeof(JumpspringFrameOffsets_data));
+
+    // DefaultBlockObjTiles
+    //
+    const uint8_t DefaultBlockObjTiles_data[] = {
+        0x85, 0x85, 0x86, 0x86
+    };
+    writeData(DefaultBlockObjTiles, DefaultBlockObjTiles_data, sizeof(DefaultBlockObjTiles_data));
+
+    // ExplosionTiles
+    //
+    const uint8_t ExplosionTiles_data[] = {
+        0x68, 0x67, 0x66
+    };
+    writeData(ExplosionTiles, ExplosionTiles_data, sizeof(ExplosionTiles_data));
+
+    // PlayerGfxTblOffsets
+    //
+    const uint8_t PlayerGfxTblOffsets_data[] = {
+        0x20, 0x28, 0xc8, 0x18, 0x00, 0x40, 0x50, 0x58,
+        0x80, 0x88, 0xb8, 0x78, 0x60, 0xa0, 0xb0, 0xb8
+    };
+    writeData(PlayerGfxTblOffsets, PlayerGfxTblOffsets_data, sizeof(PlayerGfxTblOffsets_data));
+
+    // PlayerGraphicsTable
+    //
+    const uint8_t PlayerGraphicsTable_data[] = {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+        0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
+        0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
+        0x08, 0x09, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x30, 0x2c, 0x2d,
+        0x08, 0x09, 0x0a, 0x0b, 0x2e, 0x2f, 0x2c, 0x2d,
+        0x08, 0x09, 0x28, 0x29, 0x2a, 0x2b, 0x5c, 0x5d,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x5e, 0x5f,
+        0xfc, 0xfc, 0x08, 0x09, 0x58, 0x59, 0x5a, 0x5a,
+        0x08, 0x09, 0x28, 0x29, 0x2a, 0x2b, 0x0e, 0x0f,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x33, 0x34, 0x35,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x36, 0x37, 0x38, 0x39,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x3a, 0x37, 0x3b, 0x3c,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x3d, 0x3e, 0x3f, 0x40,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x41, 0x42, 0x43,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x33, 0x44, 0x45,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x33, 0x44, 0x47,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x33, 0x48, 0x49,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x32, 0x33, 0x90, 0x91,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x3a, 0x37, 0x92, 0x93,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x9e, 0x9e, 0x9f, 0x9f,
+        0xfc, 0xfc, 0xfc, 0xfc, 0x3a, 0x37, 0x4f, 0x4f,
+        0xfc, 0xfc, 0x00, 0x01, 0x4c, 0x4d, 0x4e, 0x4e,
+        0x00, 0x01, 0x4c, 0x4d, 0x4a, 0x4a, 0x4b, 0x4b
+    };
+    writeData(PlayerGraphicsTable, PlayerGraphicsTable_data, sizeof(PlayerGraphicsTable_data));
+
+    // SwimKickTileNum
+    //
+    const uint8_t SwimKickTileNum_data[] = {
+        0x31, 0x46
+    };
+    writeData(SwimKickTileNum, SwimKickTileNum_data, sizeof(SwimKickTileNum_data));
+
+    // IntermediatePlayerData
+    //
+    const uint8_t IntermediatePlayerData_data[] = {
+        0x58, 0x01, 0x00, 0x60, 0xff, 0x04
+    };
+    writeData(IntermediatePlayerData, IntermediatePlayerData_data, sizeof(IntermediatePlayerData_data));
+
+    // ChangeSizeOffsetAdder
+    //
+    const uint8_t ChangeSizeOffsetAdder_data[] = {
+        0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02,
+        0x02, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x00
+    };
+    writeData(ChangeSizeOffsetAdder, ChangeSizeOffsetAdder_data, sizeof(ChangeSizeOffsetAdder_data));
+
+    // ObjOffsetData
+    //
+    const uint8_t ObjOffsetData_data[] = {
+        0x07, 0x16, 0x0d
+    };
+    writeData(ObjOffsetData, ObjOffsetData_data, sizeof(ObjOffsetData_data));
+
+    // XOffscreenBitsData
+    //
+    const uint8_t XOffscreenBitsData_data[] = {
+        0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01, 0x00,
+        0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff
+    };
+    writeData(XOffscreenBitsData, XOffscreenBitsData_data, sizeof(XOffscreenBitsData_data));
+
+    // DefaultXOnscreenOfs
+    //
+    const uint8_t DefaultXOnscreenOfs_data[] = {
+        0x07, 0x0f, 0x07
+    };
+    writeData(DefaultXOnscreenOfs, DefaultXOnscreenOfs_data, sizeof(DefaultXOnscreenOfs_data));
+
+    // YOffscreenBitsData
+    //
+    const uint8_t YOffscreenBitsData_data[] = {
+        0x00, 0x08, 0x0c, 0x0e,
+        0x0f, 0x07, 0x03, 0x01,
+        0x00
+    };
+    writeData(YOffscreenBitsData, YOffscreenBitsData_data, sizeof(YOffscreenBitsData_data));
+
+    // DefaultYOnscreenOfs
+    //
+    const uint8_t DefaultYOnscreenOfs_data[] = {
+        0x04, 0x00, 0x04
+    };
+    writeData(DefaultYOnscreenOfs, DefaultYOnscreenOfs_data, sizeof(DefaultYOnscreenOfs_data));
+
+    // HighPosUnitData
+    //
+    const uint8_t HighPosUnitData_data[] = {
+        0xff, 0x00
+    };
+    writeData(HighPosUnitData, HighPosUnitData_data, sizeof(HighPosUnitData_data));
+
+    // SwimStompEnvelopeData
+    //
+    const uint8_t SwimStompEnvelopeData_data[] = {
+        0x9f, 0x9b, 0x98, 0x96, 0x95, 0x94, 0x92, 0x90,
+        0x90, 0x9a, 0x97, 0x95, 0x93, 0x92
+    };
+    writeData(SwimStompEnvelopeData, SwimStompEnvelopeData_data, sizeof(SwimStompEnvelopeData_data));
+
+    // ExtraLifeFreqData
+    //
+    const uint8_t ExtraLifeFreqData_data[] = {
+        0x58, 0x02, 0x54, 0x56, 0x4e, 0x44
+    };
+    writeData(ExtraLifeFreqData, ExtraLifeFreqData_data, sizeof(ExtraLifeFreqData_data));
+
+    // PowerUpGrabFreqData
+    //
+    const uint8_t PowerUpGrabFreqData_data[] = {
+        0x4c, 0x52, 0x4c, 0x48, 0x3e, 0x36, 0x3e, 0x36, 0x30,
+        0x28, 0x4a, 0x50, 0x4a, 0x64, 0x3c, 0x32, 0x3c, 0x32,
+        0x2c, 0x24, 0x3a, 0x64, 0x3a, 0x34, 0x2c, 0x22, 0x2c,
+        0x22, 0x1c, 0x14
+    };
+    writeData(PowerUpGrabFreqData, PowerUpGrabFreqData_data, sizeof(PowerUpGrabFreqData_data));
+
+    // PUp_VGrow_FreqData
+    //
+    const uint8_t PUp_VGrow_FreqData_data[] = {
+        0x14, 0x04, 0x22, 0x24, 0x16, 0x04, 0x24, 0x26,
+        0x18, 0x04, 0x26, 0x28, 0x1a, 0x04, 0x28, 0x2a,
+        0x1c, 0x04, 0x2a, 0x2c, 0x1e, 0x04, 0x2c, 0x2e,
+        0x20, 0x04, 0x2e, 0x30, 0x22, 0x04, 0x30, 0x32
+    };
+    writeData(PUp_VGrow_FreqData, PUp_VGrow_FreqData_data, sizeof(PUp_VGrow_FreqData_data));
+
+    // BrickShatterFreqData
+    //
+    const uint8_t BrickShatterFreqData_data[] = {
+        0x01, 0x0e, 0x0e, 0x0d, 0x0b, 0x06, 0x0c, 0x0f,
+        0x0a, 0x09, 0x03, 0x0d, 0x08, 0x0d, 0x06, 0x0c
+    };
+    writeData(BrickShatterFreqData, BrickShatterFreqData_data, sizeof(BrickShatterFreqData_data));
+
+    // MusicHeaderData
+    //
+    const uint8_t MusicHeaderData_data[] = {
+        DeathMusHdr - MHD,
+        GameOverMusHdr - MHD,
+        VictoryMusHdr - MHD,
+        WinCastleMusHdr - MHD,
+        GameOverMusHdr - MHD,
+        EndOfLevelMusHdr - MHD,
+        TimeRunningOutHdr - MHD,
+        SilenceHdr - MHD,
+        GroundLevelPart1Hdr - MHD,
+        WaterMusHdr - MHD,
+        UndergroundMusHdr - MHD,
+        CastleMusHdr - MHD,
+        Star_CloudHdr - MHD,
+        GroundLevelLeadInHdr - MHD,
+        Star_CloudHdr - MHD,
+        SilenceHdr - MHD,
+        GroundLevelLeadInHdr - MHD,
+        GroundLevelPart1Hdr - MHD, GroundLevelPart1Hdr - MHD,
+        GroundLevelPart2AHdr - MHD, GroundLevelPart2BHdr - MHD, GroundLevelPart2AHdr - MHD, GroundLevelPart2CHdr - MHD,
+        GroundLevelPart2AHdr - MHD, GroundLevelPart2BHdr - MHD, GroundLevelPart2AHdr - MHD, GroundLevelPart2CHdr - MHD,
+        GroundLevelPart3AHdr - MHD, GroundLevelPart3BHdr - MHD, GroundLevelPart3AHdr - MHD, GroundLevelLeadInHdr - MHD,
+        GroundLevelPart1Hdr - MHD, GroundLevelPart1Hdr - MHD,
+        GroundLevelPart4AHdr - MHD, GroundLevelPart4BHdr - MHD, GroundLevelPart4AHdr - MHD, GroundLevelPart4CHdr - MHD,
+        GroundLevelPart4AHdr - MHD, GroundLevelPart4BHdr - MHD, GroundLevelPart4AHdr - MHD, GroundLevelPart4CHdr - MHD,
+        GroundLevelPart3AHdr - MHD, GroundLevelPart3BHdr - MHD, GroundLevelPart3AHdr - MHD, GroundLevelLeadInHdr - MHD,
+        GroundLevelPart4AHdr - MHD, GroundLevelPart4BHdr - MHD, GroundLevelPart4AHdr - MHD, GroundLevelPart4CHdr - MHD
+    };
+    writeData(MusicHeaderData, MusicHeaderData_data, sizeof(MusicHeaderData_data));
+
+    // TimeRunningOutHdr
+    //
+    const uint8_t TimeRunningOutHdr_data[] = {
+        0x08, LOBYTE(TimeRunOutMusData), HIBYTE(TimeRunOutMusData), 0x27, 0x18
+    };
+    writeData(TimeRunningOutHdr, TimeRunningOutHdr_data, sizeof(TimeRunningOutHdr_data));
+
+    // Star_CloudHdr
+    //
+    const uint8_t Star_CloudHdr_data[] = {
+        0x20, LOBYTE(Star_CloudMData), HIBYTE(Star_CloudMData), 0x2e, 0x1a, 0x40
+    };
+    writeData(Star_CloudHdr, Star_CloudHdr_data, sizeof(Star_CloudHdr_data));
+
+    // EndOfLevelMusHdr
+    //
+    const uint8_t EndOfLevelMusHdr_data[] = {
+        0x20, LOBYTE(WinLevelMusData), HIBYTE(WinLevelMusData), 0x3d, 0x21
+    };
+    writeData(EndOfLevelMusHdr, EndOfLevelMusHdr_data, sizeof(EndOfLevelMusHdr_data));
+
+    // ResidualHeaderData
+    //
+    const uint8_t ResidualHeaderData_data[] = {
+        0x20, 0xc4, 0xfc, 0x3f, 0x1d
+    };
+    writeData(ResidualHeaderData, ResidualHeaderData_data, sizeof(ResidualHeaderData_data));
+
+    // UndergroundMusHdr
+    //
+    const uint8_t UndergroundMusHdr_data[] = {
+        0x18, LOBYTE(UndergroundMusData), HIBYTE(UndergroundMusData), 0x00, 0x00
+    };
+    writeData(UndergroundMusHdr, UndergroundMusHdr_data, sizeof(UndergroundMusHdr_data));
+
+    // SilenceHdr
+    //
+    const uint8_t SilenceHdr_data[] = {
+        0x08, LOBYTE(SilenceData), HIBYTE(SilenceData), 0x00
+    };
+    writeData(SilenceHdr, SilenceHdr_data, sizeof(SilenceHdr_data));
+
+    // CastleMusHdr
+    //
+    const uint8_t CastleMusHdr_data[] = {
+        0x00, LOBYTE(CastleMusData), HIBYTE(CastleMusData), 0x93, 0x62
+    };
+    writeData(CastleMusHdr, CastleMusHdr_data, sizeof(CastleMusHdr_data));
+
+    // VictoryMusHdr
+    //
+    const uint8_t VictoryMusHdr_data[] = {
+        0x10, LOBYTE(VictoryMusData), HIBYTE(VictoryMusData), 0x24, 0x14
+    };
+    writeData(VictoryMusHdr, VictoryMusHdr_data, sizeof(VictoryMusHdr_data));
+
+    // GameOverMusHdr
+    //
+    const uint8_t GameOverMusHdr_data[] = {
+        0x18, LOBYTE(GameOverMusData), HIBYTE(GameOverMusData), 0x1e, 0x14
+    };
+    writeData(GameOverMusHdr, GameOverMusHdr_data, sizeof(GameOverMusHdr_data));
+
+    // WaterMusHdr
+    //
+    const uint8_t WaterMusHdr_data[] = {
+        0x08, LOBYTE(WaterMusData), HIBYTE(WaterMusData), 0xa0, 0x70, 0x68
+    };
+    writeData(WaterMusHdr, WaterMusHdr_data, sizeof(WaterMusHdr_data));
+
+    // WinCastleMusHdr
+    //
+    const uint8_t WinCastleMusHdr_data[] = {
+        0x08, LOBYTE(EndOfCastleMusData), HIBYTE(EndOfCastleMusData), 0x4c, 0x24
+    };
+    writeData(WinCastleMusHdr, WinCastleMusHdr_data, sizeof(WinCastleMusHdr_data));
+
+    // GroundLevelPart1Hdr
+    //
+    const uint8_t GroundLevelPart1Hdr_data[] = {
+        0x18, LOBYTE(GroundM_P1Data), HIBYTE(GroundM_P1Data), 0x2d, 0x1c, 0xb8
+    };
+    writeData(GroundLevelPart1Hdr, GroundLevelPart1Hdr_data, sizeof(GroundLevelPart1Hdr_data));
+
+    // GroundLevelPart2AHdr
+    //
+    const uint8_t GroundLevelPart2AHdr_data[] = {
+        0x18, LOBYTE(GroundM_P2AData), HIBYTE(GroundM_P2AData), 0x20, 0x12, 0x70
+    };
+    writeData(GroundLevelPart2AHdr, GroundLevelPart2AHdr_data, sizeof(GroundLevelPart2AHdr_data));
+
+    // GroundLevelPart2BHdr
+    //
+    const uint8_t GroundLevelPart2BHdr_data[] = {
+        0x18, LOBYTE(GroundM_P2BData), HIBYTE(GroundM_P2BData), 0x1b, 0x10, 0x44
+    };
+    writeData(GroundLevelPart2BHdr, GroundLevelPart2BHdr_data, sizeof(GroundLevelPart2BHdr_data));
+
+    // GroundLevelPart2CHdr
+    //
+    const uint8_t GroundLevelPart2CHdr_data[] = {
+        0x18, LOBYTE(GroundM_P2CData), HIBYTE(GroundM_P2CData), 0x11, 0x0a, 0x1c
+    };
+    writeData(GroundLevelPart2CHdr, GroundLevelPart2CHdr_data, sizeof(GroundLevelPart2CHdr_data));
+
+    // GroundLevelPart3AHdr
+    //
+    const uint8_t GroundLevelPart3AHdr_data[] = {
+        0x18, LOBYTE(GroundM_P3AData), HIBYTE(GroundM_P3AData), 0x2d, 0x10, 0x58
+    };
+    writeData(GroundLevelPart3AHdr, GroundLevelPart3AHdr_data, sizeof(GroundLevelPart3AHdr_data));
+
+    // GroundLevelPart3BHdr
+    //
+    const uint8_t GroundLevelPart3BHdr_data[] = {
+        0x18, LOBYTE(GroundM_P3BData), HIBYTE(GroundM_P3BData), 0x14, 0x0d, 0x3f
+    };
+    writeData(GroundLevelPart3BHdr, GroundLevelPart3BHdr_data, sizeof(GroundLevelPart3BHdr_data));
+
+    // GroundLevelLeadInHdr
+    //
+    const uint8_t GroundLevelLeadInHdr_data[] = {
+        0x18, LOBYTE(GroundMLdInData), HIBYTE(GroundMLdInData), 0x15, 0x0d, 0x21
+    };
+    writeData(GroundLevelLeadInHdr, GroundLevelLeadInHdr_data, sizeof(GroundLevelLeadInHdr_data));
+
+    // GroundLevelPart4AHdr
+    //
+    const uint8_t GroundLevelPart4AHdr_data[] = {
+        0x18, LOBYTE(GroundM_P4AData), HIBYTE(GroundM_P4AData), 0x18, 0x10, 0x7a
+    };
+    writeData(GroundLevelPart4AHdr, GroundLevelPart4AHdr_data, sizeof(GroundLevelPart4AHdr_data));
+
+    // GroundLevelPart4BHdr
+    //
+    const uint8_t GroundLevelPart4BHdr_data[] = {
+        0x18, LOBYTE(GroundM_P4BData), HIBYTE(GroundM_P4BData), 0x19, 0x0f, 0x54
+    };
+    writeData(GroundLevelPart4BHdr, GroundLevelPart4BHdr_data, sizeof(GroundLevelPart4BHdr_data));
+
+    // GroundLevelPart4CHdr
+    //
+    const uint8_t GroundLevelPart4CHdr_data[] = {
+        0x18, LOBYTE(GroundM_P4CData), HIBYTE(GroundM_P4CData), 0x1e, 0x12, 0x2b
+    };
+    writeData(GroundLevelPart4CHdr, GroundLevelPart4CHdr_data, sizeof(GroundLevelPart4CHdr_data));
+
+    // DeathMusHdr
+    //
+    const uint8_t DeathMusHdr_data[] = {
+        0x18, LOBYTE(DeathMusData), HIBYTE(DeathMusData), 0x1e, 0x0f, 0x2d
+    };
+    writeData(DeathMusHdr, DeathMusHdr_data, sizeof(DeathMusHdr_data));
+
+    // Star_CloudMData
+    //
+    const uint8_t Star_CloudMData_data[] = {
+        0x84, 0x2c, 0x2c, 0x2c, 0x82, 0x04, 0x2c, 0x04, 0x85, 0x2c, 0x84, 0x2c, 0x2c,
+        0x2a, 0x2a, 0x2a, 0x82, 0x04, 0x2a, 0x04, 0x85, 0x2a, 0x84, 0x2a, 0x2a, 0x00,
+        0x1f, 0x1f, 0x1f, 0x98, 0x1f, 0x1f, 0x98, 0x9e, 0x98, 0x1f,
+        0x1d, 0x1d, 0x1d, 0x94, 0x1d, 0x1d, 0x94, 0x9c, 0x94, 0x1d,
+        0x86, 0x18, 0x85, 0x26, 0x30, 0x84, 0x04, 0x26, 0x30,
+        0x86, 0x14, 0x85, 0x22, 0x2c, 0x84, 0x04, 0x22, 0x2c,
+        0x21, 0xd0, 0xc4, 0xd0, 0x31, 0xd0, 0xc4, 0xd0, 0x00
+    };
+    writeData(Star_CloudMData, Star_CloudMData_data, sizeof(Star_CloudMData_data));
+
+    // GroundM_P1Data
+    //
+    const uint8_t GroundM_P1Data_data[] = {
+        0x85, 0x2c, 0x22, 0x1c, 0x84, 0x26, 0x2a, 0x82, 0x28, 0x26, 0x04,
+        0x87, 0x22, 0x34, 0x3a, 0x82, 0x40, 0x04, 0x36, 0x84, 0x3a, 0x34,
+        0x82, 0x2c, 0x30, 0x85, 0x2a
+    };
+    writeData(GroundM_P1Data, GroundM_P1Data_data, sizeof(GroundM_P1Data_data));
+
+    // SilenceData
+    //
+    const uint8_t SilenceData_data[] = {
+        0x00,
+        0x5d, 0x55, 0x4d, 0x15, 0x19, 0x96, 0x15, 0xd5, 0xe3, 0xeb,
+        0x2d, 0xa6, 0x2b, 0x27, 0x9c, 0x9e, 0x59,
+        0x85, 0x22, 0x1c, 0x14, 0x84, 0x1e, 0x22, 0x82, 0x20, 0x1e, 0x04, 0x87,
+        0x1c, 0x2c, 0x34, 0x82, 0x36, 0x04, 0x30, 0x34, 0x04, 0x2c, 0x04, 0x26,
+        0x2a, 0x85, 0x22
+    };
+    writeData(SilenceData, SilenceData_data, sizeof(SilenceData_data));
+
+    // GroundM_P2AData
+    //
+    const uint8_t GroundM_P2AData_data[] = {
+        0x84, 0x04, 0x82, 0x3a, 0x38, 0x36, 0x32, 0x04, 0x34,
+        0x04, 0x24, 0x26, 0x2c, 0x04, 0x26, 0x2c, 0x30, 0x00,
+        0x05, 0xb4, 0xb2, 0xb0, 0x2b, 0xac, 0x84,
+        0x9c, 0x9e, 0xa2, 0x84, 0x94, 0x9c, 0x9e,
+        0x85, 0x14, 0x22, 0x84, 0x2c, 0x85, 0x1e,
+        0x82, 0x2c, 0x84, 0x2c, 0x1e
+    };
+    writeData(GroundM_P2AData, GroundM_P2AData_data, sizeof(GroundM_P2AData_data));
+
+    // GroundM_P2BData
+    //
+    const uint8_t GroundM_P2BData_data[] = {
+        0x84, 0x04, 0x82, 0x3a, 0x38, 0x36, 0x32, 0x04, 0x34,
+        0x04, 0x64, 0x04, 0x64, 0x86, 0x64, 0x00,
+        0x05, 0xb4, 0xb2, 0xb0, 0x2b, 0xac, 0x84,
+        0x37, 0xb6, 0xb6, 0x45,
+        0x85, 0x14, 0x1c, 0x82, 0x22, 0x84, 0x2c,
+        0x4e, 0x82, 0x4e, 0x84, 0x4e, 0x22
+    };
+    writeData(GroundM_P2BData, GroundM_P2BData_data, sizeof(GroundM_P2BData_data));
+
+    // GroundM_P2CData
+    //
+    const uint8_t GroundM_P2CData_data[] = {
+        0x84, 0x04, 0x85, 0x32, 0x85, 0x30, 0x86, 0x2c, 0x04, 0x00,
+        0x05, 0xa4, 0x05, 0x9e, 0x05, 0x9d, 0x85,
+        0x84, 0x14, 0x85, 0x24, 0x28, 0x2c, 0x82,
+        0x22, 0x84, 0x22, 0x14,
+        0x21, 0xd0, 0xc4, 0xd0, 0x31, 0xd0, 0xc4, 0xd0, 0x00
+    };
+    writeData(GroundM_P2CData, GroundM_P2CData_data, sizeof(GroundM_P2CData_data));
+
+    // GroundM_P3AData
+    //
+    const uint8_t GroundM_P3AData_data[] = {
+        0x82, 0x2c, 0x84, 0x2c, 0x2c, 0x82, 0x2c, 0x30,
+        0x04, 0x34, 0x2c, 0x04, 0x26, 0x86, 0x22, 0x00,
+        0xa4, 0x25, 0x25, 0xa4, 0x29, 0xa2, 0x1d, 0x9c, 0x95
+    };
+    writeData(GroundM_P3AData, GroundM_P3AData_data, sizeof(GroundM_P3AData_data));
+
+    // GroundM_P3BData
+    //
+    const uint8_t GroundM_P3BData_data[] = {
+        0x82, 0x2c, 0x2c, 0x04, 0x2c, 0x04, 0x2c, 0x30, 0x85, 0x34, 0x04, 0x04, 0x00,
+        0xa4, 0x25, 0x25, 0xa4, 0xa8, 0x63, 0x04,
+        0x85, 0x0e, 0x1a, 0x84, 0x24, 0x85, 0x22, 0x14, 0x84, 0x0c
+    };
+    writeData(GroundM_P3BData, GroundM_P3BData_data, sizeof(GroundM_P3BData_data));
+
+    // GroundMLdInData
+    //
+    const uint8_t GroundMLdInData_data[] = {
+        0x82, 0x34, 0x84, 0x34, 0x34, 0x82, 0x2c, 0x84, 0x34, 0x86, 0x3a, 0x04, 0x00,
+        0xa0, 0x21, 0x21, 0xa0, 0x21, 0x2b, 0x05, 0xa3,
+        0x82, 0x18, 0x84, 0x18, 0x18, 0x82, 0x18, 0x18, 0x04, 0x86, 0x3a, 0x22,
+        0x31, 0x90, 0x31, 0x90, 0x31, 0x71, 0x31, 0x90, 0x90, 0x90, 0x00
+    };
+    writeData(GroundMLdInData, GroundMLdInData_data, sizeof(GroundMLdInData_data));
+
+    // GroundM_P4AData
+    //
+    const uint8_t GroundM_P4AData_data[] = {
+        0x82, 0x34, 0x84, 0x2c, 0x85, 0x22, 0x84, 0x24,
+        0x82, 0x26, 0x36, 0x04, 0x36, 0x86, 0x26, 0x00,
+        0xac, 0x27, 0x5d, 0x1d, 0x9e, 0x2d, 0xac, 0x9f,
+        0x85, 0x14, 0x82, 0x20, 0x84, 0x22, 0x2c,
+        0x1e, 0x1e, 0x82, 0x2c, 0x2c, 0x1e, 0x04
+    };
+    writeData(GroundM_P4AData, GroundM_P4AData_data, sizeof(GroundM_P4AData_data));
+
+    // GroundM_P4BData
+    //
+    const uint8_t GroundM_P4BData_data[] = {
+        0x87, 0x2a, 0x40, 0x40, 0x40, 0x3a, 0x36,
+        0x82, 0x34, 0x2c, 0x04, 0x26, 0x86, 0x22, 0x00,
+        0xe3, 0xf7, 0xf7, 0xf7, 0xf5, 0xf1, 0xac, 0x27, 0x9e, 0x9d,
+        0x85, 0x18, 0x82, 0x1e, 0x84, 0x22, 0x2a,
+        0x22, 0x22, 0x82, 0x2c, 0x2c, 0x22, 0x04
+    };
+    writeData(GroundM_P4BData, GroundM_P4BData_data, sizeof(GroundM_P4BData_data));
+
+    // DeathMusData
+    //
+    const uint8_t DeathMusData_data[] = {
+        0x86, 0x04
+    };
+    writeData(DeathMusData, DeathMusData_data, sizeof(DeathMusData_data));
+
+    // GroundM_P4CData
+    //
+    const uint8_t GroundM_P4CData_data[] = {
+        0x82, 0x2a, 0x36, 0x04, 0x36, 0x87, 0x36, 0x34, 0x30, 0x86, 0x2c, 0x04, 0x00,
+        0x00, 0x68, 0x6a, 0x6c, 0x45,
+        0xa2, 0x31, 0xb0, 0xf1, 0xed, 0xeb, 0xa2, 0x1d, 0x9c, 0x95,
+        0x86, 0x04,
+        0x85, 0x22, 0x82, 0x22, 0x87, 0x22, 0x26, 0x2a, 0x84, 0x2c, 0x22, 0x86, 0x14,
+        0x51, 0x90, 0x31, 0x11, 0x00
+    };
+    writeData(GroundM_P4CData, GroundM_P4CData_data, sizeof(GroundM_P4CData_data));
+
+    // CastleMusData
+    //
+    const uint8_t CastleMusData_data[] = {
+        0x80, 0x22, 0x28, 0x22, 0x26, 0x22, 0x24, 0x22, 0x26,
+        0x22, 0x28, 0x22, 0x2a, 0x22, 0x28, 0x22, 0x26,
+        0x22, 0x28, 0x22, 0x26, 0x22, 0x24, 0x22, 0x26,
+        0x22, 0x28, 0x22, 0x2a, 0x22, 0x28, 0x22, 0x26,
+        0x20, 0x26, 0x20, 0x24, 0x20, 0x26, 0x20, 0x28,
+        0x20, 0x26, 0x20, 0x28, 0x20, 0x26, 0x20, 0x24,
+        0x20, 0x26, 0x20, 0x24, 0x20, 0x26, 0x20, 0x28,
+        0x20, 0x26, 0x20, 0x28, 0x20, 0x26, 0x20, 0x24,
+        0x28, 0x30, 0x28, 0x32, 0x28, 0x30, 0x28, 0x2e,
+        0x28, 0x30, 0x28, 0x2e, 0x28, 0x2c, 0x28, 0x2e,
+        0x28, 0x30, 0x28, 0x32, 0x28, 0x30, 0x28, 0x2e,
+        0x28, 0x30, 0x28, 0x2e, 0x28, 0x2c, 0x28, 0x2e, 0x00,
+        0x04, 0x70, 0x6e, 0x6c, 0x6e, 0x70, 0x72, 0x70, 0x6e,
+        0x70, 0x6e, 0x6c, 0x6e, 0x70, 0x72, 0x70, 0x6e,
+        0x6e, 0x6c, 0x6e, 0x70, 0x6e, 0x70, 0x6e, 0x6c,
+        0x6e, 0x6c, 0x6e, 0x70, 0x6e, 0x70, 0x6e, 0x6c,
+        0x76, 0x78, 0x76, 0x74, 0x76, 0x74, 0x72, 0x74,
+        0x76, 0x78, 0x76, 0x74, 0x76, 0x74, 0x72, 0x74,
+        0x84, 0x1a, 0x83, 0x18, 0x20, 0x84, 0x1e, 0x83, 0x1c, 0x28,
+        0x26, 0x1c, 0x1a, 0x1c
+    };
+    writeData(CastleMusData, CastleMusData_data, sizeof(CastleMusData_data));
+
+    // GameOverMusData
+    //
+    const uint8_t GameOverMusData_data[] = {
+        0x82, 0x2c, 0x04, 0x04, 0x22, 0x04, 0x04, 0x84, 0x1c, 0x87,
+        0x26, 0x2a, 0x26, 0x84, 0x24, 0x28, 0x24, 0x80, 0x22, 0x00,
+        0x9c, 0x05, 0x94, 0x05, 0x0d, 0x9f, 0x1e, 0x9c, 0x98, 0x9d,
+        0x82, 0x22, 0x04, 0x04, 0x1c, 0x04, 0x04, 0x84, 0x14,
+        0x86, 0x1e, 0x80, 0x16, 0x80, 0x14
+    };
+    writeData(GameOverMusData, GameOverMusData_data, sizeof(GameOverMusData_data));
+
+    // TimeRunOutMusData
+    //
+    const uint8_t TimeRunOutMusData_data[] = {
+        0x81, 0x1c, 0x30, 0x04, 0x30, 0x30, 0x04, 0x1e, 0x32, 0x04, 0x32, 0x32,
+        0x04, 0x20, 0x34, 0x04, 0x34, 0x34, 0x04, 0x36, 0x04, 0x84, 0x36, 0x00,
+        0x46, 0xa4, 0x64, 0xa4, 0x48, 0xa6, 0x66, 0xa6, 0x4a, 0xa8, 0x68, 0xa8,
+        0x6a, 0x44, 0x2b,
+        0x81, 0x2a, 0x42, 0x04, 0x42, 0x42, 0x04, 0x2c, 0x64, 0x04, 0x64, 0x64,
+        0x04, 0x2e, 0x46, 0x04, 0x46, 0x46, 0x04, 0x22, 0x04, 0x84, 0x22
+    };
+    writeData(TimeRunOutMusData, TimeRunOutMusData_data, sizeof(TimeRunOutMusData_data));
+
+    // WinLevelMusData
+    //
+    const uint8_t WinLevelMusData_data[] = {
+        0x87, 0x04, 0x06, 0x0c, 0x14, 0x1c, 0x22, 0x86, 0x2c, 0x22,
+        0x87, 0x04, 0x60, 0x0e, 0x14, 0x1a, 0x24, 0x86, 0x2c, 0x24,
+        0x87, 0x04, 0x08, 0x10, 0x18, 0x1e, 0x28, 0x86, 0x30, 0x30,
+        0x80, 0x64, 0x00,
+        0xcd, 0xd5, 0xdd, 0xe3, 0xed, 0xf5, 0xbb, 0xb5, 0xcf, 0xd5,
+        0xdb, 0xe5, 0xed, 0xf3, 0xbd, 0xb3, 0xd1, 0xd9, 0xdf, 0xe9,
+        0xf1, 0xf7, 0xbf, 0xff, 0xff, 0xff, 0x34,
+        0x00,
+        0x86, 0x04, 0x87, 0x14, 0x1c, 0x22, 0x86, 0x34, 0x84, 0x2c,
+        0x04, 0x04, 0x04, 0x87, 0x14, 0x1a, 0x24, 0x86, 0x32, 0x84,
+        0x2c, 0x04, 0x86, 0x04, 0x87, 0x18, 0x1e, 0x28, 0x86, 0x36,
+        0x87, 0x30, 0x30, 0x30, 0x80, 0x2c
+    };
+    writeData(WinLevelMusData, WinLevelMusData_data, sizeof(WinLevelMusData_data));
+
+    // UndergroundMusData
+    //
+    const uint8_t UndergroundMusData_data[] = {
+        0x82, 0x14, 0x2c, 0x62, 0x26, 0x10, 0x28, 0x80, 0x04,
+        0x82, 0x14, 0x2c, 0x62, 0x26, 0x10, 0x28, 0x80, 0x04,
+        0x82, 0x08, 0x1e, 0x5e, 0x18, 0x60, 0x1a, 0x80, 0x04,
+        0x82, 0x08, 0x1e, 0x5e, 0x18, 0x60, 0x1a, 0x86, 0x04,
+        0x83, 0x1a, 0x18, 0x16, 0x84, 0x14, 0x1a, 0x18, 0x0e, 0x0c,
+        0x16, 0x83, 0x14, 0x20, 0x1e, 0x1c, 0x28, 0x26, 0x87,
+        0x24, 0x1a, 0x12, 0x10, 0x62, 0x0e, 0x80, 0x04, 0x04,
+        0x00
+    };
+    writeData(UndergroundMusData, UndergroundMusData_data, sizeof(UndergroundMusData_data));
+
+    // WaterMusData
+    //
+    const uint8_t WaterMusData_data[] = {
+        0x82, 0x18, 0x1c, 0x20, 0x22, 0x26, 0x28,
+        0x81, 0x2a, 0x2a, 0x2a, 0x04, 0x2a, 0x04, 0x83, 0x2a, 0x82, 0x22,
+        0x86, 0x34, 0x32, 0x34, 0x81, 0x04, 0x22, 0x26, 0x2a, 0x2c, 0x30,
+        0x86, 0x34, 0x83, 0x32, 0x82, 0x36, 0x84, 0x34, 0x85, 0x04, 0x81, 0x22,
+        0x86, 0x30, 0x2e, 0x30, 0x81, 0x04, 0x22, 0x26, 0x2a, 0x2c, 0x2e,
+        0x86, 0x30, 0x83, 0x22, 0x82, 0x36, 0x84, 0x34, 0x85, 0x04, 0x81, 0x22,
+        0x86, 0x3a, 0x3a, 0x3a, 0x82, 0x3a, 0x81, 0x40, 0x82, 0x04, 0x81, 0x3a,
+        0x86, 0x36, 0x36, 0x36, 0x82, 0x36, 0x81, 0x3a, 0x82, 0x04, 0x81, 0x36,
+        0x86, 0x34, 0x82, 0x26, 0x2a, 0x36,
+        0x81, 0x34, 0x34, 0x85, 0x34, 0x81, 0x2a, 0x86, 0x2c, 0x00,
+        0x84, 0x90, 0xb0, 0x84, 0x50, 0x50, 0xb0, 0x00,
+        0x98, 0x96, 0x94, 0x92, 0x94, 0x96, 0x58, 0x58, 0x58, 0x44,
+        0x5c, 0x44, 0x9f, 0xa3, 0xa1, 0xa3, 0x85, 0xa3, 0xe0, 0xa6,
+        0x23, 0xc4, 0x9f, 0x9d, 0x9f, 0x85, 0x9f, 0xd2, 0xa6, 0x23,
+        0xc4, 0xb5, 0xb1, 0xaf, 0x85, 0xb1, 0xaf, 0xad, 0x85, 0x95,
+        0x9e, 0xa2, 0xaa, 0x6a, 0x6a, 0x6b, 0x5e, 0x9d,
+        0x84, 0x04, 0x04, 0x82, 0x22, 0x86, 0x22,
+        0x82, 0x14, 0x22, 0x2c, 0x12, 0x22, 0x2a, 0x14, 0x22, 0x2c,
+        0x1c, 0x22, 0x2c, 0x14, 0x22, 0x2c, 0x12, 0x22, 0x2a, 0x14,
+        0x22, 0x2c, 0x1c, 0x22, 0x2c, 0x18, 0x22, 0x2a, 0x16, 0x20,
+        0x28, 0x18, 0x22, 0x2a, 0x12, 0x22, 0x2a, 0x18, 0x22, 0x2a,
+        0x12, 0x22, 0x2a, 0x14, 0x22, 0x2c, 0x0c, 0x22, 0x2c, 0x14, 0x22, 0x34, 0x12,
+        0x22, 0x30, 0x10, 0x22, 0x2e, 0x16, 0x22, 0x34, 0x18, 0x26,
+        0x36, 0x16, 0x26, 0x36, 0x14, 0x26, 0x36, 0x12, 0x22, 0x36,
+        0x5c, 0x22, 0x34, 0x0c, 0x22, 0x22, 0x81, 0x1e, 0x1e, 0x85, 0x1e,
+        0x81, 0x12, 0x86, 0x14
+    };
+    writeData(WaterMusData, WaterMusData_data, sizeof(WaterMusData_data));
+
+    // EndOfCastleMusData
+    //
+    const uint8_t EndOfCastleMusData_data[] = {
+        0x81, 0x2c, 0x22, 0x1c, 0x2c, 0x22, 0x1c, 0x85, 0x2c, 0x04,
+        0x81, 0x2e, 0x24, 0x1e, 0x2e, 0x24, 0x1e, 0x85, 0x2e, 0x04,
+        0x81, 0x32, 0x28, 0x22, 0x32, 0x28, 0x22, 0x85, 0x32,
+        0x87, 0x36, 0x36, 0x36, 0x84, 0x3a, 0x00,
+        0x5c, 0x54, 0x4c, 0x5c, 0x54, 0x4c,
+        0x5c, 0x1c, 0x1c, 0x5c, 0x5c, 0x5c, 0x5c,
+        0x5e, 0x56, 0x4e, 0x5e, 0x56, 0x4e,
+        0x5e, 0x1e, 0x1e, 0x5e, 0x5e, 0x5e, 0x5e,
+        0x62, 0x5a, 0x50, 0x62, 0x5a, 0x50,
+        0x62, 0x22, 0x22, 0x62, 0xe7, 0xe7, 0xe7, 0x2b,
+        0x86, 0x14, 0x81, 0x14, 0x80, 0x14, 0x14, 0x81, 0x14, 0x14, 0x14, 0x14,
+        0x86, 0x16, 0x81, 0x16, 0x80, 0x16, 0x16, 0x81, 0x16, 0x16, 0x16, 0x16,
+        0x81, 0x28, 0x22, 0x1a, 0x28, 0x22, 0x1a, 0x28, 0x80, 0x28, 0x28,
+        0x81, 0x28, 0x87, 0x2c, 0x2c, 0x2c, 0x84, 0x30
+    };
+    writeData(EndOfCastleMusData, EndOfCastleMusData_data, sizeof(EndOfCastleMusData_data));
+
+    // VictoryMusData
+    //
+    const uint8_t VictoryMusData_data[] = {
+        0x83, 0x04, 0x84, 0x0c, 0x83, 0x62, 0x10, 0x84, 0x12,
+        0x83, 0x1c, 0x22, 0x1e, 0x22, 0x26, 0x18, 0x1e, 0x04, 0x1c, 0x00,
+        0xe3, 0xe1, 0xe3, 0x1d, 0xde, 0xe0, 0x23,
+        0xec, 0x75, 0x74, 0xf0, 0xf4, 0xf6, 0xea, 0x31, 0x2d,
+        0x83, 0x12, 0x14, 0x04, 0x18, 0x1a, 0x1c, 0x14,
+        0x26, 0x22, 0x1e, 0x1c, 0x18, 0x1e, 0x22, 0x0c, 0x14,
+        0xff, 0xff, 0xff
+    };
+    writeData(VictoryMusData, VictoryMusData_data, sizeof(VictoryMusData_data));
+
+    // FreqRegLookupTbl
+    //
+    const uint8_t FreqRegLookupTbl_data[] = {
+        0x00, 0x88, 0x00, 0x2f, 0x00, 0x00,
+        0x02, 0xa6, 0x02, 0x80, 0x02, 0x5c, 0x02, 0x3a,
+        0x02, 0x1a, 0x01, 0xdf, 0x01, 0xc4, 0x01, 0xab,
+        0x01, 0x93, 0x01, 0x7c, 0x01, 0x67, 0x01, 0x53,
+        0x01, 0x40, 0x01, 0x2e, 0x01, 0x1d, 0x01, 0x0d,
+        0x00, 0xfe, 0x00, 0xef, 0x00, 0xe2, 0x00, 0xd5,
+        0x00, 0xc9, 0x00, 0xbe, 0x00, 0xb3, 0x00, 0xa9,
+        0x00, 0xa0, 0x00, 0x97, 0x00, 0x8e, 0x00, 0x86,
+        0x00, 0x77, 0x00, 0x7e, 0x00, 0x71, 0x00, 0x54,
+        0x00, 0x64, 0x00, 0x5f, 0x00, 0x59, 0x00, 0x50,
+        0x00, 0x47, 0x00, 0x43, 0x00, 0x3b, 0x00, 0x35,
+        0x00, 0x2a, 0x00, 0x23, 0x04, 0x75, 0x03, 0x57,
+        0x02, 0xf9, 0x02, 0xcf, 0x01, 0xfc, 0x00, 0x6a
+    };
+    writeData(FreqRegLookupTbl, FreqRegLookupTbl_data, sizeof(FreqRegLookupTbl_data));
+
+    // MusicLengthLookupTbl
+    //
+    const uint8_t MusicLengthLookupTbl_data[] = {
+        0x05, 0x0a, 0x14, 0x28, 0x50, 0x1e, 0x3c, 0x02,
+        0x04, 0x08, 0x10, 0x20, 0x40, 0x18, 0x30, 0x0c,
+        0x03, 0x06, 0x0c, 0x18, 0x30, 0x12, 0x24, 0x08,
+        0x36, 0x03, 0x09, 0x06, 0x12, 0x1b, 0x24, 0x0c,
+        0x24, 0x02, 0x06, 0x04, 0x0c, 0x12, 0x18, 0x08,
+        0x12, 0x01, 0x03, 0x02, 0x06, 0x09, 0x0c, 0x04
+    };
+    writeData(MusicLengthLookupTbl, MusicLengthLookupTbl_data, sizeof(MusicLengthLookupTbl_data));
+
+    // EndOfCastleMusicEnvData
+    //
+    const uint8_t EndOfCastleMusicEnvData_data[] = {
+        0x98, 0x99, 0x9a, 0x9b
+    };
+    writeData(EndOfCastleMusicEnvData, EndOfCastleMusicEnvData_data, sizeof(EndOfCastleMusicEnvData_data));
+
+    // AreaMusicEnvData
+    //
+    const uint8_t AreaMusicEnvData_data[] = {
+        0x90, 0x94, 0x94, 0x95, 0x95, 0x96, 0x97, 0x98
+    };
+    writeData(AreaMusicEnvData, AreaMusicEnvData_data, sizeof(AreaMusicEnvData_data));
+
+    // WaterEventMusEnvData
+    //
+    const uint8_t WaterEventMusEnvData_data[] = {
+        0x90, 0x91, 0x92, 0x92, 0x93, 0x93, 0x93, 0x94,
+        0x94, 0x94, 0x94, 0x94, 0x94, 0x95, 0x95, 0x95,
+        0x95, 0x95, 0x95, 0x96, 0x96, 0x96, 0x96, 0x96,
+        0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96,
+        0x96, 0x96, 0x96, 0x96, 0x95, 0x95, 0x94, 0x93
+    };
+    writeData(WaterEventMusEnvData, WaterEventMusEnvData_data, sizeof(WaterEventMusEnvData_data));
+
+    // BowserFlameEnvData
+    //
+    const uint8_t BowserFlameEnvData_data[] = {
+        0x15, 0x16, 0x16, 0x17, 0x17, 0x18, 0x19, 0x19,
+        0x1a, 0x1a, 0x1c, 0x1d, 0x1d, 0x1e, 0x1e, 0x1f,
+        0x1f, 0x1f, 0x1f, 0x1e, 0x1d, 0x1c, 0x1e, 0x1f,
+        0x1f, 0x1e, 0x1d, 0x1c, 0x1a, 0x18, 0x16, 0x14
+    };
+    writeData(BowserFlameEnvData, BowserFlameEnvData_data, sizeof(BowserFlameEnvData_data));
+
+    // BrickShatterEnvData
+    //
+    const uint8_t BrickShatterEnvData_data[] = {
+        0x15, 0x16, 0x16, 0x17, 0x17, 0x18, 0x19, 0x19,
+        0x1a, 0x1a, 0x1c, 0x1d, 0x1d, 0x1e, 0x1e, 0x1f
+    };
+    writeData(BrickShatterEnvData, BrickShatterEnvData_data, sizeof(BrickShatterEnvData_data));
+
+}
 void SMBEngine::code(int mode)
 {
-    switch(mode)
+    switch (mode)
     {
     case 0:
         loadConstantData();
@@ -3792,7 +3597,10 @@ void SMBEngine::code(int mode)
     case 1:
         goto NonMaskableInterrupt;
     }
+
 Start:
+    
+    
     a = BOOST_BINARY(00010000);
     writeData(PPU_CTRL_REG1, a);
     x = 0xff;
@@ -3821,7 +3629,7 @@ WBootCheck:
         goto ColdBoot;
     y = WarmBootOffset;
 ColdBoot:
-    JSR(InitializeMemory, 0)
+    JSR(InitializeMemory, 0);
     writeData(SND_DELTA_REG + 1, a);
     writeData(OperMode, a);
     a = 0xa5;
@@ -3831,17 +3639,14 @@ ColdBoot:
     writeData(SND_MASTERCTRL_REG, a);
     a = BOOST_BINARY(00000110);
     writeData(PPU_CTRL_REG2, a);
-    JSR(MoveAllSpritesOffscreen, 1)
-    JSR(InitializeNameTables, 2)
+    JSR(MoveAllSpritesOffscreen, 1);
+    JSR(InitializeNameTables, 2);
     ++M(DisableScreenFlag);
     a = M(Mirror_PPU_CTRL_REG1);
     a |= BOOST_BINARY(10000000);
-    JSR(WritePPUReg1, 3)
+    JSR(WritePPUReg1, 3);
 EndlessLoop:
-    return; // Initialization complete
-
-//---------------------------------------------------------------------
-
+    return;
 NonMaskableInterrupt:
     a = M(Mirror_PPU_CTRL_REG1);
     a &= BOOST_BINARY(01111111);
@@ -3861,7 +3666,7 @@ ScreenOff:
     writeData(PPU_CTRL_REG2, a);
     x = M(PPU_STATUS);
     a = 0x00;
-    JSR(InitScroll, 4)
+    JSR(InitScroll, 4);
     writeData(PPU_SPR_ADDR, a);
     a = 0x02;
     writeData(SPR_DMA, a);
@@ -3870,7 +3675,7 @@ ScreenOff:
     writeData(0x00, a);
     a = M(VRAM_AddrTable_High + x);
     writeData(0x01, a);
-    JSR(UpdateScreen, 5)
+    JSR(UpdateScreen, 5);
     y = 0x00;
     x = M(VRAM_Buffer_AddrCtrl);
     compare(x, 0x06);
@@ -3885,10 +3690,10 @@ InitBuffer:
     writeData(VRAM_Buffer_AddrCtrl, a);
     a = M(Mirror_PPU_CTRL_REG2);
     writeData(PPU_CTRL_REG2, a);
-    JSR(SoundEngine, 6)
-    JSR(ReadJoypads, 7)
-    JSR(PauseRoutine, 8)
-    JSR(UpdateTopScore, 9)
+    JSR(SoundEngine, 6);
+    JSR(ReadJoypads, 7);
+    JSR(PauseRoutine, 8);
+    JSR(UpdateTopScore, 9);
     a = M(GamePauseStatus);
     a >>= 1;
     if (c)
@@ -3949,8 +3754,8 @@ Sprite0Clr:
     a >>= 1;
     if (c)
         goto Sprite0Hit;
-    JSR(MoveSpritesOffscreen, 10)
-    JSR(SpriteShuffler, 11)
+    JSR(MoveSpritesOffscreen, 10);
+    JSR(SpriteShuffler, 11);
 Sprite0Hit:
     a = M(PPU_STATUS);
     a &= BOOST_BINARY(01000000);
@@ -3973,16 +3778,13 @@ SkipSprite0:
     a >>= 1;
     if (c)
         goto SkipMainOper;
-    JSR(OperModeExecutionTree, 12)
+    JSR(OperModeExecutionTree, 12);
 SkipMainOper:
     a = M(PPU_STATUS);
     pla();
     a |= BOOST_BINARY(10000000);
     writeData(PPU_CTRL_REG1, a);
-    return; // RTI
-
-//---------------------------------------------------------------------
-
+    return;
 PauseRoutine:
     a = M(OperMode);
     compare(a, VictoryModeValue);
@@ -4001,9 +3803,6 @@ ChkPauseTimer:
         goto ChkStart;
     --M(GamePauseTimer);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkStart:
     a = M(SavedJoypad1Bits);
     a &= Start_Button;
@@ -4030,9 +3829,6 @@ SetPause:
     writeData(GamePauseStatus, a);
 ExitPause:
     goto Return;
-
-//---------------------------------------------------------------------
-
 SpriteShuffler:
     y = M(AreaType);
     a = 0x28;
@@ -4082,12 +3878,9 @@ SetMiscOffset:
     if (!n)
         goto SetMiscOffset;
     goto Return;
-
-//---------------------------------------------------------------------
-
 OperModeExecutionTree:
     a = M(OperMode);
-    switch(a)
+    switch (a)
     {
     case 0:
         goto TitleScreenMode;
@@ -4098,9 +3891,6 @@ OperModeExecutionTree:
     case 3:
         goto GameOverMode;
     }
-
-//---------------------------------------------------------------------
-
 MoveAllSpritesOffscreen:
     y = 0x00;
     goto Skip_0;
@@ -4117,12 +3907,9 @@ SprInitLoop:
     if (!z)
         goto SprInitLoop;
     goto Return;
-
-//---------------------------------------------------------------------
-
 TitleScreenMode:
     a = M(OperMode_Task);
-    switch(a)
+    switch (a)
     {
     case 0:
         goto InitializeGame;
@@ -4133,9 +3920,6 @@ TitleScreenMode:
     case 3:
         goto GameMenuRoutine;
     }
-
-//---------------------------------------------------------------------
-
 GameMenuRoutine:
     y = 0x00;
     a = M(SavedJoypad1Bits);
@@ -4156,7 +3940,7 @@ ChkSelect:
     if (!z)
         goto ChkWorldSel;
     writeData(SelectTimer, a);
-    JSR(DemoEngine, 13)
+    JSR(DemoEngine, 13);
     if (c)
         goto ResetTitle;
     goto RunDemo;
@@ -4185,7 +3969,7 @@ SelectBLogic:
     a = M(NumberOfPlayers);
     a ^= BOOST_BINARY(00000001);
     writeData(NumberOfPlayers, a);
-    JSR(DrawMushroomIcon, 14)
+    JSR(DrawMushroomIcon, 14);
     goto NullJoypad;
 IncWorldSel:
     x = M(WorldSelectNumber);
@@ -4193,7 +3977,7 @@ IncWorldSel:
     a = x;
     a &= BOOST_BINARY(00000111);
     writeData(WorldSelectNumber, a);
-    JSR(GoContinue, 15)
+    JSR(GoContinue, 15);
 UpdateShroom:
     a = M(WSelectBufferTemplate + x);
     writeData(VRAM_Buffer1 - 1 + x, a);
@@ -4208,7 +3992,7 @@ NullJoypad:
     a = 0x00;
     writeData(SavedJoypad1Bits, a);
 RunDemo:
-    JSR(GameCoreRoutine, 16)
+    JSR(GameCoreRoutine, 16);
     a = M(GameEngineSubroutine);
     compare(a, 0x06);
     if (!z)
@@ -4220,9 +4004,6 @@ ResetTitle:
     writeData(Sprite0HitDetectFlag, a);
     ++M(DisableScreenFlag);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkContinue:
     y = M(DemoTimer);
     if (z)
@@ -4231,9 +4012,9 @@ ChkContinue:
     if (!c)
         goto StartWorld1;
     a = M(ContinueWorld);
-    JSR(GoContinue, 17)
+    JSR(GoContinue, 17);
 StartWorld1:
-    JSR(LoadAreaPointer, 18)
+    JSR(LoadAreaPointer, 18);
     ++M(Hidden1UpFlag);
     ++M(OffScr_Hidden1UpFlag);
     ++M(FetchNewGameTimerFlag);
@@ -4252,9 +4033,6 @@ InitScores:
         goto InitScores;
 ExitMenu:
     goto Return;
-
-//---------------------------------------------------------------------
-
 GoContinue:
     writeData(WorldNumber, a);
     writeData(OffScr_WorldNumber, a);
@@ -4262,9 +4040,6 @@ GoContinue:
     writeData(AreaNumber, x);
     writeData(OffScr_AreaNumber, x);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawMushroomIcon:
     y = 0x07;
 IconDataRead:
@@ -4282,9 +4057,6 @@ IconDataRead:
     writeData(VRAM_Buffer1 + 5, a);
 ExitIcon:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DemoEngine:
     x = M(DemoAction);
     a = M(DemoActionTimer);
@@ -4304,23 +4076,20 @@ DoAction:
     c = 0;
 DemoOver:
     goto Return;
-
-//---------------------------------------------------------------------
-
 VictoryMode:
-    JSR(VictoryModeSubroutines, 19)
+    JSR(VictoryModeSubroutines, 19);
     a = M(OperMode_Task);
     if (z)
         goto AutoPlayer;
     x = 0x00;
     writeData(ObjectOffset, x);
-    JSR(EnemiesAndLoopsCore, 20)
+    JSR(EnemiesAndLoopsCore, 20);
 AutoPlayer:
-    JSR(RelativePlayerPosition, 21)
+    JSR(RelativePlayerPosition, 21);
     goto PlayerGfxHandler;
 VictoryModeSubroutines:
     a = M(OperMode_Task);
-    switch(a)
+    switch (a)
     {
     case 0:
         goto BridgeCollapse;
@@ -4333,9 +4102,6 @@ VictoryModeSubroutines:
     case 4:
         goto PlayerEndWorld;
     }
-
-//---------------------------------------------------------------------
-
 SetupVictoryMode:
     x = M(ScreenRight_PageLoc);
     ++x;
@@ -4359,7 +4125,7 @@ PerformWalk:
     ++y;
 DontWalk:
     a = y;
-    JSR(AutoControlPlayer, 22)
+    JSR(AutoControlPlayer, 22);
     a = M(ScreenLeft_PageLoc);
     compare(a, M(DestinationPageLoc));
     if (z)
@@ -4371,17 +4137,14 @@ DontWalk:
     a = 0x01;
     a += 0x00;
     y = a;
-    JSR(ScrollScreen, 23)
-    JSR(UpdScrollVar, 24)
+    JSR(ScrollScreen, 23);
+    JSR(UpdScrollVar, 24);
     ++M(VictoryWalkControl);
 ExitVWalk:
     a = M(VictoryWalkControl);
     if (z)
         goto IncModeTask_A;
     goto Return;
-
-//---------------------------------------------------------------------
-
 PrintVictoryMessages:
     a = M(SecondaryMsgCounter);
     if (!z)
@@ -4457,9 +4220,6 @@ IncModeTask_A:
     ++M(OperMode_Task);
 ExitMsgs:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerEndWorld:
     a = M(WorldEndTimer);
     if (!z)
@@ -4473,15 +4233,12 @@ PlayerEndWorld:
     writeData(LevelNumber, a);
     writeData(OperMode_Task, a);
     ++M(WorldNumber);
-    JSR(LoadAreaPointer, 25)
+    JSR(LoadAreaPointer, 25);
     ++M(FetchNewGameTimerFlag);
     a = GameModeValue;
     writeData(OperMode, a);
 EndExitOne:
     goto Return;
-
-//---------------------------------------------------------------------
-
 EndChkBButton:
     a = M(SavedJoypad1Bits);
     a |= M(SavedJoypad2Bits);
@@ -4492,12 +4249,9 @@ EndChkBButton:
     writeData(WorldSelectEnableFlag, a);
     a = 0xff;
     writeData(NumberofLives, a);
-    JSR(TerminateGame, 26)
+    JSR(TerminateGame, 26);
 EndExitTwo:
     goto Return;
-
-//---------------------------------------------------------------------
-
 FloateyNumbersRoutine:
     a = M(FloateyNum_Control + x);
     if (z)
@@ -4514,9 +4268,6 @@ ChkNumTimer:
         goto DecNumTimer;
     writeData(FloateyNum_Control + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DecNumTimer:
     --M(FloateyNum_Timer + x);
     compare(a, 0x2b);
@@ -4538,7 +4289,7 @@ LoadNumTiles:
     a = M(ScoreUpdateData + y);
     a &= BOOST_BINARY(00001111);
     writeData(DigitModifier + x, a);
-    JSR(AddToScore, 27)
+    JSR(AddToScore, 27);
 ChkTallEnemy:
     y = M(Enemy_SprDataOffset + x);
     a = M(Enemy_ID + x);
@@ -4578,7 +4329,7 @@ FloateyPart:
 SetupNumSpr:
     a = M(FloateyNum_Y_Pos + x);
     a -= 0x08;
-    JSR(DumpTwoSpr, 28)
+    JSR(DumpTwoSpr, 28);
     a = M(FloateyNum_X_Pos + x);
     writeData(Sprite_X_Position + y, a);
     c = 0;
@@ -4596,12 +4347,9 @@ SetupNumSpr:
     writeData(Sprite_Tilenumber + 4 + y, a);
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ScreenRoutines:
     a = M(ScreenRoutineTask);
-    switch(a)
+    switch (a)
     {
     case 0:
         goto InitScreen;
@@ -4634,12 +4382,9 @@ ScreenRoutines:
     case 14:
         goto WriteTopScore;
     }
-
-//---------------------------------------------------------------------
-
 InitScreen:
-    JSR(MoveAllSpritesOffscreen, 29)
-    JSR(InitializeNameTables, 30)
+    JSR(MoveAllSpritesOffscreen, 29);
+    JSR(InitializeNameTables, 30);
     a = M(OperMode);
     if (z)
         goto NextSubtask;
@@ -4654,7 +4399,7 @@ SetupIntermediate:
     writeData(PlayerStatus, a);
     a = 0x02;
     writeData(BackgroundColorCtrl, a);
-    JSR(GetPlayerColors, 31)
+    JSR(GetPlayerColors, 31);
     pla();
     writeData(PlayerStatus, a);
     pla();
@@ -4721,9 +4466,6 @@ SetBGColor:
 SetVRAMOffset:
     writeData(VRAM_Buffer1_Offset, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetAlternatePalette1:
     a = M(AreaStyle);
     compare(a, 0x01);
@@ -4736,10 +4478,10 @@ NoAltPal:
     goto IncSubtask;
 WriteTopStatusLine:
     a = 0x00;
-    JSR(WriteGameText, 32)
+    JSR(WriteGameText, 32);
     goto IncSubtask;
 WriteBottomStatusLine:
-    JSR(GetSBNybbles, 33)
+    JSR(GetSBNybbles, 33);
     x = M(VRAM_Buffer1_Offset);
     a = 0x20;
     writeData(VRAM_Buffer1 + x, a);
@@ -4793,34 +4535,28 @@ DisplayIntermediate:
     if (!z)
         goto NoInter;
 PlayerInter:
-    JSR(DrawPlayer_Intermediate, 34)
+    JSR(DrawPlayer_Intermediate, 34);
     a = 0x01;
 OutputInter:
-    JSR(WriteGameText, 35)
-    JSR(ResetScreenTimer, 36)
+    JSR(WriteGameText, 35);
+    JSR(ResetScreenTimer, 36);
     a = 0x00;
     writeData(DisableScreenFlag, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 GameOverInter:
     a = 0x12;
     writeData(ScreenTimer, a);
     a = 0x03;
-    JSR(WriteGameText, 37)
+    JSR(WriteGameText, 37);
     goto IncModeTask_B;
 NoInter:
     a = 0x08;
     writeData(ScreenRoutineTask, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 AreaParserTaskControl:
     ++M(DisableScreenFlag);
 TaskLoop:
-    JSR(AreaParserTaskHandler, 38)
+    JSR(AreaParserTaskHandler, 38);
     a = M(AreaParserTaskNum);
     if (!z)
         goto TaskLoop;
@@ -4832,9 +4568,6 @@ OutputCol:
     a = 0x06;
     writeData(VRAM_Buffer_AddrCtrl, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawTitleScreen:
     a = M(OperMode);
     if (!z)
@@ -4876,22 +4609,16 @@ TScrClear:
     --x;
     if (!z)
         goto TScrClear;
-    JSR(DrawMushroomIcon, 39)
+    JSR(DrawMushroomIcon, 39);
 IncSubtask:
     ++M(ScreenRoutineTask);
     goto Return;
-
-//---------------------------------------------------------------------
-
 WriteTopScore:
     a = 0xfa;
-    JSR(UpdateNumber, 40)
+    JSR(UpdateNumber, 40);
 IncModeTask_B:
     ++M(OperMode_Task);
     goto Return;
-
-//---------------------------------------------------------------------
-
 WriteGameText:
     pha();
     a <<= 1;
@@ -4950,9 +4677,6 @@ PutLives:
     ++y;
     writeData(VRAM_Buffer1 + 21, y);
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckPlayerName:
     a = M(NumberOfPlayers);
     if (z)
@@ -4979,9 +4703,6 @@ NameLoop:
         goto NameLoop;
 ExitChkName:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PrintWarpZoneNumbers:
     a -= 0x04;
     a <<= 1;
@@ -5005,16 +4726,13 @@ ResetSpritesAndScreenTimer:
     a = M(ScreenTimer);
     if (!z)
         goto NoReset;
-    JSR(MoveAllSpritesOffscreen, 41)
+    JSR(MoveAllSpritesOffscreen, 41);
 ResetScreenTimer:
     a = 0x07;
     writeData(ScreenTimer, a);
     ++M(ScreenRoutineTask);
 NoReset:
     goto Return;
-
-//---------------------------------------------------------------------
-
 RenderAreaGraphics:
     a = M(CurrentColumnPos);
     a &= 0x01;
@@ -5166,9 +4884,6 @@ SetVRAMCtrl:
     a = 0x06;
     writeData(VRAM_Buffer_AddrCtrl, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ColorRotation:
     a = M(FrameCounter);
     a &= 0x07;
@@ -5219,9 +4934,6 @@ GetAreaPal:
     writeData(ColorRotateOffset, a);
 ExitColorRot:
     goto Return;
-
-//---------------------------------------------------------------------
-
 RemoveCoin_Axe:
     y = 0x41;
     a = 0x03;
@@ -5230,21 +4942,15 @@ RemoveCoin_Axe:
         goto WriteBlankMT;
     a = 0x04;
 WriteBlankMT:
-    JSR(PutBlockMetatile, 42)
+    JSR(PutBlockMetatile, 42);
     a = 0x06;
     writeData(VRAM_Buffer_AddrCtrl, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ReplaceBlockMetatile:
-    JSR(WriteBlockMetatile, 43)
+    JSR(WriteBlockMetatile, 43);
     ++M(Block_ResidualCounter);
     --M(Block_RepFlag + x);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DestroyBlockMetatile:
     a = 0x00;
 WriteBlockMetatile:
@@ -5271,7 +4977,7 @@ UseBOffset:
     a = y;
     y = M(VRAM_Buffer1_Offset);
     ++y;
-    JSR(PutBlockMetatile, 44)
+    JSR(PutBlockMetatile, 44);
 MoveVOffset:
     --y;
     a = y;
@@ -5336,17 +5042,28 @@ RemBridge:
     writeData(VRAM_Buffer1 + 9 + y, a);
     x = M(0x00);
     goto Return;
-
-//---------------------------------------------------------------------
-
+JumpEngine:
+    a <<= 1;
+    y = a;
+    pla();
+    writeData(0x04, a);
+    pla();
+    writeData(0x05, a);
+    ++y;
+    a = M(W(0x04) + y);
+    writeData(0x06, a);
+    ++y;
+    a = M(W(0x04) + y);
+    writeData(0x07, a);
+    
 InitializeNameTables:
     a = M(PPU_STATUS);
     a = M(Mirror_PPU_CTRL_REG1);
     a |= BOOST_BINARY(00010000);
     a &= BOOST_BINARY(11110000);
-    JSR(WritePPUReg1, 45)
+    JSR(WritePPUReg1, 45);
     a = 0x24;
-    JSR(WriteNTAddr, 46)
+    JSR(WriteNTAddr, 46);
     a = 0x20;
 WriteNTAddr:
     writeData(PPU_ADDRESS, a);
@@ -5381,7 +5098,7 @@ ReadJoypads:
     a >>= 1;
     x = a;
     writeData(JOYPAD_PORT, a);
-    JSR(ReadPortBits, 47)
+    JSR(ReadPortBits, 47);
     ++x;
 ReadPortBits:
     y = 0x08;
@@ -5407,16 +5124,10 @@ PortLoop:
     a &= BOOST_BINARY(11001111);
     writeData(SavedJoypadBits + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 Save8Bits:
     pla();
     writeData(JoypadBitMask + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 WriteBufferToScreen:
     writeData(PPU_ADDRESS, a);
     ++y;
@@ -5432,7 +5143,7 @@ WriteBufferToScreen:
         goto SetupWrites;
     a &= BOOST_BINARY(11111011);
 SetupWrites:
-    JSR(WritePPUReg1, 48)
+    JSR(WritePPUReg1, 48);
     pla();
     a <<= 1;
     if (!c)
@@ -5476,19 +5187,13 @@ InitScroll:
     writeData(PPU_SCROLL_REG, a);
     writeData(PPU_SCROLL_REG, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 WritePPUReg1:
     writeData(PPU_CTRL_REG1, a);
     writeData(Mirror_PPU_CTRL_REG1, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PrintStatusBarNumbers:
     writeData(0x00, a);
-    JSR(OutputNumbers, 49)
+    JSR(OutputNumbers, 49);
     a = M(0x00);
     a >>= 1;
     a >>= 1;
@@ -5541,9 +5246,6 @@ DigitPLoop:
     writeData(VRAM_Buffer1_Offset, x);
 ExitOutputN:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DigitsMathRoutine:
     a = M(OperMode);
     compare(a, TitleScreenModeValue);
@@ -5574,9 +5276,6 @@ EraseMLoop:
     if (!n)
         goto EraseMLoop;
     goto Return;
-
-//---------------------------------------------------------------------
-
 BorrowOne:
     --M(DigitModifier - 1 + x);
     a = 0x09;
@@ -5589,7 +5288,7 @@ CarryOne:
     goto StoreNewD;
 UpdateTopScore:
     x = 0x05;
-    JSR(TopScoreCheck, 50)
+    JSR(TopScoreCheck, 50);
     x = 0x0b;
 TopScoreCheck:
     y = 0x05;
@@ -5615,12 +5314,9 @@ CopyScore:
         goto CopyScore;
 NoTopSc:
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitializeGame:
     y = 0x6f;
-    JSR(InitializeMemory, 51)
+    JSR(InitializeMemory, 51);
     y = 0x1f;
 ClrSndLoop:
     writeData(SoundMemory + y, a);
@@ -5629,10 +5325,10 @@ ClrSndLoop:
         goto ClrSndLoop;
     a = 0x18;
     writeData(DemoTimer, a);
-    JSR(LoadAreaPointer, 52)
+    JSR(LoadAreaPointer, 52);
 InitializeArea:
     y = 0x4b;
-    JSR(InitializeMemory, 53)
+    JSR(InitializeMemory, 53);
     x = 0x21;
     a = 0x00;
 ClrTimersLoop:
@@ -5649,7 +5345,7 @@ StartPage:
     writeData(ScreenLeft_PageLoc, a);
     writeData(CurrentPageLoc, a);
     writeData(BackloadingFlag, a);
-    JSR(GetScreenPosition, 54)
+    JSR(GetScreenPosition, 54);
     y = 0x20;
     a &= BOOST_BINARY(00000001);
     if (z)
@@ -5669,7 +5365,7 @@ SetInitNTHigh:
     --M(AreaObjectLength + 2);
     a = 0x0b;
     writeData(ColumnSets, a);
-    JSR(GetAreaDataAddrs, 55)
+    JSR(GetAreaDataAddrs, 55);
     a = M(PrimaryHardMode);
     if (!z)
         goto SetSecHard;
@@ -5698,9 +5394,6 @@ DoneInitArea:
     writeData(DisableScreenFlag, a);
     ++M(OperMode_Task);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PrimaryGameSetup:
     a = 0x01;
     writeData(FetchNewGameTimerFlag, a);
@@ -5727,7 +5420,7 @@ ClearVRLoop:
     a &= 0x01;
     a.ror();
     M(Mirror_PPU_CTRL_REG1).rol();
-    JSR(GetAreaMusic, 56)
+    JSR(GetAreaMusic, 56);
     a = 0x38;
     writeData(SprShuffleAmt + 2, a);
     a = 0x48;
@@ -5748,14 +5441,11 @@ ISpr0Loop:
     --y;
     if (!n)
         goto ISpr0Loop;
-    JSR(DoNothing2, 57)
-    JSR(DoNothing1, 58)
+    JSR(DoNothing2, 57);
+    JSR(DoNothing1, 58);
     ++M(Sprite0HitDetectFlag);
     ++M(OperMode_Task);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitializeMemory:
     x = 0x07;
     a = 0x00;
@@ -5780,9 +5470,6 @@ SkipByte:
     if (!n)
         goto InitPageLoop;
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetAreaMusic:
     a = M(OperMode);
     if (z)
@@ -5810,9 +5497,6 @@ StoreMusic:
     writeData(AreaMusicQueue, a);
 ExitGetM:
     goto Return;
-
-//---------------------------------------------------------------------
-
 Entrance_GameTimerSetup:
     a = M(ScreenLeft_PageLoc);
     writeData(Player_PageLoc, a);
@@ -5847,7 +5531,7 @@ SetStPos:
     writeData(Player_Y_Position, a);
     a = M(PlayerBGPriorityData + x);
     writeData(Player_SprAttrib, a);
-    JSR(GetPlayerColors, 59)
+    JSR(GetPlayerColors, 59);
     y = M(GameTimerSetting);
     if (z)
         goto ChkOverR;
@@ -5869,24 +5553,21 @@ ChkOverR:
     a = 0x03;
     writeData(Player_State, a);
     x = 0x00;
-    JSR(InitBlock_XY_Pos, 60)
+    JSR(InitBlock_XY_Pos, 60);
     a = 0xf0;
     writeData(Block_Y_Position, a);
     x = 0x05;
     y = 0x00;
-    JSR(Setup_Vine, 61)
+    JSR(Setup_Vine, 61);
 ChkSwimE:
     y = M(AreaType);
     if (!z)
         goto SetPESub;
-    JSR(SetupBubble, 62)
+    JSR(SetupBubble, 62);
 SetPESub:
     a = 0x07;
     writeData(GameEngineSubroutine, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerLoseLife:
     ++M(DisableScreenFlag);
     a = 0x00;
@@ -5901,9 +5582,6 @@ PlayerLoseLife:
     a = GameOverModeValue;
     writeData(OperMode, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 StillInGame:
     a = M(WorldNumber);
     a <<= 1;
@@ -5934,11 +5612,11 @@ MaskHPNyb:
     a = 0x00;
 SetHalfway:
     writeData(HalfwayPage, a);
-    JSR(TransposePlayers, 63)
+    JSR(TransposePlayers, 63);
     goto ContinueGame;
 GameOverMode:
     a = M(OperMode_Task);
-    switch(a)
+    switch (a)
     {
     case 0:
         goto SetupGameOver;
@@ -5947,9 +5625,6 @@ GameOverMode:
     case 2:
         goto RunGameOver;
     }
-
-//---------------------------------------------------------------------
-
 SetupGameOver:
     a = 0x00;
     writeData(ScreenRoutineTask, a);
@@ -5959,9 +5634,6 @@ SetupGameOver:
     ++M(DisableScreenFlag);
     ++M(OperMode_Task);
     goto Return;
-
-//---------------------------------------------------------------------
-
 RunGameOver:
     a = 0x00;
     writeData(DisableScreenFlag, a);
@@ -5975,7 +5647,7 @@ RunGameOver:
 TerminateGame:
     a = Silence;
     writeData(EventMusicQueue, a);
-    JSR(TransposePlayers, 64)
+    JSR(TransposePlayers, 64);
     if (!c)
         goto ContinueGame;
     a = M(WorldNumber);
@@ -5986,11 +5658,8 @@ TerminateGame:
     writeData(ScreenTimer, a);
     writeData(OperMode, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ContinueGame:
-    JSR(LoadAreaPointer, 65)
+    JSR(LoadAreaPointer, 65);
     a = 0x01;
     writeData(PlayerSize, a);
     ++M(FetchNewGameTimerFlag);
@@ -6003,9 +5672,6 @@ ContinueGame:
     writeData(OperMode, a);
 GameIsOn:
     goto Return;
-
-//---------------------------------------------------------------------
-
 TransposePlayers:
     c = 1;
     a = M(NumberOfPlayers);
@@ -6031,17 +5697,11 @@ TransLoop:
     c = 0;
 ExTrans:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DoNothing1:
     a = 0xff;
     writeData(0x06c9, a);
 DoNothing2:
     goto Return;
-
-//---------------------------------------------------------------------
-
 AreaParserTaskHandler:
     y = M(AreaParserTaskNum);
     if (!z)
@@ -6051,18 +5711,15 @@ AreaParserTaskHandler:
 DoAPTasks:
     --y;
     a = y;
-    JSR(AreaParserTasks, 66)
+    JSR(AreaParserTasks, 66);
     --M(AreaParserTaskNum);
     if (!z)
         goto SkipATRender;
-    JSR(RenderAttributeTables, 67)
+    JSR(RenderAttributeTables, 67);
 SkipATRender:
     goto Return;
-
-//---------------------------------------------------------------------
-
 AreaParserTasks:
-    switch(a)
+    switch (a)
     {
     case 0:
         goto IncrementColumnPos;
@@ -6081,9 +5738,6 @@ AreaParserTasks:
     case 7:
         goto AreaParserCore;
     }
-
-//---------------------------------------------------------------------
-
 IncrementColumnPos:
     ++M(CurrentColumnPos);
     a = M(CurrentColumnPos);
@@ -6098,14 +5752,11 @@ NoColWrap:
     a &= BOOST_BINARY(00011111);
     writeData(BlockBufferColumnPos, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 AreaParserCore:
     a = M(BackloadingFlag);
     if (z)
         goto RenderSceneryTerrain;
-    JSR(ProcessAreaData, 68)
+    JSR(ProcessAreaData, 68);
 RenderSceneryTerrain:
     x = 0x0c;
     a = 0x00;
@@ -6249,9 +5900,9 @@ EndUChk:
     if (!z)
         goto TerrLoop;
 RendBBuf:
-    JSR(ProcessAreaData, 69)
+    JSR(ProcessAreaData, 69);
     a = M(BlockBufferColumnPos);
-    JSR(GetBlockBufferAddr, 70)
+    JSR(GetBlockBufferAddr, 70);
     x = 0x00;
     y = 0x00;
 ChkMTLow:
@@ -6279,9 +5930,6 @@ StrBlock:
     if (!c)
         goto ChkMTLow;
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcessAreaData:
     x = 0x02;
 ProcADLoop:
@@ -6341,12 +5989,12 @@ CheckRear:
     if (!c)
         goto SetBehind;
 RdyDecode:
-    JSR(DecodeAreaData, 71)
+    JSR(DecodeAreaData, 71);
     goto ChkLength;
 SetBehind:
     ++M(BehindAreaParserFlag);
 NextAObj:
-    JSR(IncAreaObjOffset, 72)
+    JSR(IncAreaObjOffset, 72);
 ChkLength:
     x = M(ObjectOffset);
     a = M(AreaObjectLength + x);
@@ -6365,18 +6013,12 @@ ProcLoopb:
         goto ProcessAreaData;
 EndAParse:
     goto Return;
-
-//---------------------------------------------------------------------
-
 IncAreaObjOffset:
     ++M(AreaDataOffset);
     ++M(AreaDataOffset);
     a = 0x00;
     writeData(AreaObjectPageSel, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DecodeAreaData:
     a = M(AreaObjectLength + x);
     if (n)
@@ -6485,9 +6127,6 @@ NormObj:
         goto StrAObj;
 LeavePar:
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitRear:
     a = M(BackloadingFlag);
     if (z)
@@ -6498,9 +6137,6 @@ InitRear:
     writeData(ObjectOffset, a);
 LoopCmdE:
     goto Return;
-
-//---------------------------------------------------------------------
-
 BackColC:
     y = M(AreaDataOffset);
     a = M(W(AreaData) + y);
@@ -6515,12 +6151,12 @@ BackColC:
 StrAObj:
     a = M(AreaDataOffset);
     writeData(AreaObjOffsetBuffer + x, a);
-    JSR(IncAreaObjOffset, 73)
+    JSR(IncAreaObjOffset, 73);
 RunAObj:
     a = M(0x00);
     c = 0;
     a += M(0x07);
-    switch(a)
+    switch (a)
     {
     case 0:
         goto VerticalPipe;
@@ -6617,9 +6253,6 @@ RunAObj:
     case 46:
         goto AlterAreaAttributes;
     }
-
-//---------------------------------------------------------------------
-
 AlterAreaAttributes:
     y = M(AreaObjOffsetBuffer + x);
     ++y;
@@ -6640,9 +6273,6 @@ AlterAreaAttributes:
     a >>= 1;
     writeData(BackgroundScenery, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 Alter2:
     pla();
     a &= BOOST_BINARY(00000111);
@@ -6654,9 +6284,6 @@ Alter2:
 SetFore:
     writeData(ForegroundScenery, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ScrollLockObject_Warp:
     x = 0x04;
     a = M(WorldNumber);
@@ -6671,17 +6298,14 @@ ScrollLockObject_Warp:
 WarpNum:
     a = x;
     writeData(WarpZoneControl, a);
-    JSR(WriteGameText, 74)
+    JSR(WriteGameText, 74);
     a = PiranhaPlant;
-    JSR(KillEnemies, 75)
+    JSR(KillEnemies, 75);
 ScrollLockObject:
     a = M(ScrollLock);
     a ^= BOOST_BINARY(00000001);
     writeData(ScrollLock, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 KillEnemies:
     writeData(0x00, a);
     a = 0x00;
@@ -6697,9 +6321,6 @@ NoKillE:
     if (!n)
         goto KillELoop;
     goto Return;
-
-//---------------------------------------------------------------------
-
 AreaFrenzy:
     x = M(0x00);
     a = M(FrenzyIDData - 8 + x);
@@ -6715,12 +6336,9 @@ FreCompLoop:
 ExitAFrenzy:
     writeData(EnemyFrenzyQueue, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 AreaStyleObject:
     a = M(AreaStyle);
-    switch(a)
+    switch (a)
     {
     case 0:
         goto TreeLedge;
@@ -6729,11 +6347,8 @@ AreaStyleObject:
     case 2:
         goto BulletBillCannon;
     }
-
-//---------------------------------------------------------------------
-
 TreeLedge:
-    JSR(GetLrgObjAttrib, 76)
+    JSR(GetLrgObjAttrib, 76);
     a = M(AreaObjectLength + x);
     if (z)
         goto EndTreeL;
@@ -6757,7 +6372,7 @@ EndTreeL:
     a = 0x18;
     goto NoUnder;
 MushroomLedge:
-    JSR(ChkLrgObjLength, 77)
+    JSR(ChkLrgObjLength, 77);
     writeData(0x06, y);
     if (!c)
         goto EndMushL;
@@ -6792,7 +6407,7 @@ NoUnder:
     y = 0x00;
     goto RenderUnderPart;
 PulleyRopeObject:
-    JSR(ChkLrgObjLength, 78)
+    JSR(ChkLrgObjLength, 78);
     y = 0x00;
     if (c)
         goto RenderPul;
@@ -6806,14 +6421,11 @@ RenderPul:
     writeData(MetatileBuffer, a);
 MushLExit:
     goto Return;
-
-//---------------------------------------------------------------------
-
 CastleObject:
-    JSR(GetLrgObjAttrib, 79)
+    JSR(GetLrgObjAttrib, 79);
     writeData(0x07, y);
     y = 0x04;
-    JSR(ChkLrgObjFixedLength, 80)
+    JSR(ChkLrgObjFixedLength, 80);
     a = x;
     pha();
     y = M(AreaObjectLength + x);
@@ -6856,9 +6468,9 @@ NotTall:
     compare(a, 0x02);
     if (!z)
         goto ExitCastle;
-    JSR(GetAreaObjXPosition, 81)
+    JSR(GetAreaObjXPosition, 81);
     pha();
-    JSR(FindEmptyEnemySlot, 82)
+    JSR(FindEmptyEnemySlot, 82);
     pla();
     writeData(Enemy_X_Position + x, a);
     a = M(CurrentPageLoc);
@@ -6871,19 +6483,13 @@ NotTall:
     a = StarFlagObject;
     writeData(Enemy_ID + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerStop:
     y = 0x52;
     writeData(MetatileBuffer + 10, y);
 ExitCastle:
     goto Return;
-
-//---------------------------------------------------------------------
-
 WaterPipe:
-    JSR(GetLrgObjAttrib, 83)
+    JSR(GetLrgObjAttrib, 83);
     y = M(AreaObjectLength + x);
     x = M(0x07);
     a = 0x6b;
@@ -6891,14 +6497,11 @@ WaterPipe:
     a = 0x6c;
     writeData(MetatileBuffer + 1 + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 IntroPipe:
     y = 0x03;
-    JSR(ChkLrgObjFixedLength, 84)
+    JSR(ChkLrgObjFixedLength, 84);
     y = 0x0a;
-    JSR(RenderSidewaysPipe, 85)
+    JSR(RenderSidewaysPipe, 85);
     if (c)
         goto NoBlankP;
     x = 0x06;
@@ -6912,13 +6515,10 @@ VPipeSectLoop:
     writeData(MetatileBuffer + 7, a);
 NoBlankP:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ExitPipe:
     y = 0x03;
-    JSR(ChkLrgObjFixedLength, 86)
-    JSR(GetLrgObjAttrib, 87)
+    JSR(ChkLrgObjFixedLength, 86);
+    JSR(GetLrgObjAttrib, 87);
 RenderSidewaysPipe:
     --y;
     --y;
@@ -6933,7 +6533,7 @@ RenderSidewaysPipe:
         goto DrawSidePart;
     x = 0x00;
     y = M(0x05);
-    JSR(RenderUnderPart, 88)
+    JSR(RenderUnderPart, 88);
     c = 0;
 DrawSidePart:
     y = M(0x06);
@@ -6942,11 +6542,8 @@ DrawSidePart:
     a = M(SidePipeBottomPart + y);
     writeData(MetatileBuffer + 1 + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 VerticalPipe:
-    JSR(GetPipeHeight, 89)
+    JSR(GetPipeHeight, 89);
     a = M(0x00);
     if (z)
         goto WarpPipe;
@@ -6964,10 +6561,10 @@ WarpPipe:
     y = M(AreaObjectLength + x);
     if (z)
         goto DrawPipe;
-    JSR(FindEmptyEnemySlot, 90)
+    JSR(FindEmptyEnemySlot, 90);
     if (c)
         goto DrawPipe;
-    JSR(GetAreaObjXPosition, 91)
+    JSR(GetAreaObjXPosition, 91);
     c = 0;
     a += 0x08;
     writeData(Enemy_X_Position + x, a);
@@ -6977,11 +6574,11 @@ WarpPipe:
     a = 0x01;
     writeData(Enemy_Y_HighPos + x, a);
     writeData(Enemy_Flag + x, a);
-    JSR(GetAreaObjYPosition, 92)
+    JSR(GetAreaObjYPosition, 92);
     writeData(Enemy_Y_Position + x, a);
     a = PiranhaPlant;
     writeData(Enemy_ID + x, a);
-    JSR(InitPiranhaPlant, 93)
+    JSR(InitPiranhaPlant, 93);
 DrawPipe:
     pla();
     y = a;
@@ -6995,16 +6592,13 @@ DrawPipe:
     goto RenderUnderPart;
 GetPipeHeight:
     y = 0x01;
-    JSR(ChkLrgObjFixedLength, 94)
-    JSR(GetLrgObjAttrib, 95)
+    JSR(ChkLrgObjFixedLength, 94);
+    JSR(GetLrgObjAttrib, 95);
     a = y;
     a &= 0x07;
     writeData(0x06, a);
     y = M(AreaObjectLength + x);
     goto Return;
-
-//---------------------------------------------------------------------
-
 FindEmptyEnemySlot:
     x = 0x00;
 EmptyChkLoop:
@@ -7018,11 +6612,8 @@ EmptyChkLoop:
         goto EmptyChkLoop;
 ExitEmptyChk:
     goto Return;
-
-//---------------------------------------------------------------------
-
 Hole_Water:
-    JSR(ChkLrgObjLength, 96)
+    JSR(ChkLrgObjLength, 96);
     a = 0x86;
     writeData(MetatileBuffer + 10, a);
     x = 0x0b;
@@ -7036,15 +6627,12 @@ QuestionBlockRow_Low:
     a = 0x07;
 Skip_1:
     pha();
-    JSR(ChkLrgObjLength, 97)
+    JSR(ChkLrgObjLength, 97);
     pla();
     x = a;
     a = 0xc0;
     writeData(MetatileBuffer + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 Bridge_High:
     a = 0x06;
     goto Skip_2;
@@ -7056,7 +6644,7 @@ Bridge_Low:
     a = 0x09;
 Skip_3:
     pha();
-    JSR(ChkLrgObjLength, 98)
+    JSR(ChkLrgObjLength, 98);
     pla();
     x = a;
     a = 0x0b;
@@ -7066,7 +6654,7 @@ Skip_3:
     a = 0x63;
     goto RenderUnderPart;
 FlagBalls_Residual:
-    JSR(GetLrgObjAttrib, 99)
+    JSR(GetLrgObjAttrib, 99);
     x = 0x02;
     a = 0x6d;
     goto RenderUnderPart;
@@ -7076,10 +6664,10 @@ FlagpoleObject:
     x = 0x01;
     y = 0x08;
     a = 0x25;
-    JSR(RenderUnderPart, 100)
+    JSR(RenderUnderPart, 100);
     a = 0x61;
     writeData(MetatileBuffer + 10, a);
-    JSR(GetAreaObjXPosition, 101)
+    JSR(GetAreaObjXPosition, 101);
     c = 1;
     a -= 0x08;
     writeData(Enemy_X_Position + 5, a);
@@ -7094,9 +6682,6 @@ FlagpoleObject:
     writeData(Enemy_ID + 5, a);
     ++M(Enemy_Flag + 5);
     goto Return;
-
-//---------------------------------------------------------------------
-
 EndlessRope:
     x = 0x00;
     y = 0x0f;
@@ -7107,10 +6692,10 @@ BalancePlatRope:
     x = 0x01;
     y = 0x0f;
     a = 0x44;
-    JSR(RenderUnderPart, 102)
+    JSR(RenderUnderPart, 102);
     pla();
     x = a;
-    JSR(GetLrgObjAttrib, 103)
+    JSR(GetLrgObjAttrib, 103);
     x = 0x01;
 DrawRope:
     a = 0x40;
@@ -7121,7 +6706,7 @@ RowOfCoins:
     goto GetRow;
 CastleBridgeObj:
     y = 0x0c;
-    JSR(ChkLrgObjFixedLength, 104)
+    JSR(ChkLrgObjFixedLength, 104);
     goto ChainObj;
 AxeObj:
     a = 0x08;
@@ -7132,7 +6717,7 @@ ChainObj:
     a = M(C_ObjectMetatile - 2 + y);
     goto ColObj;
 EmptyBlock:
-    JSR(GetLrgObjAttrib, 105)
+    JSR(GetLrgObjAttrib, 105);
     x = M(0x07);
     a = 0xc4;
 ColObj:
@@ -7152,7 +6737,7 @@ RowOfSolidBlocks:
     a = M(SolidBlockMetatiles + y);
 GetRow:
     pha();
-    JSR(ChkLrgObjLength, 106)
+    JSR(ChkLrgObjLength, 106);
 DrawRow:
     x = M(0x07);
     y = 0x00;
@@ -7167,12 +6752,12 @@ ColumnOfSolidBlocks:
     a = M(SolidBlockMetatiles + y);
 GetRow2:
     pha();
-    JSR(GetLrgObjAttrib, 107)
+    JSR(GetLrgObjAttrib, 107);
     pla();
     x = M(0x07);
     goto RenderUnderPart;
 BulletBillCannon:
-    JSR(GetLrgObjAttrib, 108)
+    JSR(GetLrgObjAttrib, 108);
     x = M(0x07);
     a = 0x64;
     writeData(MetatileBuffer + x, a);
@@ -7187,14 +6772,14 @@ BulletBillCannon:
     if (n)
         goto SetupCannon;
     a = 0x66;
-    JSR(RenderUnderPart, 109)
+    JSR(RenderUnderPart, 109);
 SetupCannon:
     x = M(Cannon_Offset);
-    JSR(GetAreaObjYPosition, 110)
+    JSR(GetAreaObjYPosition, 110);
     writeData(Cannon_Y_Position + x, a);
     a = M(CurrentPageLoc);
     writeData(Cannon_PageLoc + x, a);
-    JSR(GetAreaObjXPosition, 111)
+    JSR(GetAreaObjXPosition, 111);
     writeData(Cannon_X_Position + x, a);
     ++x;
     compare(x, 0x06);
@@ -7204,11 +6789,8 @@ SetupCannon:
 StrCOffset:
     writeData(Cannon_Offset, x);
     goto Return;
-
-//---------------------------------------------------------------------
-
 StaircaseObject:
-    JSR(ChkLrgObjLength, 112)
+    JSR(ChkLrgObjLength, 112);
     if (!c)
         goto NextStair;
     a = 0x09;
@@ -7222,13 +6804,13 @@ NextStair:
     a = 0x61;
     goto RenderUnderPart;
 Jumpspring:
-    JSR(GetLrgObjAttrib, 113)
-    JSR(FindEmptyEnemySlot, 114)
-    JSR(GetAreaObjXPosition, 115)
+    JSR(GetLrgObjAttrib, 113);
+    JSR(FindEmptyEnemySlot, 114);
+    JSR(GetAreaObjXPosition, 115);
     writeData(Enemy_X_Position + x, a);
     a = M(CurrentPageLoc);
     writeData(Enemy_PageLoc + x, a);
-    JSR(GetAreaObjYPosition, 116)
+    JSR(GetAreaObjYPosition, 116);
     writeData(Enemy_Y_Position + x, a);
     writeData(Jumpspring_FixedYPos + x, a);
     a = JumpspringObject;
@@ -7242,9 +6824,6 @@ Jumpspring:
     a = 0x68;
     writeData(MetatileBuffer + 1 + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 Hidden1UpBlock:
     a = M(Hidden1UpFlag);
     if (z)
@@ -7253,13 +6832,13 @@ Hidden1UpBlock:
     writeData(Hidden1UpFlag, a);
     goto BrickWithItem;
 QuestionBlock:
-    JSR(GetAreaObjectID, 117)
+    JSR(GetAreaObjectID, 117);
     goto DrawQBlk;
 BrickWithCoins:
     a = 0x00;
     writeData(BrickCoinTimerFlag, a);
 BrickWithItem:
-    JSR(GetAreaObjectID, 118)
+    JSR(GetAreaObjectID, 118);
     writeData(0x07, y);
     a = 0x00;
     y = M(AreaType);
@@ -7274,7 +6853,7 @@ BWithL:
 DrawQBlk:
     a = M(BrickQBlockMetatiles + y);
     pha();
-    JSR(GetLrgObjAttrib, 119)
+    JSR(GetLrgObjAttrib, 119);
     goto DrawRow;
 GetAreaObjectID:
     a = M(0x00);
@@ -7283,18 +6862,15 @@ GetAreaObjectID:
     y = a;
 ExitDecBlock:
     goto Return;
-
-//---------------------------------------------------------------------
-
 Hole_Empty:
-    JSR(ChkLrgObjLength, 120)
+    JSR(ChkLrgObjLength, 120);
     if (!c)
         goto NoWhirlP;
     a = M(AreaType);
     if (!z)
         goto NoWhirlP;
     x = M(Whirlpool_Offset);
-    JSR(GetAreaObjXPosition, 121)
+    JSR(GetAreaObjXPosition, 121);
     c = 1;
     a -= 0x10;
     writeData(Whirlpool_LeftExtent + x, a);
@@ -7357,11 +6933,8 @@ WaitOneRow:
         goto RenderUnderPart;
 ExitUPartR:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkLrgObjLength:
-    JSR(GetLrgObjAttrib, 122)
+    JSR(GetLrgObjAttrib, 122);
 ChkLrgObjFixedLength:
     a = M(AreaObjectLength + x);
     c = 0;
@@ -7372,9 +6945,6 @@ ChkLrgObjFixedLength:
     c = 1;
 LenSet:
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetLrgObjAttrib:
     y = M(AreaObjOffsetBuffer + x);
     a = M(W(AreaData) + y);
@@ -7385,9 +6955,6 @@ GetLrgObjAttrib:
     a &= BOOST_BINARY(00001111);
     y = a;
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetAreaObjXPosition:
     a = M(CurrentColumnPos);
     a <<= 1;
@@ -7395,9 +6962,6 @@ GetAreaObjXPosition:
     a <<= 1;
     a <<= 1;
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetAreaObjYPosition:
     a = M(0x07);
     a <<= 1;
@@ -7407,9 +6971,6 @@ GetAreaObjYPosition:
     c = 0;
     a += 32;
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetBlockBufferAddr:
     pha();
     a >>= 1;
@@ -7425,11 +6986,8 @@ GetBlockBufferAddr:
     a += M(BlockBufferAddr + y);
     writeData(0x06, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 LoadAreaPointer:
-    JSR(FindAreaPointer, 123)
+    JSR(FindAreaPointer, 123);
     writeData(AreaPointer, a);
 GetAreaType:
     a &= BOOST_BINARY(01100000);
@@ -7439,9 +6997,6 @@ GetAreaType:
     a.rol();
     writeData(AreaType, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 FindAreaPointer:
     y = M(WorldNumber);
     a = M(WorldAddrOffsets + y);
@@ -7450,12 +7005,9 @@ FindAreaPointer:
     y = a;
     a = M(AreaAddrOffsets + y);
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetAreaDataAddrs:
     a = M(AreaPointer);
-    JSR(GetAreaType, 124)
+    JSR(GetAreaType, 124);
     y = a;
     a = M(AreaPointer);
     a &= BOOST_BINARY(00011111);
@@ -7536,12 +7088,9 @@ StoreStyle:
     a += 0x00;
     writeData(AreaDataHigh, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 GameMode:
     a = M(OperMode_Task);
-    switch(a)
+    switch (a)
     {
     case 0:
         goto InitializeArea;
@@ -7552,49 +7101,43 @@ GameMode:
     case 3:
         goto GameCoreRoutine;
     }
-
-//---------------------------------------------------------------------
-
 GameCoreRoutine:
     x = M(CurrentPlayer);
     a = M(SavedJoypadBits + x);
     writeData(SavedJoypadBits, a);
-    JSR(GameRoutines, 125)
+    JSR(GameRoutines, 125);
     a = M(OperMode_Task);
     compare(a, 0x03);
     if (c)
         goto GameEngine;
     goto Return;
-
-//---------------------------------------------------------------------
-
 GameEngine:
-    JSR(ProcFireball_Bubble, 126)
+    JSR(ProcFireball_Bubble, 126);
     x = 0x00;
 ProcELoop:
     writeData(ObjectOffset, x);
-    JSR(EnemiesAndLoopsCore, 127)
-    JSR(FloateyNumbersRoutine, 128)
+    JSR(EnemiesAndLoopsCore, 127);
+    JSR(FloateyNumbersRoutine, 128);
     ++x;
     compare(x, 0x06);
     if (!z)
         goto ProcELoop;
-    JSR(GetPlayerOffscreenBits, 129)
-    JSR(RelativePlayerPosition, 130)
-    JSR(PlayerGfxHandler, 131)
-    JSR(BlockObjMT_Updater, 132)
+    JSR(GetPlayerOffscreenBits, 129);
+    JSR(RelativePlayerPosition, 130);
+    JSR(PlayerGfxHandler, 131);
+    JSR(BlockObjMT_Updater, 132);
     x = 0x01;
     writeData(ObjectOffset, x);
-    JSR(BlockObjectsCore, 133)
+    JSR(BlockObjectsCore, 133);
     --x;
     writeData(ObjectOffset, x);
-    JSR(BlockObjectsCore, 134)
-    JSR(MiscObjectsCore, 135)
-    JSR(ProcessCannons, 136)
-    JSR(ProcessWhirlpools, 137)
-    JSR(FlagpoleRoutine, 138)
-    JSR(RunGameTimer, 139)
-    JSR(ColorRotation, 140)
+    JSR(BlockObjectsCore, 134);
+    JSR(MiscObjectsCore, 135);
+    JSR(ProcessCannons, 136);
+    JSR(ProcessWhirlpools, 137);
+    JSR(FlagpoleRoutine, 138);
+    JSR(RunGameTimer, 139);
+    JSR(ColorRotation, 140);
     a = M(Player_Y_HighPos);
     compare(a, 0x02);
     if (!n)
@@ -7608,7 +7151,7 @@ ProcELoop:
     a = M(IntervalTimerControl);
     if (!z)
         goto NoChgMus;
-    JSR(GetAreaMusic, 141)
+    JSR(GetAreaMusic, 141);
 NoChgMus:
     y = M(StarInvincibleTimer);
     a = M(FrameCounter);
@@ -7619,10 +7162,10 @@ NoChgMus:
     a >>= 1;
 CycleTwo:
     a >>= 1;
-    JSR(CyclePlayerPalette, 142)
+    JSR(CyclePlayerPalette, 142);
     goto SaveAB;
 ClrPlrPal:
-    JSR(ResetPalStar, 143)
+    JSR(ResetPalStar, 143);
 SaveAB:
     a = M(A_B_Buttons);
     writeData(PreviousA_B_Buttons, a);
@@ -7646,12 +7189,9 @@ UpdScrollVar:
     a = 0x00;
     writeData(VRAM_Buffer2_Offset, a);
 RunParser:
-    JSR(AreaParserTaskHandler, 144)
+    JSR(AreaParserTaskHandler, 144);
 ExitEng:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ScrollHandler:
     a = M(Player_X_Scroll);
     c = 0;
@@ -7702,7 +7242,7 @@ ScrollScreen:
     a &= BOOST_BINARY(11111110);
     a |= M(0x00);
     writeData(Mirror_PPU_CTRL_REG1, a);
-    JSR(GetScreenPosition, 145)
+    JSR(GetScreenPosition, 145);
     a = 0x08;
     writeData(ScrollIntervalTimer, a);
     goto ChkPOffscr;
@@ -7711,7 +7251,7 @@ InitScrlAmt:
     writeData(ScrollAmount, a);
 ChkPOffscr:
     x = 0x00;
-    JSR(GetXOffscreenBits, 146)
+    JSR(GetXOffscreenBits, 146);
     writeData(0x00, a);
     y = 0x00;
     a <<= 1;
@@ -7740,9 +7280,6 @@ InitPlatScrl:
     a = 0x00;
     writeData(Platform_X_Scroll, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetScreenPosition:
     a = M(ScreenLeft_X_Pos);
     c = 0;
@@ -7752,12 +7289,9 @@ GetScreenPosition:
     a += 0x00;
     writeData(ScreenRight_PageLoc, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 GameRoutines:
     a = M(GameEngineSubroutine);
-    switch(a)
+    switch (a)
     {
     case 0:
         goto Entrance_GameTimerSetup;
@@ -7786,9 +7320,6 @@ GameRoutines:
     case 12:
         goto PlayerFireFlower;
     }
-
-//---------------------------------------------------------------------
-
 PlayerEntrance:
     a = M(AltEntranceControl);
     compare(a, 0x02);
@@ -7813,7 +7344,7 @@ ChkBehPipe:
     a = 0x01;
     goto AutoControlPlayer;
 IntroEntr:
-    JSR(EnterSidePipe, 147)
+    JSR(EnterSidePipe, 147);
     --M(ChangeAreaTimer);
     if (!z)
         goto ExitEntr;
@@ -7824,15 +7355,12 @@ EntrMode2:
     if (!z)
         goto VineEntr;
     a = 0xff;
-    JSR(MovePlayerYAxis, 148)
+    JSR(MovePlayerYAxis, 148);
     a = M(Player_Y_Position);
     compare(a, 0x91);
     if (!c)
         goto PlayerRdy;
     goto Return;
-
-//---------------------------------------------------------------------
-
 VineEntr:
     a = M(VineHeight);
     compare(a, 0x60);
@@ -7851,7 +7379,7 @@ VineEntr:
     writeData(Block_Buffer_1 + 0xb4, a);
 OffVine:
     writeData(DisableCollisionDet, y);
-    JSR(AutoControlPlayer, 149)
+    JSR(AutoControlPlayer, 149);
     a = M(Player_X_Position);
     compare(a, 0x48);
     if (!c)
@@ -7867,9 +7395,6 @@ PlayerRdy:
     writeData(JoypadOverride, a);
 ExitEntr:
     goto Return;
-
-//---------------------------------------------------------------------
-
 AutoControlPlayer:
     writeData(SavedJoypadBits, a);
 PlayerCtrlRoutine:
@@ -7914,7 +7439,7 @@ SaveJoyp:
     writeData(Left_Right_Buttons, a);
     writeData(Up_Down_Buttons, a);
 SizeChk:
-    JSR(PlayerMovementSubs, 150)
+    JSR(PlayerMovementSubs, 150);
     y = 0x01;
     a = M(PlayerSize);
     if (!z)
@@ -7936,12 +7461,12 @@ ChkMoveDir:
 SetMoveDir:
     writeData(Player_MovingDir, a);
 PlayerSubs:
-    JSR(ScrollHandler, 151)
-    JSR(GetPlayerOffscreenBits, 152)
-    JSR(RelativePlayerPosition, 153)
+    JSR(ScrollHandler, 151);
+    JSR(GetPlayerOffscreenBits, 152);
+    JSR(RelativePlayerPosition, 153);
     x = 0x00;
-    JSR(BoundingBoxCore, 154)
-    JSR(PlayerBGCollision, 155)
+    JSR(BoundingBoxCore, 154);
+    JSR(PlayerBGCollision, 155);
     a = M(Player_Y_Position);
     compare(a, 0x40);
     if (!c)
@@ -8004,18 +7529,12 @@ ChkHoleX:
     writeData(GameEngineSubroutine, a);
 ExitCtrl:
     goto Return;
-
-//---------------------------------------------------------------------
-
 CloudExit:
     a = 0x00;
     writeData(JoypadOverride, a);
-    JSR(SetEntr, 156)
+    JSR(SetEntr, 156);
     ++M(AltEntranceControl);
     goto Return;
-
-//---------------------------------------------------------------------
-
 Vine_AutoClimb:
     a = M(Player_Y_HighPos);
     if (!z)
@@ -8036,8 +7555,8 @@ SetEntr:
     goto ChgAreaMode;
 VerticalPipeEntry:
     a = 0x01;
-    JSR(MovePlayerYAxis, 157)
-    JSR(ScrollHandler, 158)
+    JSR(MovePlayerYAxis, 157);
+    JSR(ScrollHandler, 158);
     y = 0x00;
     a = M(WarpZoneControl);
     if (!z)
@@ -8054,11 +7573,8 @@ MovePlayerYAxis:
     a += M(Player_Y_Position);
     writeData(Player_Y_Position, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 SideExitPipeEntry:
-    JSR(EnterSidePipe, 159)
+    JSR(EnterSidePipe, 159);
     y = 0x02;
 ChgAreaPipe:
     --M(ChangeAreaTimer);
@@ -8072,9 +7588,6 @@ ChgAreaMode:
     writeData(Sprite0HitDetectFlag, a);
 ExitCAPipe:
     goto Return;
-
-//---------------------------------------------------------------------
-
 EnterSidePipe:
     a = 0x08;
     writeData(Player_X_Speed, a);
@@ -8087,11 +7600,8 @@ EnterSidePipe:
     y = a;
 RightPipe:
     a = y;
-    JSR(AutoControlPlayer, 160)
+    JSR(AutoControlPlayer, 160);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerChangeSize:
     a = M(TimerControl);
     compare(a, 0xf8);
@@ -8102,12 +7612,9 @@ EndChgSize:
     compare(a, 0xc4);
     if (!z)
         goto ExitChgSize;
-    JSR(DonePlayerTask, 161)
+    JSR(DonePlayerTask, 161);
 ExitChgSize:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerInjuryBlink:
     a = M(TimerControl);
     compare(a, 0xf0);
@@ -8131,9 +7638,6 @@ InitChangeSize:
     writeData(PlayerSize, a);
 ExitBoth:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerDeath:
     a = M(TimerControl);
     compare(a, 0xf0);
@@ -8146,9 +7650,6 @@ DonePlayerTask:
     a = 0x08;
     writeData(GameEngineSubroutine, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerFireFlower:
     a = M(TimerControl);
     compare(a, 0xc0);
@@ -8165,24 +7666,15 @@ CyclePlayerPalette:
     a |= M(0x00);
     writeData(Player_SprAttrib, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ResetPalFireFlower:
-    JSR(DonePlayerTask, 162)
+    JSR(DonePlayerTask, 162);
 ResetPalStar:
     a = M(Player_SprAttrib);
     a &= BOOST_BINARY(11111100);
     writeData(Player_SprAttrib, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ExitDeath:
     goto Return;
-
-//---------------------------------------------------------------------
-
 FlagpoleSlide:
     a = M(Enemy_ID + 5);
     compare(a, FlagpoleFlagObject);
@@ -8202,12 +7694,9 @@ SlidePlayer:
 NoFPObj:
     ++M(GameEngineSubroutine);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerEndLevel:
     a = 0x01;
-    JSR(AutoControlPlayer, 163)
+    JSR(AutoControlPlayer, 163);
     a = M(Player_Y_Position);
     compare(a, 0xae);
     if (!c)
@@ -8249,17 +7738,14 @@ RdyNextA:
     ++M(Hidden1UpFlag);
 NextArea:
     ++M(AreaNumber);
-    JSR(LoadAreaPointer, 164)
+    JSR(LoadAreaPointer, 164);
     ++M(FetchNewGameTimerFlag);
-    JSR(ChgAreaMode, 165)
+    JSR(ChgAreaMode, 165);
     writeData(HalfwayPage, a);
     a = Silence;
     writeData(EventMusicQueue, a);
 ExitNA:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerMovementSubs:
     a = 0x00;
     y = M(PlayerSize);
@@ -8273,7 +7759,7 @@ PlayerMovementSubs:
 SetCrouch:
     writeData(CrouchingFlag, a);
 ProcMove:
-    JSR(PlayerPhysicsSub, 166)
+    JSR(PlayerPhysicsSub, 166);
     a = M(PlayerChangeSizeFlag);
     if (!z)
         goto NoMoveSub;
@@ -8284,7 +7770,7 @@ ProcMove:
     y = 0x18;
     writeData(ClimbSideTimer, y);
 MoveSubs:
-    switch(a)
+    switch (a)
     {
     case 0:
         goto OnGroundStateSub;
@@ -8295,28 +7781,19 @@ MoveSubs:
     case 3:
         goto ClimbingSub;
     }
-
-//---------------------------------------------------------------------
-
 NoMoveSub:
     goto Return;
-
-//---------------------------------------------------------------------
-
 OnGroundStateSub:
-    JSR(GetPlayerAnimSpeed, 167)
+    JSR(GetPlayerAnimSpeed, 167);
     a = M(Left_Right_Buttons);
     if (z)
         goto GndMove;
     writeData(PlayerFacingDir, a);
 GndMove:
-    JSR(ImposeFriction, 168)
-    JSR(MovePlayerHorizontally, 169)
+    JSR(ImposeFriction, 168);
+    JSR(MovePlayerHorizontally, 169);
     writeData(Player_X_Scroll, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 FallingSub:
     a = M(VerticalForceDown);
     writeData(VerticalForce, a);
@@ -8343,7 +7820,7 @@ ProcSwim:
     a = M(SwimmingFlag);
     if (z)
         goto LRAir;
-    JSR(GetPlayerAnimSpeed, 170)
+    JSR(GetPlayerAnimSpeed, 170);
     a = M(Player_Y_Position);
     compare(a, 0x14);
     if (c)
@@ -8359,9 +7836,9 @@ LRAir:
     a = M(Left_Right_Buttons);
     if (z)
         goto JSMove;
-    JSR(ImposeFriction, 171)
+    JSR(ImposeFriction, 171);
 JSMove:
-    JSR(MovePlayerHorizontally, 172)
+    JSR(MovePlayerHorizontally, 172);
     writeData(Player_X_Scroll, a);
     a = M(GameEngineSubroutine);
     compare(a, 0x0b);
@@ -8422,15 +7899,9 @@ CSetFDir:
     writeData(PlayerFacingDir, a);
 ExitCSub:
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitCSTimer:
     writeData(ClimbSideTimer, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerPhysicsSub:
     a = M(Player_State);
     compare(a, 0x03);
@@ -8458,9 +7929,6 @@ ProcClimb:
 SetCAnim:
     writeData(PlayerAnimTimerSet, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckForJumping:
     a = M(JumpspringAnimCtrl);
     if (!z)
@@ -8626,9 +8094,6 @@ GetXPhy2:
     M(FrictionAdderHigh).rol();
 ExitPhy:
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetPlayerAnimSpeed:
     y = 0x00;
     a = M(Player_XSpeedAbsolute);
@@ -8667,9 +8132,6 @@ SetAnimSpd:
     a = M(PlayerAnimTmrData + y);
     writeData(PlayerAnimTimerSet, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ImposeFriction:
     a &= M(Player_CollisionBits);
     compare(a, 0x00);
@@ -8723,9 +8185,6 @@ XSpdSign:
 SetAbsSpd:
     writeData(Player_XSpeedAbsolute, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcFireball_Bubble:
     a = M(PlayerStatus);
     compare(a, 0x02);
@@ -8766,9 +8225,9 @@ ProcFireball_Bubble:
     ++M(FireballCounter);
 ProcFireballs:
     x = 0x00;
-    JSR(FireballObjCore, 173)
+    JSR(FireballObjCore, 173);
     x = 0x01;
-    JSR(FireballObjCore, 174)
+    JSR(FireballObjCore, 174);
 ProcAirBubbles:
     a = M(AreaType);
     if (!z)
@@ -8776,18 +8235,15 @@ ProcAirBubbles:
     x = 0x02;
 BublLoop:
     writeData(ObjectOffset, x);
-    JSR(BubbleCheck, 175)
-    JSR(RelativeBubblePosition, 176)
-    JSR(GetBubbleOffscreenBits, 177)
-    JSR(DrawBubble, 178)
+    JSR(BubbleCheck, 175);
+    JSR(RelativeBubblePosition, 176);
+    JSR(GetBubbleOffscreenBits, 177);
+    JSR(DrawBubble, 178);
     --x;
     if (!n)
         goto BublLoop;
 BublExit:
     goto Return;
-
-//---------------------------------------------------------------------
-
 FireballObjCore:
     writeData(ObjectOffset, x);
     a = M(Fireball_State + x);
@@ -8829,29 +8285,26 @@ RunFB:
     a = 0x03;
     writeData(0x02, a);
     a = 0x00;
-    JSR(ImposeGravity, 179)
-    JSR(MoveObjectHorizontally, 180)
+    JSR(ImposeGravity, 179);
+    JSR(MoveObjectHorizontally, 180);
     x = M(ObjectOffset);
-    JSR(RelativeFireballPosition, 181)
-    JSR(GetFireballOffscreenBits, 182)
-    JSR(GetFireballBoundBox, 183)
-    JSR(FireballBGCollision, 184)
+    JSR(RelativeFireballPosition, 181);
+    JSR(GetFireballOffscreenBits, 182);
+    JSR(GetFireballBoundBox, 183);
+    JSR(FireballBGCollision, 184);
     a = M(FBall_OffscreenBits);
     a &= BOOST_BINARY(11001100);
     if (!z)
         goto EraseFB;
-    JSR(FireballEnemyCollision, 185)
+    JSR(FireballEnemyCollision, 185);
     goto DrawFireball;
 EraseFB:
     a = 0x00;
     writeData(Fireball_State + x, a);
 NoFBall:
     goto Return;
-
-//---------------------------------------------------------------------
-
 FireballExplosion:
-    JSR(RelativeFireballPosition, 186)
+    JSR(RelativeFireballPosition, 186);
     goto DrawExplosion_Fireball;
 BubbleCheck:
     a = M(PseudoRandomBitReg + 1 + x);
@@ -8903,9 +8356,6 @@ Y_Bubl:
     writeData(Bubble_Y_Position + x, a);
 ExitBubl:
     goto Return;
-
-//---------------------------------------------------------------------
-
 RunGameTimer:
     a = M(OperMode);
     if (z)
@@ -8945,18 +8395,15 @@ ResGTCtrl:
     y = 0x23;
     a = 0xff;
     writeData(DigitModifier + 5, a);
-    JSR(DigitsMathRoutine, 187)
+    JSR(DigitsMathRoutine, 187);
     a = 0xa4;
     goto PrintStatusBarNumbers;
 TimeUpOn:
     writeData(PlayerStatus, a);
-    JSR(ForceInjury, 188)
+    JSR(ForceInjury, 188);
     ++M(GameTimerExpiredFlag);
 ExGTimer:
     goto Return;
-
-//---------------------------------------------------------------------
-
 WarpZoneObject:
     a = M(ScrollLock);
     if (z)
@@ -9007,9 +8454,6 @@ NextWh:
         goto WhLoop;
 ExitWh:
     goto Return;
-
-//---------------------------------------------------------------------
-
 WhirlpoolActivate:
     a = M(Whirlpool_Length + y);
     a >>= 1;
@@ -9104,20 +8548,17 @@ GiveFPScr:
     a = M(FlagpoleScoreMods + y);
     x = M(FlagpoleScoreDigits + y);
     writeData(DigitModifier + x, a);
-    JSR(AddToScore, 189)
+    JSR(AddToScore, 189);
     a = 0x05;
     writeData(GameEngineSubroutine, a);
 FPGfx:
-    JSR(GetEnemyOffscreenBits, 190)
-    JSR(RelativeEnemyPosition, 191)
-    JSR(FlagpoleGfxHandler, 192)
+    JSR(GetEnemyOffscreenBits, 190);
+    JSR(RelativeEnemyPosition, 191);
+    JSR(FlagpoleGfxHandler, 192);
 ExitFlagP:
     goto Return;
-
-//---------------------------------------------------------------------
-
 JumpspringHandler:
-    JSR(GetEnemyOffscreenBits, 193)
+    JSR(GetEnemyOffscreenBits, 193);
     a = M(TimerControl);
     if (!z)
         goto DrawJSpr;
@@ -9162,9 +8603,9 @@ BounceJS:
     a = 0x00;
     writeData(JumpspringAnimCtrl, a);
 DrawJSpr:
-    JSR(RelativeEnemyPosition, 194)
-    JSR(EnemyGfxHandler, 195)
-    JSR(OffscreenBoundsCheck, 196)
+    JSR(RelativeEnemyPosition, 194);
+    JSR(EnemyGfxHandler, 195);
+    JSR(OffscreenBoundsCheck, 196);
     a = M(JumpspringAnimCtrl);
     if (z)
         goto ExJSpring;
@@ -9176,9 +8617,6 @@ DrawJSpr:
     ++M(JumpspringAnimCtrl);
 ExJSpring:
     goto Return;
-
-//---------------------------------------------------------------------
-
 Setup_Vine:
     a = VineObject;
     writeData(Enemy_ID + x, a);
@@ -9201,9 +8639,6 @@ NextVO:
     a = Sfx_GrowVine;
     writeData(Square2SoundQueue, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 VineObjectHandler:
     compare(x, 0x05);
     if (!z)
@@ -9228,11 +8663,11 @@ RunVSubs:
     compare(a, 0x08);
     if (!c)
         goto ExitVH;
-    JSR(RelativeEnemyPosition, 197)
-    JSR(GetEnemyOffscreenBits, 198)
+    JSR(RelativeEnemyPosition, 197);
+    JSR(GetEnemyOffscreenBits, 198);
     y = 0x00;
 VDrawLoop:
-    JSR(DrawVine, 199)
+    JSR(DrawVine, 199);
     ++y;
     compare(y, M(VineFlagOffset));
     if (!z)
@@ -9244,7 +8679,7 @@ VDrawLoop:
     --y;
 KillVine:
     x = M(VineObjOffset + y);
-    JSR(EraseEnemyObject, 200)
+    JSR(EraseEnemyObject, 200);
     --y;
     if (!n)
         goto KillVine;
@@ -9258,7 +8693,7 @@ WrCMTile:
     x = 0x06;
     a = 0x01;
     y = 0x1b;
-    JSR(BlockBufferCollision, 201)
+    JSR(BlockBufferCollision, 201);
     y = M(0x02);
     compare(y, 0xd0);
     if (c)
@@ -9271,9 +8706,6 @@ WrCMTile:
 ExitVH:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcessCannons:
     a = M(AreaType);
     if (z)
@@ -9329,21 +8761,18 @@ Chk_BB:
     compare(a, BulletBill_CannonVar);
     if (!z)
         goto Next3Slt;
-    JSR(OffscreenBoundsCheck, 202)
+    JSR(OffscreenBoundsCheck, 202);
     a = M(Enemy_Flag + x);
     if (z)
         goto Next3Slt;
-    JSR(GetEnemyOffscreenBits, 203)
-    JSR(BulletBillHandler, 204)
+    JSR(GetEnemyOffscreenBits, 203);
+    JSR(BulletBillHandler, 204);
 Next3Slt:
     --x;
     if (!n)
         goto ThreeSChk;
 ExCannon:
     goto Return;
-
-//---------------------------------------------------------------------
-
 BulletBillHandler:
     a = M(TimerControl);
     if (!z)
@@ -9357,7 +8786,7 @@ BulletBillHandler:
     if (z)
         goto KillBB;
     y = 0x01;
-    JSR(PlayerEnemyDiff, 205)
+    JSR(PlayerEnemyDiff, 205);
     if (n)
         goto SetupBB;
     ++y;
@@ -9382,21 +8811,18 @@ ChkDSte:
     a &= BOOST_BINARY(00100000);
     if (z)
         goto BBFly;
-    JSR(MoveD_EnemyVertically, 206)
+    JSR(MoveD_EnemyVertically, 206);
 BBFly:
-    JSR(MoveEnemyHorizontally, 207)
+    JSR(MoveEnemyHorizontally, 207);
 RunBBSubs:
-    JSR(GetEnemyOffscreenBits, 208)
-    JSR(RelativeEnemyPosition, 209)
-    JSR(GetEnemyBoundBox, 210)
-    JSR(PlayerEnemyCollision, 211)
+    JSR(GetEnemyOffscreenBits, 208);
+    JSR(RelativeEnemyPosition, 209);
+    JSR(GetEnemyBoundBox, 210);
+    JSR(PlayerEnemyCollision, 211);
     goto EnemyGfxHandler;
 KillBB:
-    JSR(EraseEnemyObject, 212)
+    JSR(EraseEnemyObject, 212);
     goto Return;
-
-//---------------------------------------------------------------------
-
 SpawnHammerObj:
     a = M(PseudoRandomBitReg + 1);
     a &= BOOST_BINARY(00000111);
@@ -9422,16 +8848,10 @@ SetMOfs:
     writeData(Misc_BoundBoxCtrl + y, a);
     c = 1;
     goto Return;
-
-//---------------------------------------------------------------------
-
 NoHammer:
     x = M(ObjectOffset);
     c = 0;
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcHammerObj:
     a = M(TimerControl);
     if (!z)
@@ -9455,8 +8875,8 @@ ProcHammerObj:
     a = 0x04;
     writeData(0x02, a);
     a = 0x00;
-    JSR(ImposeGravity, 213)
-    JSR(MoveObjectHorizontally, 214)
+    JSR(ImposeGravity, 213);
+    JSR(MoveObjectHorizontally, 214);
     x = M(ObjectOffset);
     goto RunAllH;
 SetHSpd:
@@ -9488,18 +8908,15 @@ SetHPos:
     if (!z)
         goto RunHSubs;
 RunAllH:
-    JSR(PlayerHammerCollision, 215)
+    JSR(PlayerHammerCollision, 215);
 RunHSubs:
-    JSR(GetMiscOffscreenBits, 216)
-    JSR(RelativeMiscPosition, 217)
-    JSR(GetMiscBoundBox, 218)
-    JSR(DrawHammer, 219)
+    JSR(GetMiscOffscreenBits, 216);
+    JSR(RelativeMiscPosition, 217);
+    JSR(GetMiscBoundBox, 218);
+    JSR(DrawHammer, 219);
     goto Return;
-
-//---------------------------------------------------------------------
-
 CoinBlock:
-    JSR(FindEmptyMiscSlot, 220)
+    JSR(FindEmptyMiscSlot, 220);
     a = M(Block_PageLoc + x);
     writeData(Misc_PageLoc + y, a);
     a = M(Block_X_Position + x);
@@ -9510,7 +8927,7 @@ CoinBlock:
     writeData(Misc_Y_Position + y, a);
     goto JCoinC;
 SetupJumpCoin:
-    JSR(FindEmptyMiscSlot, 221)
+    JSR(FindEmptyMiscSlot, 221);
     a = M(Block_PageLoc2 + x);
     writeData(Misc_PageLoc + y, a);
     a = M(0x06);
@@ -9531,12 +8948,9 @@ JCoinC:
     writeData(Misc_State + y, a);
     writeData(Square2SoundQueue, a);
     writeData(ObjectOffset, x);
-    JSR(GiveOneCoin, 222)
+    JSR(GiveOneCoin, 222);
     ++M(CoinTallyFor1Ups);
     goto Return;
-
-//---------------------------------------------------------------------
-
 FindEmptyMiscSlot:
     y = 0x08;
 FMiscLoop:
@@ -9551,9 +8965,6 @@ FMiscLoop:
 UseMiscS:
     writeData(JumpCoinMiscOffset, y);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MiscObjectsCore:
     x = 0x08;
 MiscLoop:
@@ -9564,7 +8975,7 @@ MiscLoop:
     a <<= 1;
     if (!c)
         goto ProcJumpCoin;
-    JSR(ProcHammerObj, 223)
+    JSR(ProcHammerObj, 223);
     goto MiscLoopBack;
 ProcJumpCoin:
     y = M(Misc_State + x);
@@ -9598,7 +9009,7 @@ JCoinRun:
     a >>= 1;
     writeData(0x01, a);
     a = 0x00;
-    JSR(ImposeGravity, 224)
+    JSR(ImposeGravity, 224);
     x = M(ObjectOffset);
     a = M(Misc_Y_Speed + x);
     compare(a, 0x05);
@@ -9606,24 +9017,21 @@ JCoinRun:
         goto RunJCSubs;
     ++M(Misc_State + x);
 RunJCSubs:
-    JSR(RelativeMiscPosition, 225)
-    JSR(GetMiscOffscreenBits, 226)
-    JSR(GetMiscBoundBox, 227)
-    JSR(JCoinGfxHandler, 228)
+    JSR(RelativeMiscPosition, 225);
+    JSR(GetMiscOffscreenBits, 226);
+    JSR(GetMiscBoundBox, 227);
+    JSR(JCoinGfxHandler, 228);
 MiscLoopBack:
     --x;
     if (!n)
         goto MiscLoop;
     goto Return;
-
-//---------------------------------------------------------------------
-
 GiveOneCoin:
     a = 0x01;
     writeData(DigitModifier + 5, a);
     x = M(CurrentPlayer);
     y = M(CoinTallyOffsets + x);
-    JSR(DigitsMathRoutine, 229)
+    JSR(DigitsMathRoutine, 229);
     ++M(CoinTally);
     a = M(CoinTally);
     compare(a, 100);
@@ -9640,12 +9048,12 @@ CoinPoints:
 AddToScore:
     x = M(CurrentPlayer);
     y = M(ScoreOffsets + x);
-    JSR(DigitsMathRoutine, 230)
+    JSR(DigitsMathRoutine, 230);
 GetSBNybbles:
     y = M(CurrentPlayer);
     a = M(StatusBarNybbles + y);
 UpdateNumber:
-    JSR(PrintStatusBarNumbers, 231)
+    JSR(PrintStatusBarNumbers, 231);
     y = M(VRAM_Buffer1_Offset);
     a = M(VRAM_Buffer1 - 6 + y);
     if (!z)
@@ -9655,9 +9063,6 @@ UpdateNumber:
 NoZSup:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 SetupPowerUp:
     a = PowerUpObject;
     writeData(Enemy_ID + 5, a);
@@ -9694,9 +9099,6 @@ PutBehind:
     a = Sfx_GrowPowerUp;
     writeData(Square2SoundQueue, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PowerUpObjHandler:
     x = 0x05;
     writeData(ObjectOffset, x);
@@ -9718,12 +9120,12 @@ PowerUpObjHandler:
     compare(a, 0x02);
     if (!z)
         goto RunPUSubs;
-    JSR(MoveJumpingEnemy, 232)
-    JSR(EnemyJump, 233)
+    JSR(MoveJumpingEnemy, 232);
+    JSR(EnemyJump, 233);
     goto RunPUSubs;
 ShroomM:
-    JSR(MoveNormalEnemy, 234)
-    JSR(EnemyToBGCollisionDet, 235)
+    JSR(MoveNormalEnemy, 234);
+    JSR(EnemyToBGCollisionDet, 235);
     goto RunPUSubs;
 GrowThePowerUp:
     a = M(FrameCounter);
@@ -9750,17 +9152,14 @@ ChkPUSte:
     if (!c)
         goto ExitPUp;
 RunPUSubs:
-    JSR(RelativeEnemyPosition, 236)
-    JSR(GetEnemyOffscreenBits, 237)
-    JSR(GetEnemyBoundBox, 238)
-    JSR(DrawPowerUp, 239)
-    JSR(PlayerEnemyCollision, 240)
-    JSR(OffscreenBoundsCheck, 241)
+    JSR(RelativeEnemyPosition, 236);
+    JSR(GetEnemyOffscreenBits, 237);
+    JSR(GetEnemyBoundBox, 238);
+    JSR(DrawPowerUp, 239);
+    JSR(PlayerEnemyCollision, 240);
+    JSR(OffscreenBoundsCheck, 241);
 ExitPUp:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerHeadCollision:
     pha();
     a = 0x11;
@@ -9771,7 +9170,7 @@ PlayerHeadCollision:
     a = 0x12;
 DBlockSte:
     writeData(Block_State + x, a);
-    JSR(DestroyBlockMetatile, 242)
+    JSR(DestroyBlockMetatile, 242);
     x = M(SprDataOffset_Ctrl);
     a = M(0x02);
     writeData(Block_Orig_YPos + x, a);
@@ -9779,7 +9178,7 @@ DBlockSte:
     a = M(0x06);
     writeData(Block_BBuf_Low + x, a);
     a = M(W(0x06) + y);
-    JSR(BlockBumpedChk, 243)
+    JSR(BlockBumpedChk, 243);
     writeData(0x00, a);
     y = M(PlayerSize);
     if (!z)
@@ -9814,7 +9213,7 @@ PutOldMT:
     a = y;
 PutMTileB:
     writeData(Block_Metatile + x, a);
-    JSR(InitBlock_XY_Pos, 244)
+    JSR(InitBlock_XY_Pos, 244);
     y = M(0x02);
     a = 0x23;
     writeData(W(0x06) + y, a);
@@ -9841,18 +9240,15 @@ BigBP:
     compare(y, 0x11);
     if (z)
         goto Unbreak;
-    JSR(BrickShatter, 245)
+    JSR(BrickShatter, 245);
     goto InvOBit;
 Unbreak:
-    JSR(BumpBlock, 246)
+    JSR(BumpBlock, 246);
 InvOBit:
     a = M(SprDataOffset_Ctrl);
     a ^= 0x01;
     writeData(SprDataOffset_Ctrl, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitBlock_XY_Pos:
     a = M(Player_X_Position);
     c = 0;
@@ -9866,11 +9262,8 @@ InitBlock_XY_Pos:
     a = M(Player_Y_HighPos);
     writeData(Block_Y_HighPos + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 BumpBlock:
-    JSR(CheckTopOfBlock, 247)
+    JSR(CheckTopOfBlock, 247);
     a = Sfx_Bump;
     writeData(Square1SoundQueue, a);
     a = 0x00;
@@ -9880,7 +9273,7 @@ BumpBlock:
     a = 0xfe;
     writeData(Block_Y_Speed + x, a);
     a = M(0x05);
-    JSR(BlockBumpedChk, 248)
+    JSR(BlockBumpedChk, 248);
     if (!c)
         goto ExitBlockChk;
     a = y;
@@ -9889,7 +9282,7 @@ BumpBlock:
         goto BlockCode;
     a -= 0x05;
 BlockCode:
-    switch(a)
+    switch (a)
     {
     case 0:
         goto MushFlowerBlock;
@@ -9910,9 +9303,6 @@ BlockCode:
     case 8:
         goto ExtraLifeMushBlock;
     }
-
-//---------------------------------------------------------------------
-
 MushFlowerBlock:
     a = 0x00;
     goto Skip_4;
@@ -9928,12 +9318,9 @@ Skip_5:
 VineBlock:
     x = 0x05;
     y = M(SprDataOffset_Ctrl);
-    JSR(Setup_Vine, 249)
+    JSR(Setup_Vine, 249);
 ExitBlockChk:
     goto Return;
-
-//---------------------------------------------------------------------
-
 BlockBumpedChk:
     y = 0x0d;
 BumpChkLoop:
@@ -9946,25 +9333,19 @@ BumpChkLoop:
     c = 0;
 MatchBump:
     goto Return;
-
-//---------------------------------------------------------------------
-
 BrickShatter:
-    JSR(CheckTopOfBlock, 250)
+    JSR(CheckTopOfBlock, 250);
     a = Sfx_BrickShatter;
     writeData(Block_RepFlag + x, a);
     writeData(NoiseSoundQueue, a);
-    JSR(SpawnBrickChunks, 251)
+    JSR(SpawnBrickChunks, 251);
     a = 0xfe;
     writeData(Player_Y_Speed, a);
     a = 0x05;
     writeData(DigitModifier + 5, a);
-    JSR(AddToScore, 252)
+    JSR(AddToScore, 252);
     x = M(SprDataOffset_Ctrl);
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckTopOfBlock:
     x = M(SprDataOffset_Ctrl);
     y = M(0x02);
@@ -9981,14 +9362,11 @@ CheckTopOfBlock:
         goto TopEx;
     a = 0x00;
     writeData(W(0x06) + y, a);
-    JSR(RemoveCoin_Axe, 253)
+    JSR(RemoveCoin_Axe, 253);
     x = M(SprDataOffset_Ctrl);
-    JSR(SetupJumpCoin, 254)
+    JSR(SetupJumpCoin, 254);
 TopEx:
     goto Return;
-
-//---------------------------------------------------------------------
-
 SpawnBrickChunks:
     a = M(Block_X_Position + x);
     writeData(Block_Orig_XPos + x, a);
@@ -10013,9 +9391,6 @@ SpawnBrickChunks:
     a = 0xfa;
     writeData(Block_Y_Speed + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 BlockObjectsCore:
     a = M(Block_State + x);
     if (z)
@@ -10030,18 +9405,18 @@ BlockObjectsCore:
     --y;
     if (z)
         goto BouncingBlockHandler;
-    JSR(ImposeGravityBlock, 255)
-    JSR(MoveObjectHorizontally, 256)
+    JSR(ImposeGravityBlock, 255);
+    JSR(MoveObjectHorizontally, 256);
     a = x;
     c = 0;
     a += 0x02;
     x = a;
-    JSR(ImposeGravityBlock, 257)
-    JSR(MoveObjectHorizontally, 258)
+    JSR(ImposeGravityBlock, 257);
+    JSR(MoveObjectHorizontally, 258);
     x = M(ObjectOffset);
-    JSR(RelativeBlockPosition, 259)
-    JSR(GetBlockOffscreenBits, 260)
-    JSR(DrawBrickChunks, 261)
+    JSR(RelativeBlockPosition, 259);
+    JSR(GetBlockOffscreenBits, 260);
+    JSR(DrawBrickChunks, 261);
     pla();
     y = M(Block_Y_HighPos + x);
     if (z)
@@ -10061,11 +9436,11 @@ ChkTop:
     if (c)
         goto KillBlock;
 BouncingBlockHandler:
-    JSR(ImposeGravityBlock, 262)
+    JSR(ImposeGravityBlock, 262);
     x = M(ObjectOffset);
-    JSR(RelativeBlockPosition, 263)
-    JSR(GetBlockOffscreenBits, 264)
-    JSR(DrawBlock, 265)
+    JSR(RelativeBlockPosition, 263);
+    JSR(GetBlockOffscreenBits, 264);
+    JSR(DrawBlock, 265);
     a = M(Block_Y_Position + x);
     a &= 0x0f;
     compare(a, 0x05);
@@ -10079,9 +9454,6 @@ KillBlock:
 UpdSte:
     writeData(Block_State + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 BlockObjMT_Updater:
     x = 0x01;
 UpdateLoop:
@@ -10101,7 +9473,7 @@ UpdateLoop:
     y = a;
     a = M(Block_Metatile + x);
     writeData(W(0x06) + y, a);
-    JSR(ReplaceBlockMetatile, 266)
+    JSR(ReplaceBlockMetatile, 266);
     a = 0x00;
     writeData(Block_RepFlag + x, a);
 NextBUpd:
@@ -10109,17 +9481,11 @@ NextBUpd:
     if (!n)
         goto UpdateLoop;
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveEnemyHorizontally:
     ++x;
-    JSR(MoveObjectHorizontally, 267)
+    JSR(MoveObjectHorizontally, 267);
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MovePlayerHorizontally:
     a = M(JumpspringAnimCtrl);
     if (!z)
@@ -10169,9 +9535,6 @@ UseAdder:
     a += M(0x00);
 ExXMove:
     goto Return;
-
-//---------------------------------------------------------------------
-
 MovePlayerVertically:
     x = 0x00;
     a = M(TimerControl);
@@ -10227,12 +9590,9 @@ SetHiMax:
 SetXMoveAmt:
     writeData(0x00, y);
     ++x;
-    JSR(ImposeGravitySprObj, 268)
+    JSR(ImposeGravitySprObj, 268);
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ResidualGravityCode:
     y = 0x00;
     goto Skip_6;
@@ -10269,12 +9629,9 @@ SetDplSpd:
     pla();
     y = a;
 RedPTroopaGrav:
-    JSR(ImposeGravity, 269)
+    JSR(ImposeGravity, 269);
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ImposeGravity:
     pha();
     a = M(SprObject_YMF_Dummy + x);
@@ -10340,9 +9697,6 @@ ChkUpM:
     writeData(SprObject_Y_MoveForce + x, a);
 ExVMove:
     goto Return;
-
-//---------------------------------------------------------------------
-
 EnemiesAndLoopsCore:
     a = M(Enemy_Flag + x);
     pha();
@@ -10370,9 +9724,6 @@ ChkBowserF:
     writeData(Enemy_Flag + x, a);
 ExitELCore:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ExecGameLoopback:
     a = M(Player_PageLoc);
     c = 1;
@@ -10402,9 +9753,6 @@ ExecGameLoopback:
     a = M(AreaDataOfsLoopback + y);
     writeData(AreaDataOffset, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcLoopCommand:
     a = M(LoopCommand);
     if (z)
@@ -10456,8 +9804,8 @@ WrongChk:
     if (z)
         goto IncMLoop;
 DoLpBack:
-    JSR(ExecGameLoopback, 270)
-    JSR(KillAllEnemies, 271)
+    JSR(ExecGameLoopback, 270);
+    JSR(KillAllEnemies, 271);
 InitMLp:
     a = 0x00;
     writeData(MultiLoopPassCntr, a);
@@ -10498,9 +9846,6 @@ CheckEndofBuffer:
     if (z)
         goto CheckRightBounds;
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckRightBounds:
     a = M(ScreenRight_X_Pos);
     c = 0;
@@ -10603,14 +9948,11 @@ StrID:
     writeData(Enemy_ID + x, a);
     a = 0x01;
     writeData(Enemy_Flag + x, a);
-    JSR(InitEnemyObject, 272)
+    JSR(InitEnemyObject, 272);
     a = M(Enemy_Flag + x);
     if (!z)
         goto Inc2B;
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckFrenzyBuffer:
     a = M(EnemyFrenzyBuffer);
     if (!z)
@@ -10625,12 +9967,9 @@ StrFre:
 InitEnemyObject:
     a = 0x00;
     writeData(Enemy_State + x, a);
-    JSR(CheckpointEnemyID, 273)
+    JSR(CheckpointEnemyID, 273);
 ExEPar:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DoGroup:
     goto HandleGroupEnemies;
 ParseRow0e:
@@ -10670,9 +10009,6 @@ Inc2B:
     writeData(EnemyObjectPageSel, a);
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckpointEnemyID:
     a = M(Enemy_ID + x);
     compare(a, 0x15);
@@ -10686,7 +10022,7 @@ CheckpointEnemyID:
     writeData(EnemyOffscrBitsMasked + x, a);
     a = y;
 InitEnemyRoutines:
-    switch(a)
+    switch (a)
     {
     case 0:
         goto InitNormalEnemy;
@@ -10799,16 +10135,10 @@ InitEnemyRoutines:
     case 54:
         goto EndOfEnemyInitCode;
     }
-
-//---------------------------------------------------------------------
-
 NoInitCode:
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitGoomba:
-    JSR(InitNormalEnemy, 274)
+    JSR(InitNormalEnemy, 274);
     goto SmallBBox;
 InitPodoboo:
     a = 0x02;
@@ -10823,9 +10153,6 @@ InitRetainerObj:
     a = 0xb8;
     writeData(Enemy_Y_Position + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitNormalEnemy:
     y = 0x01;
     a = M(PrimaryHardMode);
@@ -10838,13 +10165,10 @@ SetESpd:
     writeData(Enemy_X_Speed + x, a);
     goto TallBBox;
 InitRedKoopa:
-    JSR(InitNormalEnemy, 275)
+    JSR(InitNormalEnemy, 275);
     a = 0x01;
     writeData(Enemy_State + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitHammerBro:
     a = 0x00;
     writeData(HammerThrowingTimer + x, a);
@@ -10886,29 +10210,20 @@ InitVStf:
     writeData(Enemy_Y_Speed + x, a);
     writeData(Enemy_Y_MoveForce + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitBulletBill:
     a = 0x02;
     writeData(Enemy_MovingDir + x, a);
     a = 0x09;
     writeData(Enemy_BoundBoxCtrl + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitCheepCheep:
-    JSR(SmallBBox, 276)
+    JSR(SmallBBox, 276);
     a = M(PseudoRandomBitReg + x);
     a &= BOOST_BINARY(00010000);
     writeData(CheepCheepMoveMFlag + x, a);
     a = M(Enemy_Y_Position + x);
     writeData(CheepCheepOrigYPos + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitLakitu:
     a = M(EnemyFrenzyBuffer);
     if (!z)
@@ -10916,7 +10231,7 @@ InitLakitu:
 SetupLakitu:
     a = 0x00;
     writeData(LakituReappearTimer, a);
-    JSR(InitHorizFlySwimEnemy, 277)
+    JSR(InitHorizFlySwimEnemy, 277);
     goto TallBBox2;
 KillLakitu:
     goto EraseEnemyObject;
@@ -10958,16 +10273,13 @@ CreateL:
     writeData(Enemy_State + x, a);
     a = Lakitu;
     writeData(Enemy_ID + x, a);
-    JSR(SetupLakitu, 278)
+    JSR(SetupLakitu, 278);
     a = 0x20;
-    JSR(PutAtRightExtent, 279)
+    JSR(PutAtRightExtent, 279);
 RetEOfs:
     x = M(ObjectOffset);
 ExLSHand:
     goto Return;
-
-//---------------------------------------------------------------------
-
 CreateSpiny:
     a = M(Player_Y_Position);
     compare(a, 0x2c);
@@ -11001,7 +10313,7 @@ DifLoop:
     if (!n)
         goto DifLoop;
     x = M(ObjectOffset);
-    JSR(PlayerLakituDiff, 280)
+    JSR(PlayerLakituDiff, 280);
     y = M(Player_X_Speed);
     compare(y, 0x08);
     if (c)
@@ -11018,7 +10330,7 @@ DifLoop:
 UsePosv:
     a = y;
 SetSpSpd:
-    JSR(SmallBBox, 281)
+    JSR(SmallBBox, 281);
     y = 0x02;
     writeData(Enemy_X_Speed + x, a);
     compare(a, 0x00);
@@ -11035,11 +10347,8 @@ SpinyRte:
     writeData(Enemy_State + x, a);
 ChpChpEx:
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitLongFirebar:
-    JSR(DuplicateEnemyObj, 282)
+    JSR(DuplicateEnemyObj, 282);
 InitShortFirebar:
     a = 0x00;
     writeData(FirebarSpinState_Low + x, a);
@@ -11067,7 +10376,7 @@ InitFlyingCheepCheep:
     a = M(FrenzyEnemyTimer);
     if (!z)
         goto ChpChpEx;
-    JSR(SmallBBox, 283)
+    JSR(SmallBBox, 283);
     a = M(PseudoRandomBitReg + 1 + x);
     a &= BOOST_BINARY(00000011);
     y = a;
@@ -11160,11 +10469,8 @@ FinCCSt:
     a = 0xf8;
     writeData(Enemy_Y_Position + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitBowser:
-    JSR(DuplicateEnemyObj, 284)
+    JSR(DuplicateEnemyObj, 284);
     writeData(BowserFront_Offset, x);
     a = 0x00;
     writeData(BowserBodyControls, a);
@@ -11182,9 +10488,6 @@ InitBowser:
     a >>= 1;
     writeData(BowserMovementSpeed, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DuplicateEnemyObj:
     y = 0xff;
 FSLoop:
@@ -11207,9 +10510,6 @@ FSLoop:
     writeData(Enemy_Y_Position + y, a);
 FlmEx:
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitBowserFlame:
     a = M(FrenzyEnemyTimer);
     if (!z)
@@ -11223,7 +10523,7 @@ InitBowserFlame:
     compare(a, Bowser);
     if (z)
         goto SpawnFromMouth;
-    JSR(SetFlameTimer, 285)
+    JSR(SetFlameTimer, 285);
     c = 0;
     a += 0x20;
     y = M(SecondaryHardMode);
@@ -11284,9 +10584,6 @@ FinishFlame:
     writeData(Enemy_X_MoveForce + x, a);
     writeData(Enemy_State + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitFireworks:
     a = M(FrenzyEnemyTimer);
     if (!z)
@@ -11330,9 +10627,6 @@ StarFChk:
     writeData(ExplosionTimerCounter + x, a);
 ExitFWk:
     goto Return;
-
-//---------------------------------------------------------------------
-
 BulletBillCheepCheep:
     a = M(FrenzyEnemyTimer);
     if (!z)
@@ -11385,7 +10679,7 @@ AddFBit:
     a |= M(BitMFilter);
     writeData(BitMFilter, a);
     a = M(Enemy17YPosData + y);
-    JSR(PutAtRightExtent, 286)
+    JSR(PutAtRightExtent, 286);
     writeData(Enemy_YMF_Dummy + x, a);
     a = 0x20;
     writeData(FrenzyEnemyTimer, a);
@@ -11406,9 +10700,6 @@ BB_SLoop:
         goto BB_SLoop;
 ExF17:
     goto Return;
-
-//---------------------------------------------------------------------
-
 FireBulletBill:
     a = M(Square2SoundQueue);
     a |= Sfx_Blast;
@@ -11480,7 +10771,7 @@ GSltLp:
     a = 0x01;
     writeData(Enemy_Y_HighPos + x, a);
     writeData(Enemy_Flag + x, a);
-    JSR(CheckpointEnemyID, 287)
+    JSR(CheckpointEnemyID, 287);
     --M(NumberofGroupEnemies);
     if (!z)
         goto GrLoop;
@@ -11504,7 +10795,7 @@ InitEnemyFrenzy:
     writeData(EnemyFrenzyBuffer, a);
     c = 1;
     a -= 0x12;
-    switch(a)
+    switch (a)
     {
     case 0:
         goto LakituAndSpinyHandler;
@@ -11519,14 +10810,8 @@ InitEnemyFrenzy:
     case 5:
         goto BulletBillCheepCheep;
     }
-
-//---------------------------------------------------------------------
-
 NoFrenzyCode:
     goto Return;
-
-//---------------------------------------------------------------------
-
 EndFrenzy:
     y = 0x05;
 LakituChk:
@@ -11544,9 +10829,6 @@ NextFSlot:
     writeData(EnemyFrenzyBuffer, a);
     writeData(Enemy_Flag + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitJumpGPTroopa:
     a = 0x02;
     writeData(Enemy_MovingDir + x, a);
@@ -11557,9 +10839,6 @@ TallBBox2:
 SetBBox2:
     writeData(Enemy_BoundBoxCtrl + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitBalPlatform:
     --M(Enemy_Y_Position + x);
     --M(Enemy_Y_Position + x);
@@ -11567,7 +10846,7 @@ InitBalPlatform:
     if (!z)
         goto AlignP;
     y = 0x02;
-    JSR(PosPlatform, 288)
+    JSR(PosPlatform, 288);
 AlignP:
     y = 0xff;
     a = M(BalPlatformAlignment);
@@ -11581,7 +10860,7 @@ SetBPA:
     a = 0x00;
     writeData(Enemy_MovingDir + x, a);
     y = a;
-    JSR(PosPlatform, 289)
+    JSR(PosPlatform, 289);
 InitDropPlatform:
     a = 0xff;
     writeData(PlatformCollisionFlag + x, a);
@@ -11606,7 +10885,7 @@ SetYO:
     a += M(Enemy_Y_Position + x);
     writeData(YPlatformCenterYPos + x, a);
 CommonPlatCode:
-    JSR(InitVStf, 290)
+    JSR(InitVStf, 290);
 SPBBox:
     a = 0x05;
     y = M(AreaType);
@@ -11620,14 +10899,11 @@ SPBBox:
 CasPBB:
     writeData(Enemy_BoundBoxCtrl + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 LargeLiftUp:
-    JSR(PlatLiftUp, 291)
+    JSR(PlatLiftUp, 291);
     goto LargeLiftBBox;
 LargeLiftDown:
-    JSR(PlatLiftDown, 292)
+    JSR(PlatLiftDown, 292);
 LargeLiftBBox:
     goto SPBBox;
 PlatLiftUp:
@@ -11643,13 +10919,10 @@ PlatLiftDown:
     writeData(Enemy_Y_Speed + x, a);
 CommonSmallLift:
     y = 0x01;
-    JSR(PosPlatform, 293)
+    JSR(PosPlatform, 293);
     a = 0x04;
     writeData(Enemy_BoundBoxCtrl + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PosPlatform:
     a = M(Enemy_X_Position + x);
     c = 0;
@@ -11659,14 +10932,8 @@ PosPlatform:
     a += M(PlatPosDataHigh + y);
     writeData(Enemy_PageLoc + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 EndOfEnemyInitCode:
     goto Return;
-
-//---------------------------------------------------------------------
-
 RunEnemyObjectsCore:
     x = M(ObjectOffset);
     a = 0x00;
@@ -11677,7 +10944,7 @@ RunEnemyObjectsCore:
     a = y;
     a -= 0x14;
 JmpEO:
-    switch(a)
+    switch (a)
     {
     case 0:
         goto RunNormalEnemies;
@@ -11748,37 +11015,31 @@ JmpEO:
     case 33:
         goto RunRetainerObj;
     }
-
-//---------------------------------------------------------------------
-
 NoRunCode:
     goto Return;
-
-//---------------------------------------------------------------------
-
 RunRetainerObj:
-    JSR(GetEnemyOffscreenBits, 294)
-    JSR(RelativeEnemyPosition, 295)
+    JSR(GetEnemyOffscreenBits, 294);
+    JSR(RelativeEnemyPosition, 295);
     goto EnemyGfxHandler;
 RunNormalEnemies:
     a = 0x00;
     writeData(Enemy_SprAttrib + x, a);
-    JSR(GetEnemyOffscreenBits, 296)
-    JSR(RelativeEnemyPosition, 297)
-    JSR(EnemyGfxHandler, 298)
-    JSR(GetEnemyBoundBox, 299)
-    JSR(EnemyToBGCollisionDet, 300)
-    JSR(EnemiesCollision, 301)
-    JSR(PlayerEnemyCollision, 302)
+    JSR(GetEnemyOffscreenBits, 296);
+    JSR(RelativeEnemyPosition, 297);
+    JSR(EnemyGfxHandler, 298);
+    JSR(GetEnemyBoundBox, 299);
+    JSR(EnemyToBGCollisionDet, 300);
+    JSR(EnemiesCollision, 301);
+    JSR(PlayerEnemyCollision, 302);
     y = M(TimerControl);
     if (!z)
         goto SkipMove;
-    JSR(EnemyMovementSubs, 303)
+    JSR(EnemyMovementSubs, 303);
 SkipMove:
     goto OffscreenBoundsCheck;
 EnemyMovementSubs:
     a = M(Enemy_ID + x);
-    switch(a)
+    switch (a)
     {
     case 0:
         goto MoveNormalEnemy;
@@ -11823,51 +11084,45 @@ EnemyMovementSubs:
     case 20:
         goto MoveFlyingCheepCheep;
     }
-
-//---------------------------------------------------------------------
-
 NoMoveCode:
     goto Return;
-
-//---------------------------------------------------------------------
-
 RunBowserFlame:
-    JSR(ProcBowserFlame, 304)
-    JSR(GetEnemyOffscreenBits, 305)
-    JSR(RelativeEnemyPosition, 306)
-    JSR(GetEnemyBoundBox, 307)
-    JSR(PlayerEnemyCollision, 308)
+    JSR(ProcBowserFlame, 304);
+    JSR(GetEnemyOffscreenBits, 305);
+    JSR(RelativeEnemyPosition, 306);
+    JSR(GetEnemyBoundBox, 307);
+    JSR(PlayerEnemyCollision, 308);
     goto OffscreenBoundsCheck;
 RunFirebarObj:
-    JSR(ProcFirebar, 309)
+    JSR(ProcFirebar, 309);
     goto OffscreenBoundsCheck;
 RunSmallPlatform:
-    JSR(GetEnemyOffscreenBits, 310)
-    JSR(RelativeEnemyPosition, 311)
-    JSR(SmallPlatformBoundBox, 312)
-    JSR(SmallPlatformCollision, 313)
-    JSR(RelativeEnemyPosition, 314)
-    JSR(DrawSmallPlatform, 315)
-    JSR(MoveSmallPlatform, 316)
+    JSR(GetEnemyOffscreenBits, 310);
+    JSR(RelativeEnemyPosition, 311);
+    JSR(SmallPlatformBoundBox, 312);
+    JSR(SmallPlatformCollision, 313);
+    JSR(RelativeEnemyPosition, 314);
+    JSR(DrawSmallPlatform, 315);
+    JSR(MoveSmallPlatform, 316);
     goto OffscreenBoundsCheck;
 RunLargePlatform:
-    JSR(GetEnemyOffscreenBits, 317)
-    JSR(RelativeEnemyPosition, 318)
-    JSR(LargePlatformBoundBox, 319)
-    JSR(LargePlatformCollision, 320)
+    JSR(GetEnemyOffscreenBits, 317);
+    JSR(RelativeEnemyPosition, 318);
+    JSR(LargePlatformBoundBox, 319);
+    JSR(LargePlatformCollision, 320);
     a = M(TimerControl);
     if (!z)
         goto SkipPT;
-    JSR(LargePlatformSubroutines, 321)
+    JSR(LargePlatformSubroutines, 321);
 SkipPT:
-    JSR(RelativeEnemyPosition, 322)
-    JSR(DrawLargePlatform, 323)
+    JSR(RelativeEnemyPosition, 322);
+    JSR(DrawLargePlatform, 323);
     goto OffscreenBoundsCheck;
 LargePlatformSubroutines:
     a = M(Enemy_ID + x);
     c = 1;
     a -= 0x24;
-    switch(a)
+    switch (a)
     {
     case 0:
         goto BalancePlatform;
@@ -11884,9 +11139,6 @@ LargePlatformSubroutines:
     case 6:
         goto RightPlatform;
     }
-
-//---------------------------------------------------------------------
-
 EraseEnemyObject:
     a = 0x00;
     writeData(Enemy_Flag + x, a);
@@ -11898,14 +11150,11 @@ EraseEnemyObject:
     writeData(Enemy_SprAttrib + x, a);
     writeData(EnemyFrameTimer + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MovePodoboo:
     a = M(EnemyIntervalTimer + x);
     if (!z)
         goto PdbM;
-    JSR(InitPodoboo, 324)
+    JSR(InitPodoboo, 324);
     a = M(PseudoRandomBitReg + 1 + x);
     a |= BOOST_BINARY(10000000);
     writeData(Enemy_Y_MoveForce + x, a);
@@ -11937,7 +11186,7 @@ ChkJH:
     y = M(SecondaryHardMode);
     a = M(HammerThrowTmrData + y);
     writeData(HammerThrowingTimer + x, a);
-    JSR(SpawnHammerObj, 325)
+    JSR(SpawnHammerObj, 325);
     if (!c)
         goto DecHT;
     a = M(Enemy_State + x);
@@ -11998,7 +11247,7 @@ MoveHammerBroXDir:
 Shimmy:
     writeData(Enemy_X_Speed + x, y);
     y = 0x01;
-    JSR(PlayerEnemyDiff, 326)
+    JSR(PlayerEnemyDiff, 326);
     if (n)
         goto SetShim;
     ++y;
@@ -12034,7 +11283,7 @@ MoveNormalEnemy:
     if (c)
         goto ReviveStunned;
 FallE:
-    JSR(MoveD_EnemyVertically, 327)
+    JSR(MoveD_EnemyVertically, 327);
     y = 0x00;
     a = M(Enemy_State + x);
     compare(a, 0x02);
@@ -12064,13 +11313,10 @@ AddHS:
     c = 0;
     a += M(XSpeedAdderData + y);
     writeData(Enemy_X_Speed + x, a);
-    JSR(MoveEnemyHorizontally, 328)
+    JSR(MoveEnemyHorizontally, 328);
     pla();
     writeData(Enemy_X_Speed + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ReviveStunned:
     a = M(EnemyIntervalTimer + x);
     if (!z)
@@ -12091,11 +11337,8 @@ SetRSpd:
     a = M(RevivedXSpeed + y);
     writeData(Enemy_X_Speed + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveDefeatedEnemy:
-    JSR(MoveD_EnemyVertically, 329)
+    JSR(MoveD_EnemyVertically, 329);
     goto MoveEnemyHorizontally;
 ChkKillGoomba:
     compare(a, 0x0e);
@@ -12105,14 +11348,11 @@ ChkKillGoomba:
     compare(a, Goomba);
     if (!z)
         goto NKGmba;
-    JSR(EraseEnemyObject, 330)
+    JSR(EraseEnemyObject, 330);
 NKGmba:
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveJumpingEnemy:
-    JSR(MoveJ_EnemyVertically, 331)
+    JSR(MoveJ_EnemyVertically, 331);
     goto MoveEnemyHorizontally;
 ProcMoveRedPTroopa:
     a = M(Enemy_Y_Speed + x);
@@ -12131,9 +11371,6 @@ ProcMoveRedPTroopa:
     ++M(Enemy_Y_Position + x);
 NoIncPT:
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveRedPTUpOrDown:
     a = M(Enemy_Y_Position + x);
     compare(a, M(RedPTroopaCenterYPos + x));
@@ -12143,8 +11380,8 @@ MoveRedPTUpOrDown:
 MovPTDwn:
     goto MoveRedPTroopaDown;
 MoveFlyGreenPTroopa:
-    JSR(XMoveCntr_GreenPTroopa, 332)
-    JSR(MoveWithXMCntrs, 333)
+    JSR(XMoveCntr_GreenPTroopa, 332);
+    JSR(MoveWithXMCntrs, 333);
     y = 0x01;
     a = M(FrameCounter);
     a &= BOOST_BINARY(00000011);
@@ -12163,9 +11400,6 @@ YSway:
     writeData(Enemy_Y_Position + x, a);
 NoMGPT:
     goto Return;
-
-//---------------------------------------------------------------------
-
 XMoveCntr_GreenPTroopa:
     a = 0x13;
 XMoveCntr_Platform:
@@ -12185,24 +11419,15 @@ XMoveCntr_Platform:
     ++M(XMoveSecondaryCounter + x);
 NoIncXM:
     goto Return;
-
-//---------------------------------------------------------------------
-
 IncPXM:
     ++M(XMovePrimaryCounter + x);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DecSeXM:
     a = y;
     if (z)
         goto IncPXM;
     --M(XMoveSecondaryCounter + x);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveWithXMCntrs:
     a = M(XMoveSecondaryCounter + x);
     pha();
@@ -12219,14 +11444,11 @@ MoveWithXMCntrs:
     y = 0x02;
 XMRight:
     writeData(Enemy_MovingDir + x, y);
-    JSR(MoveEnemyHorizontally, 334)
+    JSR(MoveEnemyHorizontally, 334);
     writeData(0x00, a);
     pla();
     writeData(XMoveSecondaryCounter + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveBloober:
     a = M(Enemy_State + x);
     a &= BOOST_BINARY(00100000);
@@ -12246,14 +11468,14 @@ MoveBloober:
         goto SBMDir;
 FBLeft:
     y = 0x02;
-    JSR(PlayerEnemyDiff, 335)
+    JSR(PlayerEnemyDiff, 335);
     if (!n)
         goto SBMDir;
     --y;
 SBMDir:
     writeData(Enemy_MovingDir + x, y);
 BlooberSwim:
-    JSR(ProcSwimmingB, 336)
+    JSR(ProcSwimmingB, 336);
     a = M(Enemy_Y_Position + x);
     c = 1;
     a -= M(Enemy_Y_MoveForce + x);
@@ -12274,9 +11496,6 @@ SwimX:
     a += 0x00;
     writeData(Enemy_PageLoc + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 LeftSwim:
     a = M(Enemy_X_Position + x);
     c = 1;
@@ -12286,9 +11505,6 @@ LeftSwim:
     a -= 0x00;
     writeData(Enemy_PageLoc + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveDefeatedBloober:
     goto MoveEnemySlowVert;
 ProcSwimmingB:
@@ -12317,9 +11533,6 @@ ProcSwimmingB:
     ++M(BlooperMoveCounter + x);
 BSwimE:
     goto Return;
-
-//---------------------------------------------------------------------
-
 SlowSwim:
     pla();
     if (!z)
@@ -12336,9 +11549,6 @@ SlowSwim:
     writeData(EnemyIntervalTimer + x, a);
 NoSSw:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkForFloatdown:
     a = M(EnemyIntervalTimer + x);
     if (z)
@@ -12351,9 +11561,6 @@ Floatdown:
     ++M(Enemy_Y_Position + x);
 NoFD:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkNearPlayer:
     a = M(Enemy_Y_Position + x);
     a += 0x10;
@@ -12363,9 +11570,6 @@ ChkNearPlayer:
     a = 0x00;
     writeData(BlooperMoveCounter + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveBulletBill:
     a = M(Enemy_State + x);
     a &= BOOST_BINARY(00100000);
@@ -12449,11 +11653,8 @@ YPDiff:
     writeData(CheepCheepMoveMFlag + x, a);
 ExSwCC:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcFirebar:
-    JSR(GetEnemyOffscreenBits, 337)
+    JSR(GetEnemyOffscreenBits, 337);
     a = M(Enemy_OffscreenBits);
     a &= BOOST_BINARY(00001000);
     if (!z)
@@ -12462,7 +11663,7 @@ ProcFirebar:
     if (!z)
         goto SusFbar;
     a = M(FirebarSpinSpeed + x);
-    JSR(FirebarSpin, 338)
+    JSR(FirebarSpin, 338);
     a &= BOOST_BINARY(00011111);
     writeData(FirebarSpinState_High + x, a);
 SusFbar:
@@ -12483,8 +11684,8 @@ SkpFSte:
     writeData(FirebarSpinState_High + x, a);
 SetupGFB:
     writeData(0xef, a);
-    JSR(RelativeEnemyPosition, 339)
-    JSR(GetFirebarPosition, 340)
+    JSR(RelativeEnemyPosition, 339);
+    JSR(GetFirebarPosition, 340);
     y = M(Enemy_SprDataOffset + x);
     a = M(Enemy_Rel_YPos);
     writeData(Sprite_Y_Position + y, a);
@@ -12494,7 +11695,7 @@ SetupGFB:
     writeData(0x06, a);
     a = 0x01;
     writeData(0x00, a);
-    JSR(FirebarCollision, 341)
+    JSR(FirebarCollision, 341);
     y = 0x05;
     a = M(Enemy_ID + x);
     compare(a, 0x1f);
@@ -12507,8 +11708,8 @@ SetMFbar:
     writeData(0x00, a);
 DrawFbar:
     a = M(0xef);
-    JSR(GetFirebarPosition, 342)
-    JSR(DrawFirebar_Collision, 343)
+    JSR(GetFirebarPosition, 342);
+    JSR(DrawFirebar_Collision, 343);
     a = M(0x00);
     compare(a, 0x04);
     if (!z)
@@ -12524,9 +11725,6 @@ NextFbar:
         goto DrawFbar;
 SkipFBar:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawFirebar_Collision:
     a = M(0x03);
     writeData(0x05, a);
@@ -12577,7 +11775,7 @@ SetVFbr:
     writeData(Sprite_Y_Position + y, a);
     writeData(0x07, a);
 FirebarCollision:
-    JSR(DrawFirebar, 344)
+    JSR(DrawFirebar, 344);
     a = y;
     pha();
     a = M(StarInvincibleTimer);
@@ -12659,7 +11857,7 @@ SetSDir:
     x = 0x00;
     a = M(0x00);
     pha();
-    JSR(InjurePlayer, 345)
+    JSR(InjurePlayer, 345);
     pla();
     writeData(0x00, a);
 NoColFB:
@@ -12669,9 +11867,6 @@ NoColFB:
     writeData(0x06, a);
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetFirebarPosition:
     pha();
     a &= BOOST_BINARY(00001111);
@@ -12718,9 +11913,6 @@ GetVAdder:
     a = M(FirebarMirrorData + y);
     writeData(0x03, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveFlyingCheepCheep:
     a = M(Enemy_State + x);
     a &= BOOST_BINARY(00100000);
@@ -12730,10 +11922,10 @@ MoveFlyingCheepCheep:
     writeData(Enemy_SprAttrib + x, a);
     goto MoveJ_EnemyVertically;
 FlyCC:
-    JSR(MoveEnemyHorizontally, 346)
+    JSR(MoveEnemyHorizontally, 346);
     y = 0x0d;
     a = 0x05;
-    JSR(SetXMoveAmt, 347)
+    JSR(SetXMoveAmt, 347);
     a = M(Enemy_Y_MoveForce + x);
     a >>= 1;
     a >>= 1;
@@ -12765,9 +11957,6 @@ BPGet:
     a = M(FlyCCBPriority + y);
     writeData(Enemy_SprAttrib + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveLakitu:
     a = M(Enemy_State + x);
     a &= BOOST_BINARY(00100000);
@@ -12794,7 +11983,7 @@ LdLDa:
     --y;
     if (!n)
         goto LdLDa;
-    JSR(PlayerLakituDiff, 348)
+    JSR(PlayerLakituDiff, 348);
 SetLSpd:
     writeData(LakituMoveSpeed + x, a);
     y = 0x01;
@@ -12813,7 +12002,7 @@ SetLMov:
     goto MoveEnemyHorizontally;
 PlayerLakituDiff:
     y = 0x00;
-    JSR(PlayerEnemyDiff, 349)
+    JSR(PlayerEnemyDiff, 349);
     if (!n)
         goto ChkLakDif;
     ++y;
@@ -12894,9 +12083,6 @@ SPixelLak:
         goto SPixelLak;
 ExMoveLak:
     goto Return;
-
-//---------------------------------------------------------------------
-
 BridgeCollapse:
     x = M(BowserFront_Offset);
     a = M(Enemy_ID + x);
@@ -12920,7 +12106,7 @@ SetM2:
     ++M(OperMode_Task);
     goto KillAllEnemies;
 MoveD_Bowser:
-    JSR(MoveEnemySlowVert, 350)
+    JSR(MoveEnemySlowVert, 350);
     goto BowserGfxHandler;
 RemoveBridge:
     --M(BowserFeetCounter);
@@ -12939,9 +12125,9 @@ RemoveBridge:
     y = M(VRAM_Buffer1_Offset);
     ++y;
     x = 0x0c;
-    JSR(RemBridge, 351)
+    JSR(RemBridge, 351);
     x = M(ObjectOffset);
-    JSR(MoveVOffset, 352)
+    JSR(MoveVOffset, 352);
     a = Sfx_Blast;
     writeData(Square2SoundQueue, a);
     a = Sfx_BrickShatter;
@@ -12951,7 +12137,7 @@ RemoveBridge:
     compare(a, 0x0f);
     if (!z)
         goto NoBFall;
-    JSR(InitVStf, 353)
+    JSR(InitVStf, 353);
     a = BOOST_BINARY(01000000);
     writeData(Enemy_State + x, a);
     a = Sfx_BowserFall;
@@ -12970,16 +12156,13 @@ RunBowser:
 KillAllEnemies:
     x = 0x04;
 KillLoop:
-    JSR(EraseEnemyObject, 354)
+    JSR(EraseEnemyObject, 354);
     --x;
     if (!n)
         goto KillLoop;
     writeData(EnemyFrenzyBuffer, a);
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 BowserControl:
     a = 0x00;
     writeData(EnemyFrenzyBuffer, a);
@@ -13012,7 +12195,7 @@ B_FaceP:
     a = M(EnemyFrameTimer + x);
     if (z)
         goto GetPRCmp;
-    JSR(PlayerEnemyDiff, 355)
+    JSR(PlayerEnemyDiff, 355);
     if (!n)
         goto GetPRCmp;
     a = 0x01;
@@ -13067,7 +12250,7 @@ HammerChk:
     a = M(EnemyFrameTimer + x);
     if (!z)
         goto MakeBJump;
-    JSR(MoveEnemySlowVert, 356)
+    JSR(MoveEnemySlowVert, 356);
     a = M(WorldNumber);
     compare(a, World6);
     if (!c)
@@ -13076,7 +12259,7 @@ HammerChk:
     a &= BOOST_BINARY(00000011);
     if (!z)
         goto SetHmrTmr;
-    JSR(SpawnHammerObj, 357)
+    JSR(SpawnHammerObj, 357);
 SetHmrTmr:
     a = M(Enemy_Y_Position + x);
     compare(a, 0x80);
@@ -13094,7 +12277,7 @@ MakeBJump:
     if (!z)
         goto ChkFireB;
     --M(Enemy_Y_Position + x);
-    JSR(InitVStf, 358)
+    JSR(InitVStf, 358);
     a = 0xfe;
     writeData(Enemy_Y_Speed + x, a);
 ChkFireB:
@@ -13116,7 +12299,7 @@ SpawnFBr:
     writeData(BowserBodyControls, a);
     if (n)
         goto ChkFireB;
-    JSR(SetFlameTimer, 359)
+    JSR(SetFlameTimer, 359);
     y = M(SecondaryHardMode);
     if (z)
         goto SetFBTmr;
@@ -13127,7 +12310,7 @@ SetFBTmr:
     a = BowserFlame;
     writeData(EnemyFrenzyBuffer, a);
 BowserGfxHandler:
-    JSR(ProcessBowserHalf, 360)
+    JSR(ProcessBowserHalf, 360);
     y = 0x10;
     a = M(Enemy_MovingDir + x);
     a >>= 1;
@@ -13154,7 +12337,7 @@ CopyFToR:
     writeData(ObjectOffset, x);
     a = Bowser;
     writeData(Enemy_ID + x, a);
-    JSR(ProcessBowserHalf, 361)
+    JSR(ProcessBowserHalf, 361);
     pla();
     writeData(ObjectOffset, a);
     x = a;
@@ -13162,18 +12345,15 @@ CopyFToR:
     writeData(BowserGfxFlag, a);
 ExBGfxH:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcessBowserHalf:
     ++M(BowserGfxFlag);
-    JSR(RunRetainerObj, 362)
+    JSR(RunRetainerObj, 362);
     a = M(Enemy_State + x);
     if (!z)
         goto ExBGfxH;
     a = 0x0a;
     writeData(Enemy_BoundBoxCtrl + x, a);
-    JSR(GetEnemyBoundBox, 363)
+    JSR(GetEnemyBoundBox, 363);
     goto PlayerEnemyCollision;
 SetFlameTimer:
     y = M(BowserFlameTimerCtrl);
@@ -13184,9 +12364,6 @@ SetFlameTimer:
     a = M(FlameTimerData + y);
 ExFl:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcBowserFlame:
     a = M(TimerControl);
     if (!z)
@@ -13217,7 +12394,7 @@ SFlmX:
     a += M(Enemy_Y_MoveForce + x);
     writeData(Enemy_Y_Position + x, a);
 SetGfxF:
-    JSR(RelativeEnemyPosition, 364)
+    JSR(RelativeEnemyPosition, 364);
     a = M(Enemy_State + x);
     if (!z)
         goto ExFl;
@@ -13255,7 +12432,7 @@ DrawFlameLoop:
     if (!c)
         goto DrawFlameLoop;
     x = M(ObjectOffset);
-    JSR(GetEnemyOffscreenBits, 365)
+    JSR(GetEnemyOffscreenBits, 365);
     y = M(Enemy_SprDataOffset + x);
     a = M(Enemy_OffscreenBits);
     a >>= 1;
@@ -13289,9 +12466,6 @@ M1FOfs:
     writeData(Sprite_Y_Position + y, a);
 ExFlmeD:
     goto Return;
-
-//---------------------------------------------------------------------
-
 RunFireworks:
     --M(ExplosionTimerCounter + x);
     if (!z)
@@ -13304,18 +12478,15 @@ RunFireworks:
     if (c)
         goto FireworksSoundScore;
 SetupExpl:
-    JSR(RelativeEnemyPosition, 366)
+    JSR(RelativeEnemyPosition, 366);
     a = M(Enemy_Rel_YPos);
     writeData(Fireball_Rel_YPos, a);
     a = M(Enemy_Rel_XPos);
     writeData(Fireball_Rel_XPos, a);
     y = M(Enemy_SprDataOffset + x);
     a = M(ExplosionGfxCounter + x);
-    JSR(DrawExplosion_Fireworks, 367)
+    JSR(DrawExplosion_Fireworks, 367);
     goto Return;
-
-//---------------------------------------------------------------------
-
 FireworksSoundScore:
     a = 0x00;
     writeData(Enemy_Flag + x, a);
@@ -13331,7 +12502,7 @@ RunStarFlagObj:
     compare(a, 0x05);
     if (c)
         goto StarFlagExit;
-    switch(a)
+    switch (a)
     {
     case 0:
         goto StarFlagExit;
@@ -13344,9 +12515,6 @@ RunStarFlagObj:
     case 4:
         goto DelayToAreaEnd;
     }
-
-//---------------------------------------------------------------------
-
 GameTimerFireworks:
     y = 0x05;
     a = M(GameTimerDisplay + 2);
@@ -13369,9 +12537,6 @@ IncrementSFTask1:
     ++M(StarFlagTaskControl);
 StarFlagExit:
     goto Return;
-
-//---------------------------------------------------------------------
-
 AwardGameTimerPoints:
     a = M(GameTimerDisplay);
     a |= M(GameTimerDisplay + 1);
@@ -13388,7 +12553,7 @@ NoTTick:
     y = 0x23;
     a = 0xff;
     writeData(DigitModifier + 5, a);
-    JSR(DigitsMathRoutine, 368)
+    JSR(DigitsMathRoutine, 368);
     a = 0x05;
     writeData(DigitModifier + 5, a);
 EndAreaPoints:
@@ -13398,7 +12563,7 @@ EndAreaPoints:
         goto ELPGive;
     y = 0x11;
 ELPGive:
-    JSR(DigitsMathRoutine, 369)
+    JSR(DigitsMathRoutine, 369);
     a = M(CurrentPlayer);
     a <<= 1;
     a <<= 1;
@@ -13422,7 +12587,7 @@ SetoffF:
     a = Fireworks;
     writeData(EnemyFrenzyBuffer, a);
 DrawStarFlag:
-    JSR(RelativeEnemyPosition, 370)
+    JSR(RelativeEnemyPosition, 370);
     y = M(Enemy_SprDataOffset + x);
     x = 0x03;
 DSFLoop:
@@ -13447,21 +12612,15 @@ DSFLoop:
         goto DSFLoop;
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawFlagSetTimer:
-    JSR(DrawStarFlag, 371)
+    JSR(DrawStarFlag, 371);
     a = 0x06;
     writeData(EnemyIntervalTimer + x, a);
 IncrementSFTask2:
     ++M(StarFlagTaskControl);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DelayToAreaEnd:
-    JSR(DrawStarFlag, 372)
+    JSR(DrawStarFlag, 372);
     a = M(EnemyIntervalTimer + x);
     if (!z)
         goto StarFlagExit2;
@@ -13470,9 +12629,6 @@ DelayToAreaEnd:
         goto IncrementSFTask2;
 StarFlagExit2:
     goto Return;
-
-//---------------------------------------------------------------------
-
 MovePiranhaPlant:
     a = M(Enemy_State + x);
     if (!z)
@@ -13486,7 +12642,7 @@ MovePiranhaPlant:
     a = M(PiranhaPlant_Y_Speed + x);
     if (n)
         goto ReversePlantSpeed;
-    JSR(PlayerEnemyDiff, 373)
+    JSR(PlayerEnemyDiff, 373);
     if (!n)
         goto ChkPlayerNearPipe;
     a = M(0x00);
@@ -13536,9 +12692,6 @@ PutinPipe:
     a = BOOST_BINARY(00100000);
     writeData(Enemy_SprAttrib + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 FirebarSpin:
     writeData(0x07, a);
     a = M(FirebarSpinDirection + x);
@@ -13552,9 +12705,6 @@ FirebarSpin:
     a = M(FirebarSpinState_High + x);
     a += 0x00;
     goto Return;
-
-//---------------------------------------------------------------------
-
 SpinCounterClockwise:
     y = 0x08;
     a = M(FirebarSpinState_Low + x);
@@ -13564,9 +12714,6 @@ SpinCounterClockwise:
     a = M(FirebarSpinState_High + x);
     a -= 0x00;
     goto Return;
-
-//---------------------------------------------------------------------
-
 BalancePlatform:
     a = M(Enemy_Y_HighPos + x);
     compare(a, 0x03);
@@ -13578,9 +12725,6 @@ DoBPl:
     if (!n)
         goto CheckBalPlatform;
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckBalPlatform:
     y = a;
     a = M(PlatformCollisionFlag + x);
@@ -13641,13 +12785,13 @@ ColFlg:
     if (z)
         goto PlatDn;
 PlatUp:
-    JSR(MovePlatformUp, 374)
+    JSR(MovePlatformUp, 374);
     goto DoOtherPlatform;
 PlatSt:
-    JSR(StopPlatforms, 375)
+    JSR(StopPlatforms, 375);
     goto DoOtherPlatform;
 PlatDn:
-    JSR(MovePlatformDown, 376)
+    JSR(MovePlatformDown, 376);
 DoOtherPlatform:
     y = M(Enemy_State + x);
     pla();
@@ -13660,7 +12804,7 @@ DoOtherPlatform:
     if (n)
         goto DrawEraseRope;
     x = a;
-    JSR(PositionPlayerOnVPlat, 377)
+    JSR(PositionPlayerOnVPlat, 377);
 DrawEraseRope:
     y = M(ObjectOffset);
     a = M(Enemy_Y_Speed + y);
@@ -13674,7 +12818,7 @@ DrawEraseRope:
     a = M(Enemy_Y_Speed + y);
     pha();
     pha();
-    JSR(SetupPlatformRope, 378)
+    JSR(SetupPlatformRope, 378);
     a = M(0x01);
     writeData(VRAM_Buffer1 + x, a);
     a = M(0x00);
@@ -13698,7 +12842,7 @@ OtherRope:
     y = a;
     pla();
     a ^= 0xff;
-    JSR(SetupPlatformRope, 379)
+    JSR(SetupPlatformRope, 379);
     a = M(0x01);
     writeData(VRAM_Buffer1 + 5 + x, a);
     a = M(0x00);
@@ -13727,9 +12871,6 @@ EndRp:
 ExitRp:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 SetupPlatformRope:
     pha();
     a = M(Enemy_X_Position + y);
@@ -13789,15 +12930,12 @@ GetHRp:
     writeData(0x00, a);
 ExPRp:
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitPlatformFall:
     a = y;
     x = a;
-    JSR(GetEnemyOffscreenBits, 380)
+    JSR(GetEnemyOffscreenBits, 380);
     a = 0x06;
-    JSR(SetupFloateyNumber, 381)
+    JSR(SetupFloateyNumber, 381);
     a = M(Player_Rel_XPos);
     writeData(FloateyNum_X_Pos + x, a);
     a = M(Player_Y_Position);
@@ -13805,32 +12943,26 @@ InitPlatformFall:
     a = 0x01;
     writeData(Enemy_MovingDir + x, a);
 StopPlatforms:
-    JSR(InitVStf, 382)
+    JSR(InitVStf, 382);
     writeData(Enemy_Y_Speed + y, a);
     writeData(Enemy_Y_MoveForce + y, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlatformFall:
     a = y;
     pha();
-    JSR(MoveFallingPlatform, 383)
+    JSR(MoveFallingPlatform, 383);
     pla();
     x = a;
-    JSR(MoveFallingPlatform, 384)
+    JSR(MoveFallingPlatform, 384);
     x = M(ObjectOffset);
     a = M(PlatformCollisionFlag + x);
     if (n)
         goto ExPF;
     x = a;
-    JSR(PositionPlayerOnVPlat, 385)
+    JSR(PositionPlayerOnVPlat, 385);
 ExPF:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 YMovingPlatform:
     a = M(Enemy_Y_Speed + x);
     a |= M(Enemy_Y_MoveForce + x);
@@ -13853,24 +12985,21 @@ ChkYCenterPos:
     compare(a, M(YPlatformCenterYPos + x));
     if (!c)
         goto YMDown;
-    JSR(MovePlatformUp, 386)
+    JSR(MovePlatformUp, 386);
     goto ChkYPCollision;
 YMDown:
-    JSR(MovePlatformDown, 387)
+    JSR(MovePlatformDown, 387);
 ChkYPCollision:
     a = M(PlatformCollisionFlag + x);
     if (n)
         goto ExYPl;
-    JSR(PositionPlayerOnVPlat, 388)
+    JSR(PositionPlayerOnVPlat, 388);
 ExYPl:
     goto Return;
-
-//---------------------------------------------------------------------
-
 XMovingPlatform:
     a = 0x0e;
-    JSR(XMoveCntr_Platform, 389)
-    JSR(MoveWithXMCntrs, 390)
+    JSR(XMoveCntr_Platform, 389);
+    JSR(MoveWithXMCntrs, 390);
     a = M(PlatformCollisionFlag + x);
     if (n)
         goto ExXMP;
@@ -13890,42 +13019,33 @@ PPHSubt:
 SetPVar:
     writeData(Player_PageLoc, a);
     writeData(Platform_X_Scroll, y);
-    JSR(PositionPlayerOnVPlat, 391)
+    JSR(PositionPlayerOnVPlat, 391);
 ExXMP:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DropPlatform:
     a = M(PlatformCollisionFlag + x);
     if (n)
         goto ExDPl;
-    JSR(MoveDropPlatform, 392)
-    JSR(PositionPlayerOnVPlat, 393)
+    JSR(MoveDropPlatform, 392);
+    JSR(PositionPlayerOnVPlat, 393);
 ExDPl:
     goto Return;
-
-//---------------------------------------------------------------------
-
 RightPlatform:
-    JSR(MoveEnemyHorizontally, 394)
+    JSR(MoveEnemyHorizontally, 394);
     writeData(0x00, a);
     a = M(PlatformCollisionFlag + x);
     if (n)
         goto ExRPl;
     a = 0x10;
     writeData(Enemy_X_Speed + x, a);
-    JSR(PositionPlayerOnHPlat, 395)
+    JSR(PositionPlayerOnHPlat, 395);
 ExRPl:
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveLargeLiftPlat:
-    JSR(MoveLiftPlatforms, 396)
+    JSR(MoveLiftPlatforms, 396);
     goto ChkYPCollision;
 MoveSmallPlatform:
-    JSR(MoveLiftPlatforms, 397)
+    JSR(MoveLiftPlatforms, 397);
     goto ChkSmallPlatCollision;
 MoveLiftPlatforms:
     a = M(TimerControl);
@@ -13939,19 +13059,13 @@ MoveLiftPlatforms:
     a += M(Enemy_Y_Speed + x);
     writeData(Enemy_Y_Position + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkSmallPlatCollision:
     a = M(PlatformCollisionFlag + x);
     if (z)
         goto ExLiftP;
-    JSR(PositionPlayerOnS_Plat, 398)
+    JSR(PositionPlayerOnS_Plat, 398);
 ExLiftP:
     goto Return;
-
-//---------------------------------------------------------------------
-
 OffscreenBoundsCheck:
     a = M(Enemy_ID + x);
     compare(a, FlyingCheepCheep);
@@ -14008,12 +13122,9 @@ ExtendLB:
     if (z)
         goto ExScrnBd;
 TooFar:
-    JSR(EraseEnemyObject, 399)
+    JSR(EraseEnemyObject, 399);
 ExScrnBd:
     goto Return;
-
-//---------------------------------------------------------------------
-
 FireballEnemyCollision:
     a = M(Fireball_State + x);
     if (z)
@@ -14068,14 +13179,14 @@ NotGoomba:
     c = 0;
     a += 0x04;
     x = a;
-    JSR(SprObjectCollisionCore, 400)
+    JSR(SprObjectCollisionCore, 400);
     x = M(ObjectOffset);
     if (!c)
         goto NoFToECol;
     a = BOOST_BINARY(10000000);
     writeData(Fireball_State + x, a);
     x = M(0x01);
-    JSR(HandleEnemyFBallCol, 401)
+    JSR(HandleEnemyFBallCol, 401);
 NoFToECol:
     pla();
     y = a;
@@ -14086,11 +13197,8 @@ NoFToECol:
 ExitFBallEnemy:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 HandleEnemyFBallCol:
-    JSR(RelativeEnemyPosition, 402)
+    JSR(RelativeEnemyPosition, 402);
     x = M(0x01);
     a = M(Enemy_Flag + x);
     if (!n)
@@ -14114,7 +13222,7 @@ HurtBowser:
     --M(BowserHitPoints);
     if (!z)
         goto ExHCF;
-    JSR(InitVStf, 403)
+    JSR(InitVStf, 403);
     writeData(Enemy_X_Speed + x, a);
     writeData(EnemyFrenzyBuffer, a);
     a = 0xfe;
@@ -14154,7 +13262,7 @@ ShellOrBlockDefeat:
     a += 0x18;
     writeData(Enemy_Y_Position + x, a);
 StnE:
-    JSR(ChkToStunEnemies, 404)
+    JSR(ChkToStunEnemies, 404);
     a = M(Enemy_State + x);
     a &= BOOST_BINARY(00011111);
     a |= BOOST_BINARY(00100000);
@@ -14171,14 +13279,11 @@ GoombaPoints:
         goto EnemySmackScore;
     a = 0x01;
 EnemySmackScore:
-    JSR(SetupFloateyNumber, 405)
+    JSR(SetupFloateyNumber, 405);
     a = Sfx_EnemySmack;
     writeData(Square1SoundQueue, a);
 ExHCF:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerHammerCollision:
     a = M(FrameCounter);
     a >>= 1;
@@ -14194,7 +13299,7 @@ PlayerHammerCollision:
     c = 0;
     a += 0x24;
     y = a;
-    JSR(PlayerCollisionCore, 406)
+    JSR(PlayerCollisionCore, 406);
     x = M(ObjectOffset);
     if (!c)
         goto ClHCol;
@@ -14217,13 +13322,10 @@ ClHCol:
     writeData(Misc_Collision_Flag + x, a);
 ExPHC:
     goto Return;
-
-//---------------------------------------------------------------------
-
 HandlePowerUpCollision:
-    JSR(EraseEnemyObject, 407)
+    JSR(EraseEnemyObject, 407);
     a = 0x06;
-    JSR(SetupFloateyNumber, 408)
+    JSR(SetupFloateyNumber, 408);
     a = Sfx_PowerUpGrab;
     writeData(Square2SoundQueue, a);
     a = M(PowerUpType);
@@ -14238,9 +13340,6 @@ HandlePowerUpCollision:
     a = StarPowerMusic;
     writeData(AreaMusicQueue, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 Shroom_Flower_PUp:
     a = M(PlayerStatus);
     if (z)
@@ -14251,7 +13350,7 @@ Shroom_Flower_PUp:
     x = M(ObjectOffset);
     a = 0x02;
     writeData(PlayerStatus, a);
-    JSR(GetPlayerColors, 409)
+    JSR(GetPlayerColors, 409);
     x = M(ObjectOffset);
     a = 0x0c;
     goto UpToFiery;
@@ -14259,27 +13358,21 @@ SetFor1Up:
     a = 0x0b;
     writeData(FloateyNum_Control + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 UpToSuper:
     a = 0x01;
     writeData(PlayerStatus, a);
     a = 0x09;
 UpToFiery:
     y = 0x00;
-    JSR(SetPRout, 410)
+    JSR(SetPRout, 410);
 NoPUp:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerEnemyCollision:
     a = M(FrameCounter);
     a >>= 1;
     if (c)
         goto NoPUp;
-    JSR(CheckPlayerVertical, 411)
+    JSR(CheckPlayerVertical, 411);
     if (c)
         goto NoPECol;
     a = M(EnemyOffscrBitsMasked + x);
@@ -14293,8 +13386,8 @@ PlayerEnemyCollision:
     a &= BOOST_BINARY(00100000);
     if (!z)
         goto NoPECol;
-    JSR(GetEnemyBoundBoxOfs, 412)
-    JSR(PlayerCollisionCore, 413)
+    JSR(GetEnemyBoundBoxOfs, 412);
+    JSR(PlayerCollisionCore, 413);
     x = M(ObjectOffset);
     if (c)
         goto CheckForPUpCollision;
@@ -14303,9 +13396,6 @@ PlayerEnemyCollision:
     writeData(Enemy_CollisionBits + x, a);
 NoPECol:
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckForPUpCollision:
     y = M(Enemy_ID + x);
     compare(y, PowerUpObject);
@@ -14362,7 +13452,7 @@ HandlePECollisions:
     a = M(Enemy_State + x);
     a |= BOOST_BINARY(10000000);
     writeData(Enemy_State + x, a);
-    JSR(EnemyFacePlayer, 414)
+    JSR(EnemyFacePlayer, 414);
     a = M(KickedShellXSpdData + y);
     writeData(Enemy_X_Speed + x, a);
     a = 0x03;
@@ -14374,12 +13464,9 @@ HandlePECollisions:
         goto KSPts;
     a = M(KickedShellPtsData + y);
 KSPts:
-    JSR(SetupFloateyNumber, 415)
+    JSR(SetupFloateyNumber, 415);
 ExPEC:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkForPlayerInjury:
     a = M(Player_Y_Speed);
     if (n)
@@ -14428,7 +13515,7 @@ ForceInjury:
     writeData(InjuryTimer, a);
     a <<= 1;
     writeData(Square1SoundQueue, a);
-    JSR(GetPlayerColors, 416)
+    JSR(GetPlayerColors, 416);
     a = 0x0a;
 SetKRout:
     y = 0x01;
@@ -14442,9 +13529,6 @@ SetPRout:
 ExInjColRoutines:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 KillPlayer:
     writeData(Player_X_Speed, x);
     ++x;
@@ -14489,22 +13573,19 @@ EnemyStomped:
         goto ChkForDemoteKoopa;
 EnemyStompedPts:
     a = M(StompedEnemyPtsData + y);
-    JSR(SetupFloateyNumber, 417)
+    JSR(SetupFloateyNumber, 417);
     a = M(Enemy_MovingDir + x);
     pha();
-    JSR(SetStun, 418)
+    JSR(SetStun, 418);
     pla();
     writeData(Enemy_MovingDir + x, a);
     a = BOOST_BINARY(00100000);
     writeData(Enemy_State + x, a);
-    JSR(InitVStf, 419)
+    JSR(InitVStf, 419);
     writeData(Enemy_X_Speed + x, a);
     a = 0xfd;
     writeData(Player_Y_Speed, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkForDemoteKoopa:
     compare(a, 0x09);
     if (!c)
@@ -14514,9 +13595,9 @@ ChkForDemoteKoopa:
     y = 0x00;
     writeData(Enemy_State + x, y);
     a = 0x03;
-    JSR(SetupFloateyNumber, 420)
-    JSR(InitVStf, 421)
-    JSR(EnemyFacePlayer, 422)
+    JSR(SetupFloateyNumber, 420);
+    JSR(InitVStf, 421);
+    JSR(EnemyFacePlayer, 422);
     a = M(DemotedKoopaXSpdData + y);
     writeData(Enemy_X_Speed + x, a);
     goto SBnce;
@@ -14527,7 +13608,7 @@ HandleStompedShellE:
     a = M(StompChainCounter);
     c = 0;
     a += M(StompTimer);
-    JSR(SetupFloateyNumber, 423)
+    JSR(SetupFloateyNumber, 423);
     ++M(StompTimer);
     y = M(PrimaryHardMode);
     a = M(RevivalRateData + y);
@@ -14536,9 +13617,6 @@ SBnce:
     a = 0xfc;
     writeData(Player_Y_Speed, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkEnemyFaceRight:
     a = M(Enemy_MovingDir + x);
     compare(a, 0x01);
@@ -14546,11 +13624,11 @@ ChkEnemyFaceRight:
         goto LInj;
     goto InjurePlayer;
 LInj:
-    JSR(EnemyTurnAround, 424)
+    JSR(EnemyTurnAround, 424);
     goto InjurePlayer;
 EnemyFacePlayer:
     y = 0x01;
-    JSR(PlayerEnemyDiff, 425)
+    JSR(PlayerEnemyDiff, 425);
     if (!n)
         goto SFcRt;
     ++y;
@@ -14558,9 +13636,6 @@ SFcRt:
     writeData(Enemy_MovingDir + x, y);
     --y;
     goto Return;
-
-//---------------------------------------------------------------------
-
 SetupFloateyNumber:
     writeData(FloateyNum_Control + x, a);
     a = 0x30;
@@ -14571,9 +13646,6 @@ SetupFloateyNumber:
     writeData(FloateyNum_X_Pos + x, a);
 ExSFN:
     goto Return;
-
-//---------------------------------------------------------------------
-
 EnemiesCollision:
     a = M(FrameCounter);
     a >>= 1;
@@ -14595,7 +13667,7 @@ EnemiesCollision:
     a = M(EnemyOffscrBitsMasked + x);
     if (!z)
         goto ExitECRoutine;
-    JSR(GetEnemyBoundBoxOfs, 426)
+    JSR(GetEnemyBoundBoxOfs, 426);
     --x;
     if (n)
         goto ExitECRoutine;
@@ -14625,7 +13697,7 @@ ECLoop:
     c = 0;
     a += 0x04;
     x = a;
-    JSR(SprObjectCollisionCore, 427)
+    JSR(SprObjectCollisionCore, 427);
     x = M(ObjectOffset);
     y = M(0x01);
     if (!c)
@@ -14643,7 +13715,7 @@ ECLoop:
     a |= M(SetBitsMask + x);
     writeData(Enemy_CollisionBits + y, a);
 YesEC:
-    JSR(ProcEnemyCollisions, 428)
+    JSR(ProcEnemyCollisions, 428);
     goto ReadyNextEnemy;
 NoEnemyCollision:
     a = M(Enemy_CollisionBits + y);
@@ -14659,9 +13731,6 @@ ReadyNextEnemy:
 ExitECRoutine:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcEnemyCollisions:
     a = M(Enemy_State + y);
     a |= M(Enemy_State + x);
@@ -14681,26 +13750,23 @@ ProcEnemyCollisions:
     if (!c)
         goto ShellCollisions;
     a = 0x06;
-    JSR(SetupFloateyNumber, 429)
-    JSR(ShellOrBlockDefeat, 430)
+    JSR(SetupFloateyNumber, 429);
+    JSR(ShellOrBlockDefeat, 430);
     y = M(0x01);
 ShellCollisions:
     a = y;
     x = a;
-    JSR(ShellOrBlockDefeat, 431)
+    JSR(ShellOrBlockDefeat, 431);
     x = M(ObjectOffset);
     a = M(ShellChainCounter + x);
     c = 0;
     a += 0x04;
     x = M(0x01);
-    JSR(SetupFloateyNumber, 432)
+    JSR(SetupFloateyNumber, 432);
     x = M(ObjectOffset);
     ++M(ShellChainCounter + x);
 ExitProcessEColl:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcSecondEnemyColl:
     a = M(Enemy_State + y);
     compare(a, 0x06);
@@ -14710,23 +13776,20 @@ ProcSecondEnemyColl:
     compare(a, HammerBro);
     if (z)
         goto ExitProcessEColl;
-    JSR(ShellOrBlockDefeat, 433)
+    JSR(ShellOrBlockDefeat, 433);
     y = M(0x01);
     a = M(ShellChainCounter + y);
     c = 0;
     a += 0x04;
     x = M(ObjectOffset);
-    JSR(SetupFloateyNumber, 434)
+    JSR(SetupFloateyNumber, 434);
     x = M(0x01);
     ++M(ShellChainCounter + x);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MoveEOfs:
     a = y;
     x = a;
-    JSR(EnemyTurnAround, 435)
+    JSR(EnemyTurnAround, 435);
     x = M(ObjectOffset);
 EnemyTurnAround:
     a = M(Enemy_ID + x);
@@ -14759,9 +13822,6 @@ RXSpd:
     writeData(Enemy_MovingDir + x, a);
 ExTA:
     goto Return;
-
-//---------------------------------------------------------------------
-
 LargePlatformCollision:
     a = 0xff;
     writeData(PlatformCollisionFlag + x, a);
@@ -14777,42 +13837,39 @@ LargePlatformCollision:
         goto ChkForPlayerC_LargeP;
     a = M(Enemy_State + x);
     x = a;
-    JSR(ChkForPlayerC_LargeP, 436)
+    JSR(ChkForPlayerC_LargeP, 436);
 ChkForPlayerC_LargeP:
-    JSR(CheckPlayerVertical, 437)
+    JSR(CheckPlayerVertical, 437);
     if (c)
         goto ExLPC;
     a = x;
-    JSR(GetEnemyBoundBoxOfsArg, 438)
+    JSR(GetEnemyBoundBoxOfsArg, 438);
     a = M(Enemy_Y_Position + x);
     writeData(0x00, a);
     a = x;
     pha();
-    JSR(PlayerCollisionCore, 439)
+    JSR(PlayerCollisionCore, 439);
     pla();
     x = a;
     if (!c)
         goto ExLPC;
-    JSR(ProcLPlatCollisions, 440)
+    JSR(ProcLPlatCollisions, 440);
 ExLPC:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 SmallPlatformCollision:
     a = M(TimerControl);
     if (!z)
         goto ExSPC;
     writeData(PlatformCollisionFlag + x, a);
-    JSR(CheckPlayerVertical, 441)
+    JSR(CheckPlayerVertical, 441);
     if (c)
         goto ExSPC;
     a = 0x02;
     writeData(0x00, a);
 ChkSmallPlatLoop:
     x = M(ObjectOffset);
-    JSR(GetEnemyBoundBoxOfs, 442)
+    JSR(GetEnemyBoundBoxOfs, 442);
     a &= BOOST_BINARY(00000010);
     if (!z)
         goto ExSPC;
@@ -14820,7 +13877,7 @@ ChkSmallPlatLoop:
     compare(a, 0x20);
     if (!c)
         goto MoveBoundBox;
-    JSR(PlayerCollisionCore, 443)
+    JSR(PlayerCollisionCore, 443);
     if (c)
         goto ProcSPlatCollisions;
 MoveBoundBox:
@@ -14838,9 +13895,6 @@ MoveBoundBox:
 ExSPC:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcSPlatCollisions:
     x = M(ObjectOffset);
 ProcLPlatCollisions:
@@ -14880,9 +13934,6 @@ SetCollisionFlag:
     a = 0x00;
     writeData(Player_State, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlatformSideCollisions:
     a = 0x01;
     writeData(0x00, a);
@@ -14900,13 +13951,10 @@ PlatformSideCollisions:
     if (c)
         goto NoSideC;
 SideC:
-    JSR(ImpedePlayerMove, 444)
+    JSR(ImpedePlayerMove, 444);
 NoSideC:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PositionPlayerOnS_Plat:
     y = a;
     a = M(Enemy_Y_Position + x);
@@ -14935,9 +13983,6 @@ Skip_8:
     writeData(Player_Y_MoveForce, a);
 ExPlPos:
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckPlayerVertical:
     a = M(Player_OffscreenBits);
     compare(a, 0xf0);
@@ -14951,9 +13996,6 @@ CheckPlayerVertical:
     compare(a, 0xd0);
 ExCPV:
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetEnemyBoundBoxOfs:
     a = M(ObjectOffset);
 GetEnemyBoundBoxOfsArg:
@@ -14966,9 +14008,6 @@ GetEnemyBoundBoxOfsArg:
     a &= BOOST_BINARY(00001111);
     compare(a, BOOST_BINARY(00001111));
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerBGCollision:
     a = M(DisableCollisionDet);
     if (!z)
@@ -15007,9 +14046,6 @@ ChkOnScr:
         goto ChkCollSize;
 ExPBGCol:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkCollSize:
     y = 0x02;
     a = M(CrouchingFlag);
@@ -15037,10 +14073,10 @@ HeadChk:
     compare(a, M(PlayerBGUpperExtent + x));
     if (!c)
         goto DoFootCheck;
-    JSR(BlockBufferColli_Head, 445)
+    JSR(BlockBufferColli_Head, 445);
     if (z)
         goto DoFootCheck;
-    JSR(CheckForCoinMTiles, 446)
+    JSR(CheckForCoinMTiles, 446);
     if (c)
         goto AwardTouchedCoin;
     y = M(Player_Y_Speed);
@@ -15050,7 +14086,7 @@ HeadChk:
     compare(y, 0x04);
     if (!c)
         goto DoFootCheck;
-    JSR(CheckForSolidMTiles, 447)
+    JSR(CheckForSolidMTiles, 447);
     if (c)
         goto SolidOrClimb;
     y = M(AreaType);
@@ -15059,7 +14095,7 @@ HeadChk:
     y = M(BlockBounceTimer);
     if (!z)
         goto NYSpd;
-    JSR(PlayerHeadCollision, 448)
+    JSR(PlayerHeadCollision, 448);
     goto DoFootCheck;
 SolidOrClimb:
     compare(a, 0x26);
@@ -15076,12 +14112,12 @@ DoFootCheck:
     compare(a, 0xcf);
     if (c)
         goto DoPlayerSideCheck;
-    JSR(BlockBufferColli_Feet, 449)
-    JSR(CheckForCoinMTiles, 450)
+    JSR(BlockBufferColli_Feet, 449);
+    JSR(CheckForCoinMTiles, 450);
     if (c)
         goto AwardTouchedCoin;
     pha();
-    JSR(BlockBufferColli_Feet, 451)
+    JSR(BlockBufferColli_Feet, 451);
     writeData(0x00, a);
     pla();
     writeData(0x01, a);
@@ -15090,13 +14126,13 @@ DoFootCheck:
     a = M(0x00);
     if (z)
         goto DoPlayerSideCheck;
-    JSR(CheckForCoinMTiles, 452)
+    JSR(CheckForCoinMTiles, 452);
     if (!c)
         goto ChkFootMTile;
 AwardTouchedCoin:
     goto HandleCoinMetatile;
 ChkFootMTile:
-    JSR(CheckForClimbMTiles, 453)
+    JSR(CheckForClimbMTiles, 453);
     if (c)
         goto DoPlayerSideCheck;
     y = M(Player_Y_Speed);
@@ -15107,7 +14143,7 @@ ChkFootMTile:
         goto ContChk;
     goto HandleAxeMetatile;
 ContChk:
-    JSR(ChkInvisibleMTiles, 454)
+    JSR(ChkInvisibleMTiles, 454);
     if (z)
         goto DoPlayerSideCheck;
     y = M(JumpspringAnimCtrl);
@@ -15121,11 +14157,11 @@ ContChk:
     writeData(0x00, a);
     goto ImpedePlayerMove;
 LandPlyr:
-    JSR(ChkForLandJumpSpring, 455)
+    JSR(ChkForLandJumpSpring, 455);
     a = 0xf0;
     a &= M(Player_Y_Position);
     writeData(Player_Y_Position, a);
-    JSR(HandlePipeEntry, 456)
+    JSR(HandlePipeEntry, 456);
     a = 0x00;
     writeData(Player_Y_Speed, a);
     writeData(Player_Y_MoveForce, a);
@@ -15149,7 +14185,7 @@ SideCheckLoop:
     compare(a, 0xe4);
     if (c)
         goto ExSCH;
-    JSR(BlockBufferColli_Side, 457)
+    JSR(BlockBufferColli_Side, 457);
     if (z)
         goto BHalf;
     compare(a, 0x1c);
@@ -15158,7 +14194,7 @@ SideCheckLoop:
     compare(a, 0x6b);
     if (z)
         goto BHalf;
-    JSR(CheckForClimbMTiles, 458)
+    JSR(CheckForClimbMTiles, 458);
     if (!c)
         goto CheckSideMTiles;
 BHalf:
@@ -15171,7 +14207,7 @@ BHalf:
     compare(a, 0xd0);
     if (c)
         goto ExSCH;
-    JSR(BlockBufferColli_Side, 459)
+    JSR(BlockBufferColli_Side, 459);
     if (!z)
         goto CheckSideMTiles;
     --M(0x00);
@@ -15179,22 +14215,19 @@ BHalf:
         goto SideCheckLoop;
 ExSCH:
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckSideMTiles:
-    JSR(ChkInvisibleMTiles, 460)
+    JSR(ChkInvisibleMTiles, 460);
     if (z)
         goto ExCSM;
-    JSR(CheckForClimbMTiles, 461)
+    JSR(CheckForClimbMTiles, 461);
     if (!c)
         goto ContSChk;
     goto HandleClimbing;
 ContSChk:
-    JSR(CheckForCoinMTiles, 462)
+    JSR(CheckForCoinMTiles, 462);
     if (c)
         goto HandleCoinMetatile;
-    JSR(ChkJumpspringMetatiles, 463)
+    JSR(ChkJumpspringMetatiles, 463);
     if (!c)
         goto ChkPBtm;
     a = M(JumpspringAnimCtrl);
@@ -15248,18 +14281,12 @@ ChkGERtn:
     a = 0x02;
     writeData(GameEngineSubroutine, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 StopPlayerMove:
-    JSR(ImpedePlayerMove, 464)
+    JSR(ImpedePlayerMove, 464);
 ExCSM:
     goto Return;
-
-//---------------------------------------------------------------------
-
 HandleCoinMetatile:
-    JSR(ErACM, 465)
+    JSR(ErACM, 465);
     ++M(CoinTallyFor1Ups);
     goto GiveOneCoin;
 HandleAxeMetatile:
@@ -15284,9 +14311,6 @@ HandleClimbing:
         goto ChkForFlagpole;
 ExHC:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkForFlagpole:
     compare(a, 0x24);
     if (z)
@@ -15307,7 +14331,7 @@ FlagpoleCollision:
     if (z)
         goto RunFR;
     a = BulletBill_CannonVar;
-    JSR(KillEnemies, 466)
+    JSR(KillEnemies, 466);
     a = Silence;
     writeData(EventMusicQueue, a);
     a >>= 1;
@@ -15371,9 +14395,6 @@ SetVXPl:
     writeData(Player_PageLoc, a);
 ExPVne:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkInvisibleMTiles:
     compare(a, 0x5f);
     if (z)
@@ -15381,11 +14402,8 @@ ChkInvisibleMTiles:
     compare(a, 0x60);
 ExCInvT:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkForLandJumpSpring:
-    JSR(ChkJumpspringMetatiles, 467)
+    JSR(ChkJumpspringMetatiles, 467);
     if (!c)
         goto ExCJSp;
     a = 0x70;
@@ -15398,9 +14416,6 @@ ChkForLandJumpSpring:
     writeData(JumpspringAnimCtrl, a);
 ExCJSp:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkJumpspringMetatiles:
     compare(a, 0x67);
     if (z)
@@ -15413,9 +14428,6 @@ JSFnd:
     c = 1;
 NoJSFnd:
     goto Return;
-
-//---------------------------------------------------------------------
-
 HandlePipeEntry:
     a = M(Up_Down_Buttons);
     a &= BOOST_BINARY(00000100);
@@ -15471,9 +14483,6 @@ GetWNum:
     ++M(FetchNewGameTimerFlag);
 ExPipeE:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ImpedePlayerMove:
     a = 0x00;
     y = M(Player_X_Speed);
@@ -15516,23 +14525,14 @@ ExIPM:
     a &= M(Player_CollisionBits);
     writeData(Player_CollisionBits, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckForSolidMTiles:
-    JSR(GetMTileAttrib, 468)
+    JSR(GetMTileAttrib, 468);
     compare(a, M(SolidMTileUpperExt + x));
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckForClimbMTiles:
-    JSR(GetMTileAttrib, 469)
+    JSR(GetMTileAttrib, 469);
     compare(a, M(ClimbMTileUpperExt + x));
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckForCoinMTiles:
     compare(a, 0xc2);
     if (z)
@@ -15542,16 +14542,10 @@ CheckForCoinMTiles:
         goto CoinSd;
     c = 0;
     goto Return;
-
-//---------------------------------------------------------------------
-
 CoinSd:
     a = Sfx_CoinGrab;
     writeData(Square2SoundQueue, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetMTileAttrib:
     y = a;
     a &= BOOST_BINARY(11000000);
@@ -15562,15 +14556,12 @@ GetMTileAttrib:
     a = y;
 ExEBG:
     goto Return;
-
-//---------------------------------------------------------------------
-
 EnemyToBGCollisionDet:
     a = M(Enemy_State + x);
     a &= BOOST_BINARY(00100000);
     if (!z)
         goto ExEBG;
-    JSR(SubtEnemyYPos, 470)
+    JSR(SubtEnemyYPos, 470);
     if (!c)
         goto ExEBG;
     y = M(Enemy_ID + x);
@@ -15602,13 +14593,13 @@ CInvu:
     if (c)
         goto ExEBGChk;
 YesIn:
-    JSR(ChkUnderEnemy, 471)
+    JSR(ChkUnderEnemy, 471);
     if (!z)
         goto HandleEToBGCollision;
 NoEToBGCollision:
     goto ChkForRedKoopa;
 HandleEToBGCollision:
-    JSR(ChkForNonSolids, 472)
+    JSR(ChkForNonSolids, 472);
     if (z)
         goto NoEToBGCollision;
     compare(a, 0x23);
@@ -15624,10 +14615,10 @@ HandleEToBGCollision:
     compare(a, Goomba);
     if (!z)
         goto GiveOEPoints;
-    JSR(KillEnemyAboveBlock, 473)
+    JSR(KillEnemyAboveBlock, 473);
 GiveOEPoints:
     a = 0x01;
-    JSR(SetupFloateyNumber, 474)
+    JSR(SetupFloateyNumber, 474);
 ChkToStunEnemies:
     compare(a, 0x09);
     if (!c)
@@ -15664,7 +14655,7 @@ SetWYSpd:
 SetNotW:
     writeData(Enemy_Y_Speed + x, a);
     y = 0x01;
-    JSR(PlayerEnemyDiff, 475)
+    JSR(PlayerEnemyDiff, 475);
     if (!n)
         goto ChkBBill;
     ++y;
@@ -15683,9 +14674,6 @@ NoCDirF:
     writeData(Enemy_X_Speed + x, a);
 ExEBGChk:
     goto Return;
-
-//---------------------------------------------------------------------
-
 LandEnemyProperly:
     a = M(0x04);
     c = 1;
@@ -15727,12 +14715,9 @@ SetForStn:
     writeData(EnemyIntervalTimer + x, a);
     a = 0x03;
     writeData(Enemy_State + x, a);
-    JSR(EnemyLanding, 476)
+    JSR(EnemyLanding, 476);
 ExSteChk:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcEnemyDirection:
     a = M(Enemy_ID + x);
     compare(a, Goomba);
@@ -15751,7 +14736,7 @@ ProcEnemyDirection:
         goto LandEnemyInitState;
 InvtD:
     y = 0x01;
-    JSR(PlayerEnemyDiff, 477)
+    JSR(PlayerEnemyDiff, 477);
     if (!n)
         goto CNwCDir;
     ++y;
@@ -15760,9 +14745,9 @@ CNwCDir:
     compare(a, M(Enemy_MovingDir + x));
     if (!z)
         goto LandEnemyInitState;
-    JSR(ChkForBump_HammerBroJ, 478)
+    JSR(ChkForBump_HammerBroJ, 478);
 LandEnemyInitState:
-    JSR(EnemyLanding, 479)
+    JSR(EnemyLanding, 479);
     a = M(Enemy_State + x);
     a &= BOOST_BINARY(10000000);
     if (!z)
@@ -15770,17 +14755,11 @@ LandEnemyInitState:
     a = 0x00;
     writeData(Enemy_State + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 NMovShellFallBit:
     a = M(Enemy_State + x);
     a &= BOOST_BINARY(10111111);
     writeData(Enemy_State + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkForRedKoopa:
     a = M(Enemy_ID + x);
     compare(a, RedKoopa);
@@ -15816,10 +14795,10 @@ SdeCLoop:
     if (!z)
         goto NextSdeC;
     a = 0x01;
-    JSR(BlockBufferChk_Enemy, 480)
+    JSR(BlockBufferChk_Enemy, 480);
     if (z)
         goto NextSdeC;
-    JSR(ChkForNonSolids, 481)
+    JSR(ChkForNonSolids, 481);
     if (!z)
         goto ChkForBump_HammerBroJ;
 NextSdeC:
@@ -15830,9 +14809,6 @@ NextSdeC:
         goto SdeCLoop;
 ExESdeC:
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkForBump_HammerBroJ:
     compare(x, 0x05);
     if (z)
@@ -15862,30 +14838,21 @@ PlayerEnemyDiff:
     a = M(Enemy_PageLoc + x);
     a -= M(Player_PageLoc);
     goto Return;
-
-//---------------------------------------------------------------------
-
 EnemyLanding:
-    JSR(InitVStf, 482)
+    JSR(InitVStf, 482);
     a = M(Enemy_Y_Position + x);
     a &= BOOST_BINARY(11110000);
     a |= BOOST_BINARY(00001000);
     writeData(Enemy_Y_Position + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 SubtEnemyYPos:
     a = M(Enemy_Y_Position + x);
     c = 0;
     a += 0x3e;
     compare(a, 0x44);
     goto Return;
-
-//---------------------------------------------------------------------
-
 EnemyJump:
-    JSR(SubtEnemyYPos, 483)
+    JSR(SubtEnemyYPos, 483);
     if (!c)
         goto DoSide;
     a = M(Enemy_Y_Speed + x);
@@ -15894,32 +14861,29 @@ EnemyJump:
     compare(a, 0x03);
     if (!c)
         goto DoSide;
-    JSR(ChkUnderEnemy, 484)
+    JSR(ChkUnderEnemy, 484);
     if (z)
         goto DoSide;
-    JSR(ChkForNonSolids, 485)
+    JSR(ChkForNonSolids, 485);
     if (z)
         goto DoSide;
-    JSR(EnemyLanding, 486)
+    JSR(EnemyLanding, 486);
     a = 0xfd;
     writeData(Enemy_Y_Speed + x, a);
 DoSide:
     goto DoEnemySideCheck;
 HammerBroBGColl:
-    JSR(ChkUnderEnemy, 487)
+    JSR(ChkUnderEnemy, 487);
     if (z)
         goto NoUnderHammerBro;
     compare(a, 0x23);
     if (!z)
         goto UnderHammerBro;
 KillEnemyAboveBlock:
-    JSR(ShellOrBlockDefeat, 488)
+    JSR(ShellOrBlockDefeat, 488);
     a = 0xfc;
     writeData(Enemy_Y_Speed + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 UnderHammerBro:
     a = M(EnemyFrameTimer + x);
     if (!z)
@@ -15927,16 +14891,13 @@ UnderHammerBro:
     a = M(Enemy_State + x);
     a &= BOOST_BINARY(10001000);
     writeData(Enemy_State + x, a);
-    JSR(EnemyLanding, 489)
+    JSR(EnemyLanding, 489);
     goto DoEnemySideCheck;
 NoUnderHammerBro:
     a = M(Enemy_State + x);
     a |= 0x01;
     writeData(Enemy_State + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkUnderEnemy:
     a = 0x00;
     y = 0x15;
@@ -15957,18 +14918,15 @@ ChkForNonSolids:
     compare(a, 0x60);
 NSFnd:
     goto Return;
-
-//---------------------------------------------------------------------
-
 FireballBGCollision:
     a = M(Fireball_Y_Position + x);
     compare(a, 0x18);
     if (!c)
         goto ClearBounceFlag;
-    JSR(BlockBufferChk_FBall, 490)
+    JSR(BlockBufferChk_FBall, 490);
     if (z)
         goto ClearBounceFlag;
-    JSR(ChkForNonSolids, 491)
+    JSR(ChkForNonSolids, 491);
     if (z)
         goto ClearBounceFlag;
     a = M(Fireball_Y_Speed + x);
@@ -15985,25 +14943,16 @@ FireballBGCollision:
     a &= 0xf8;
     writeData(Fireball_Y_Position + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ClearBounceFlag:
     a = 0x00;
     writeData(FireballBouncingFlag + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 InitFireballExplode:
     a = 0x80;
     writeData(Fireball_State + x, a);
     a = Sfx_Bump;
     writeData(Square1SoundQueue, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetFireballBoundBox:
     a = x;
     c = 0;
@@ -16019,7 +14968,7 @@ GetMiscBoundBox:
     x = a;
     y = 0x06;
 FBallB:
-    JSR(BoundingBoxCore, 492)
+    JSR(BoundingBoxCore, 492);
     goto CheckRightScreenBBox;
 GetEnemyBoundBox:
     y = 0x48;
@@ -16052,7 +15001,7 @@ CMBits:
     goto SetupEOffsetFBBox;
 LargePlatformBoundBox:
     ++x;
-    JSR(GetXOffscreenBits, 493)
+    JSR(GetXOffscreenBits, 493);
     --x;
     compare(a, 0xfe);
     if (c)
@@ -16063,7 +15012,7 @@ SetupEOffsetFBBox:
     a += 0x01;
     x = a;
     y = 0x01;
-    JSR(BoundingBoxCore, 494)
+    JSR(BoundingBoxCore, 494);
     goto CheckRightScreenBBox;
 MoveBoundBoxOffscreen:
     a = x;
@@ -16076,9 +15025,6 @@ MoveBoundBoxOffscreen:
     writeData(EnemyBoundingBoxCoord + 2 + y, a);
     writeData(EnemyBoundingBoxCoord + 3 + y, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 BoundingBoxCore:
     writeData(0x00, x);
     a = M(SprObject_Rel_YPos + y);
@@ -16116,9 +15062,6 @@ BoundingBoxCore:
     y = a;
     x = M(0x00);
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckRightScreenBBox:
     a = M(ScreenLeft_X_Pos);
     c = 0;
@@ -16146,9 +15089,6 @@ SORte:
 NoOfs:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckLeftScreenBBox:
     a = M(BoundingBox_UL_XPos + y);
     if (!n)
@@ -16166,9 +15106,6 @@ SOLft:
 NoOfs2:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerCollisionCore:
     x = 0x00;
 SprObjectCollisionCore:
@@ -16194,9 +15131,6 @@ CollisionCoreLoop:
         goto CollisionFound;
     y = M(0x06);
     goto Return;
-
-//---------------------------------------------------------------------
-
 SecondBoxVerticalChk:
     a = M(BoundingBox_LR_Corner + x);
     compare(a, M(BoundingBox_UL_Corner + x));
@@ -16208,9 +15142,6 @@ SecondBoxVerticalChk:
         goto CollisionFound;
     y = M(0x06);
     goto Return;
-
-//---------------------------------------------------------------------
-
 FirstBoxGreater:
     compare(a, M(BoundingBox_UL_Corner + x));
     if (z)
@@ -16233,9 +15164,6 @@ NoCollisionFound:
     c = 0;
     y = M(0x06);
     goto Return;
-
-//---------------------------------------------------------------------
-
 CollisionFound:
     ++x;
     ++y;
@@ -16245,9 +15173,6 @@ CollisionFound:
     c = 1;
     y = M(0x06);
     goto Return;
-
-//---------------------------------------------------------------------
-
 BlockBufferChk_Enemy:
     pha();
     a = x;
@@ -16272,13 +15197,10 @@ BlockBufferChk_FBall:
 ResJmpM:
     a = 0x00;
 BBChk_E:
-    JSR(BlockBufferCollision, 495)
+    JSR(BlockBufferCollision, 495);
     x = M(ObjectOffset);
     compare(a, 0x00);
     goto Return;
-
-//---------------------------------------------------------------------
-
 BlockBufferColli_Feet:
     ++y;
 BlockBufferColli_Head:
@@ -16304,7 +15226,7 @@ BlockBufferCollision:
     a >>= 1;
     a >>= 1;
     a >>= 1;
-    JSR(GetBlockBufferAddr, 496)
+    JSR(GetBlockBufferAddr, 496);
     y = M(0x04);
     a = M(SprObject_Y_Position + x);
     c = 0;
@@ -16329,9 +15251,6 @@ RetYC:
     writeData(0x04, a);
     a = M(0x03);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawVine:
     writeData(0x00, y);
     a = M(Enemy_Rel_YPos);
@@ -16340,7 +15259,7 @@ DrawVine:
     x = M(VineObjOffset + y);
     y = M(Enemy_SprDataOffset + x);
     writeData(0x02, y);
-    JSR(SixSpriteStacker, 497)
+    JSR(SixSpriteStacker, 497);
     a = M(Enemy_Rel_XPos);
     writeData(Sprite_X_Position + y, a);
     writeData(Sprite_X_Position + 8 + y, a);
@@ -16397,9 +15316,6 @@ NextVSp:
         goto ChkFTop;
     y = M(0x00);
     goto Return;
-
-//---------------------------------------------------------------------
-
 SixSpriteStacker:
     x = 0x06;
 StkLp:
@@ -16415,9 +15331,6 @@ StkLp:
         goto StkLp;
     y = M(0x02);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawHammer:
     y = M(Misc_SprDataOffset + x);
     a = M(TimerControl);
@@ -16468,12 +15381,9 @@ RenderH:
     a = 0x00;
     writeData(Misc_State + x, a);
     a = 0xf8;
-    JSR(DumpTwoSpr, 498)
+    JSR(DumpTwoSpr, 498);
 NoHOffscr:
     goto Return;
-
-//---------------------------------------------------------------------
-
 FlagpoleGfxHandler:
     y = M(Enemy_SprDataOffset + x);
     a = M(Enemy_Rel_XPos);
@@ -16486,7 +15396,7 @@ FlagpoleGfxHandler:
     a += 0x0c;
     writeData(0x05, a);
     a = M(Enemy_Y_Position + x);
-    JSR(DumpTwoSpr, 499)
+    JSR(DumpTwoSpr, 499);
     a += 0x08;
     writeData(Sprite_Y_Position + 8 + y, a);
     a = M(FlagpoleFNum_Y_Pos);
@@ -16515,7 +15425,7 @@ FlagpoleGfxHandler:
     a = M(FlagpoleScoreNumTiles + x);
     writeData(0x00, a);
     a = M(FlagpoleScoreNumTiles + 1 + x);
-    JSR(DrawOneSpriteRow, 500)
+    JSR(DrawOneSpriteRow, 500);
 ChkFlagOffscreen:
     x = M(ObjectOffset);
     y = M(Enemy_SprDataOffset + x);
@@ -16537,9 +15447,6 @@ DumpTwoSpr:
     writeData(Sprite_Data + y, a);
 ExitDumpSpr:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawLargePlatform:
     y = M(Enemy_SprDataOffset + x);
     writeData(0x02, y);
@@ -16547,10 +15454,10 @@ DrawLargePlatform:
     ++y;
     ++y;
     a = M(Enemy_Rel_XPos);
-    JSR(SixSpriteStacker, 501)
+    JSR(SixSpriteStacker, 501);
     x = M(ObjectOffset);
     a = M(Enemy_Y_Position + x);
-    JSR(DumpFourSpr, 502)
+    JSR(DumpFourSpr, 502);
     y = M(AreaType);
     compare(y, 0x03);
     if (z)
@@ -16572,12 +15479,12 @@ SetLast2Platform:
 SetPlatformTilenum:
     x = M(ObjectOffset);
     ++y;
-    JSR(DumpSixSpr, 503)
+    JSR(DumpSixSpr, 503);
     a = 0x02;
     ++y;
-    JSR(DumpSixSpr, 504)
+    JSR(DumpSixSpr, 504);
     ++x;
-    JSR(GetXOffscreenBits, 505)
+    JSR(GetXOffscreenBits, 505);
     --x;
     y = M(Enemy_SprDataOffset + x);
     a <<= 1;
@@ -16630,12 +15537,9 @@ SLChk:
     a <<= 1;
     if (!c)
         goto ExDLPl;
-    JSR(MoveSixSpritesOffscreen, 506)
+    JSR(MoveSixSpritesOffscreen, 506);
 ExDLPl:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawFloateyNumber_Coin:
     a = M(FrameCounter);
     a >>= 1;
@@ -16644,7 +15548,7 @@ DrawFloateyNumber_Coin:
     --M(Misc_Y_Position + x);
 NotRsNum:
     a = M(Misc_Y_Position + x);
-    JSR(DumpTwoSpr, 507)
+    JSR(DumpTwoSpr, 507);
     a = M(Misc_Rel_XPos);
     writeData(Sprite_X_Position + y, a);
     c = 0;
@@ -16678,7 +15582,7 @@ JCoinGfxHandler:
     x = a;
     a = M(JumpingCoinTiles + x);
     ++y;
-    JSR(DumpTwoSpr, 508)
+    JSR(DumpTwoSpr, 508);
     --y;
     a = 0x02;
     writeData(Sprite_Attributes + y, a);
@@ -16687,9 +15591,6 @@ JCoinGfxHandler:
     x = M(ObjectOffset);
 ExJCGfx:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawPowerUp:
     y = M(Enemy_SprDataOffset + 5);
     a = M(Enemy_Rel_YPos);
@@ -16714,7 +15615,7 @@ PUpDrawLoop:
     a = M(PowerUpGfxTable + x);
     writeData(0x00, a);
     a = M(PowerUpGfxTable + 1 + x);
-    JSR(DrawOneSpriteRow, 509)
+    JSR(DrawOneSpriteRow, 509);
     --M(0x07);
     if (!n)
         goto PUpDrawLoop;
@@ -16771,9 +15672,6 @@ EnemyGfxHandler:
     if (z)
         goto CheckForRetainerObj;
     goto Return;
-
-//---------------------------------------------------------------------
-
 CheckForRetainerObj:
     a = M(Enemy_State + x);
     writeData(0xed, a);
@@ -17055,9 +15953,9 @@ CheckDefeatedState:
     writeData(0xec, y);
 DrawEnemyObject:
     y = M(0xeb);
-    JSR(DrawEnemyObjRow, 510)
-    JSR(DrawEnemyObjRow, 511)
-    JSR(DrawEnemyObjRow, 512)
+    JSR(DrawEnemyObjRow, 510);
+    JSR(DrawEnemyObjRow, 511);
+    JSR(DrawEnemyObjRow, 512);
     x = M(ObjectOffset);
     y = M(Enemy_SprDataOffset + x);
     a = M(0xef);
@@ -17074,7 +15972,7 @@ CheckForVerticalFlip:
     a |= BOOST_BINARY(10000000);
     ++y;
     ++y;
-    JSR(DumpSixSpr, 513)
+    JSR(DumpSixSpr, 513);
     --y;
     --y;
     a = y;
@@ -17221,7 +16119,7 @@ SprObjectOffscrChk:
     if (!c)
         goto LcChk;
     a = 0x04;
-    JSR(MoveESprColOffscreen, 514)
+    JSR(MoveESprColOffscreen, 514);
 LcChk:
     pla();
     a >>= 1;
@@ -17229,7 +16127,7 @@ LcChk:
     if (!c)
         goto Row3C;
     a = 0x00;
-    JSR(MoveESprColOffscreen, 515)
+    JSR(MoveESprColOffscreen, 515);
 Row3C:
     pla();
     a >>= 1;
@@ -17238,7 +16136,7 @@ Row3C:
     if (!c)
         goto Row23C;
     a = 0x10;
-    JSR(MoveESprRowOffscreen, 516)
+    JSR(MoveESprRowOffscreen, 516);
 Row23C:
     pla();
     a >>= 1;
@@ -17246,13 +16144,13 @@ Row23C:
     if (!c)
         goto AllRowC;
     a = 0x08;
-    JSR(MoveESprRowOffscreen, 517)
+    JSR(MoveESprRowOffscreen, 517);
 AllRowC:
     pla();
     a >>= 1;
     if (!c)
         goto ExEGHandler;
-    JSR(MoveESprRowOffscreen, 518)
+    JSR(MoveESprRowOffscreen, 518);
     a = M(Enemy_ID + x);
     compare(a, Podoboo);
     if (z)
@@ -17261,12 +16159,9 @@ AllRowC:
     compare(a, 0x02);
     if (!z)
         goto ExEGHandler;
-    JSR(EraseEnemyObject, 519)
+    JSR(EraseEnemyObject, 519);
 ExEGHandler:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawEnemyObjRow:
     a = M(EnemyGraphicsTable + x);
     writeData(0x00, a);
@@ -17284,12 +16179,9 @@ MoveESprColOffscreen:
     c = 0;
     a += M(Enemy_SprDataOffset + x);
     y = a;
-    JSR(MoveColOffscreen, 520)
+    JSR(MoveColOffscreen, 520);
     writeData(Sprite_Data + 16 + y, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawBlock:
     a = M(Block_Rel_YPos);
     writeData(0x02, a);
@@ -17305,7 +16197,7 @@ DBlkLoop:
     a = M(DefaultBlockObjTiles + x);
     writeData(0x00, a);
     a = M(DefaultBlockObjTiles + 1 + x);
-    JSR(DrawOneSpriteRow, 521)
+    JSR(DrawOneSpriteRow, 521);
     compare(x, 0x04);
     if (!z)
         goto DBlkLoop;
@@ -17325,7 +16217,7 @@ ChkRep:
         goto BlkOffscr;
     a = 0x87;
     ++y;
-    JSR(DumpFourSpr, 522)
+    JSR(DumpFourSpr, 522);
     --y;
     a = 0x03;
     x = M(AreaType);
@@ -17363,9 +16255,6 @@ MoveColOffscreen:
     writeData(Sprite_Y_Position + 8 + y, a);
 ExDBlk:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawBrickChunks:
     a = 0x02;
     writeData(0x00, a);
@@ -17380,7 +16269,7 @@ DrawBrickChunks:
 DChunks:
     y = M(Block_SprDataOffset + x);
     ++y;
-    JSR(DumpFourSpr, 523)
+    JSR(DumpFourSpr, 523);
     a = M(FrameCounter);
     a <<= 1;
     a <<= 1;
@@ -17389,11 +16278,11 @@ DChunks:
     a &= 0xc0;
     a |= M(0x00);
     ++y;
-    JSR(DumpFourSpr, 524)
+    JSR(DumpFourSpr, 524);
     --y;
     --y;
     a = M(Block_Rel_YPos);
-    JSR(DumpTwoSpr, 525)
+    JSR(DumpTwoSpr, 525);
     a = M(Block_Rel_XPos);
     writeData(Sprite_X_Position + y, a);
     a = M(Block_Orig_XPos + x);
@@ -17417,13 +16306,13 @@ DChunks:
     a += 0x06;
     writeData(Sprite_X_Position + 12 + y, a);
     a = M(Block_OffscreenBits);
-    JSR(ChkLeftCo, 526)
+    JSR(ChkLeftCo, 526);
     a = M(Block_OffscreenBits);
     a <<= 1;
     if (!c)
         goto ChnkOfs;
     a = 0xf8;
-    JSR(DumpTwoSpr, 527)
+    JSR(DumpTwoSpr, 527);
 ChnkOfs:
     a = M(0x00);
     if (!n)
@@ -17437,9 +16326,6 @@ ChnkOfs:
     writeData(Sprite_Y_Position + 12 + y, a);
 ExBCDr:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawFireball:
     y = M(FBall_SprDataOffset + x);
     a = M(Fireball_Rel_YPos);
@@ -17464,9 +16350,6 @@ DrawFirebar:
 FireA:
     writeData(Sprite_Attributes + y, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawExplosion_Fireball:
     y = M(Alt_SprDataOffset + x);
     a = M(Fireball_State + x);
@@ -17480,7 +16363,7 @@ DrawExplosion_Fireworks:
     x = a;
     a = M(ExplosionTiles + x);
     ++y;
-    JSR(DumpFourSpr, 528)
+    JSR(DumpFourSpr, 528);
     --y;
     x = M(ObjectOffset);
     a = M(Fireball_Rel_YPos);
@@ -17510,24 +16393,18 @@ DrawExplosion_Fireworks:
     a = 0xc2;
     writeData(Sprite_Attributes + 12 + y, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 KillFireBall:
     a = 0x00;
     writeData(Fireball_State + x, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawSmallPlatform:
     y = M(Enemy_SprDataOffset + x);
     a = 0x5b;
     ++y;
-    JSR(DumpSixSpr, 529)
+    JSR(DumpSixSpr, 529);
     ++y;
     a = 0x02;
-    JSR(DumpSixSpr, 530)
+    JSR(DumpSixSpr, 530);
     --y;
     --y;
     a = M(Enemy_Rel_XPos);
@@ -17549,7 +16426,7 @@ DrawSmallPlatform:
         goto TopSP;
     a = 0xf8;
 TopSP:
-    JSR(DumpThreeSpr, 531)
+    JSR(DumpThreeSpr, 531);
     pla();
     c = 0;
     a += 0x80;
@@ -17590,9 +16467,6 @@ SOfs2:
 ExSPl:
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawBubble:
     y = M(Player_Y_HighPos);
     --y;
@@ -17613,9 +16487,6 @@ DrawBubble:
     writeData(Sprite_Attributes + y, a);
 ExDBub:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayerGfxHandler:
     a = M(InjuryTimer);
     if (z)
@@ -17639,7 +16510,7 @@ CntPl:
     compare(a, 0x00);
     if (z)
         goto FindPlayerAction;
-    JSR(FindPlayerAction, 532)
+    JSR(FindPlayerAction, 532);
     a = M(FrameCounter);
     a &= BOOST_BINARY(00000100);
     if (!z)
@@ -17668,14 +16539,11 @@ BigKTS:
     writeData(Sprite_Tilenumber + 24 + y, a);
 ExPGH:
     goto Return;
-
-//---------------------------------------------------------------------
-
 FindPlayerAction:
-    JSR(ProcessPlayerAction, 533)
+    JSR(ProcessPlayerAction, 533);
     goto PlayerGfxProcessing;
 DoChangeSize:
-    JSR(HandleChangeSize, 534)
+    JSR(HandleChangeSize, 534);
     goto PlayerGfxProcessing;
 PlayerKilled:
     y = 0x0e;
@@ -17683,8 +16551,8 @@ PlayerKilled:
 PlayerGfxProcessing:
     writeData(PlayerGfxOffset, a);
     a = 0x04;
-    JSR(RenderPlayerSub, 535)
-    JSR(ChkForPlayerAttrib, 536)
+    JSR(RenderPlayerSub, 535);
+    JSR(ChkForPlayerAttrib, 536);
     a = M(FireballThrowingTimer);
     if (z)
         goto PlayerOffscreenChk;
@@ -17706,7 +16574,7 @@ PlayerGfxProcessing:
     --y;
 SUpdR:
     a = y;
-    JSR(RenderPlayerSub, 537)
+    JSR(RenderPlayerSub, 537);
 PlayerOffscreenChk:
     a = M(Player_OffscreenBits);
     a >>= 1;
@@ -17724,7 +16592,7 @@ PROfsLoop:
     M(0x00) >>= 1;
     if (!c)
         goto NPROffscr;
-    JSR(DumpTwoSpr, 538)
+    JSR(DumpTwoSpr, 538);
 NPROffscr:
     a = y;
     c = 1;
@@ -17734,9 +16602,6 @@ NPROffscr:
     if (!n)
         goto PROfsLoop;
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawPlayer_Intermediate:
     x = 0x05;
 PIntLoop:
@@ -17747,14 +16612,11 @@ PIntLoop:
         goto PIntLoop;
     x = 0xb8;
     y = 0x04;
-    JSR(DrawPlayerLoop, 539)
+    JSR(DrawPlayerLoop, 539);
     a = M(Sprite_Attributes + 36);
     a |= BOOST_BINARY(01000000);
     writeData(Sprite_Attributes + 32, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 RenderPlayerSub:
     writeData(0x07, a);
     a = M(Player_Rel_XPos);
@@ -17772,14 +16634,11 @@ DrawPlayerLoop:
     a = M(PlayerGraphicsTable + x);
     writeData(0x00, a);
     a = M(PlayerGraphicsTable + 1 + x);
-    JSR(DrawOneSpriteRow, 540)
+    JSR(DrawOneSpriteRow, 540);
     --M(0x07);
     if (!z)
         goto DrawPlayerLoop;
     goto Return;
-
-//---------------------------------------------------------------------
-
 ProcessPlayerAction:
     a = M(Player_State);
     compare(a, 0x03);
@@ -17820,32 +16679,29 @@ ProcOnGroundActs:
         goto ActionWalkRun;
     ++y;
 NonAnimatedActs:
-    JSR(GetGfxOffsetAdder, 541)
+    JSR(GetGfxOffsetAdder, 541);
     a = 0x00;
     writeData(PlayerAnimCtrl, a);
     a = M(PlayerGfxTblOffsets + y);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ActionFalling:
     y = 0x04;
-    JSR(GetGfxOffsetAdder, 542)
+    JSR(GetGfxOffsetAdder, 542);
     goto GetCurrentAnimOffset;
 ActionWalkRun:
     y = 0x04;
-    JSR(GetGfxOffsetAdder, 543)
+    JSR(GetGfxOffsetAdder, 543);
     goto FourFrameExtent;
 ActionClimbing:
     y = 0x05;
     a = M(Player_Y_Speed);
     if (z)
         goto NonAnimatedActs;
-    JSR(GetGfxOffsetAdder, 544)
+    JSR(GetGfxOffsetAdder, 544);
     goto ThreeFrameExtent;
 ActionSwimming:
     y = 0x01;
-    JSR(GetGfxOffsetAdder, 545)
+    JSR(GetGfxOffsetAdder, 545);
     a = M(JumpSwimTimer);
     a |= M(PlayerAnimCtrl);
     if (!z)
@@ -17864,7 +16720,7 @@ ThreeFrameExtent:
     a = 0x02;
 AnimationControl:
     writeData(0x00, a);
-    JSR(GetCurrentAnimOffset, 546)
+    JSR(GetCurrentAnimOffset, 546);
     pha();
     a = M(PlayerAnimTimer);
     if (!z)
@@ -17883,9 +16739,6 @@ SetAnimC:
 ExAnimC:
     pla();
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetGfxOffsetAdder:
     a = M(PlayerSize);
     if (z)
@@ -17896,9 +16749,6 @@ GetGfxOffsetAdder:
     y = a;
 SzOfs:
     goto Return;
-
-//---------------------------------------------------------------------
-
 HandleChangeSize:
     y = M(PlayerAnimCtrl);
     a = M(FrameCounter);
@@ -17925,9 +16775,6 @@ GetOffsetFromAnimCtrl:
     a <<= 1;
     a += M(PlayerGfxTblOffsets + y);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ShrinkPlayer:
     a = y;
     c = 0;
@@ -17941,9 +16788,6 @@ ShrinkPlayer:
 ShrPlF:
     a = M(PlayerGfxTblOffsets + y);
     goto Return;
-
-//---------------------------------------------------------------------
-
 ChkForPlayerAttrib:
     y = M(Player_SprDataOffset);
     a = M(GameEngineSubroutine);
@@ -17981,32 +16825,26 @@ C_S_IGAtt:
     writeData(Sprite_Attributes + 28 + y, a);
 ExPlyrAt:
     goto Return;
-
-//---------------------------------------------------------------------
-
 RelativePlayerPosition:
     x = 0x00;
     y = 0x00;
     goto RelWOfs;
 RelativeBubblePosition:
     y = 0x01;
-    JSR(GetProperObjOffset, 547)
+    JSR(GetProperObjOffset, 547);
     y = 0x03;
     goto RelWOfs;
 RelativeFireballPosition:
     y = 0x00;
-    JSR(GetProperObjOffset, 548)
+    JSR(GetProperObjOffset, 548);
     y = 0x02;
 RelWOfs:
-    JSR(GetObjRelativePosition, 549)
+    JSR(GetObjRelativePosition, 549);
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 RelativeMiscPosition:
     y = 0x02;
-    JSR(GetProperObjOffset, 550)
+    JSR(GetProperObjOffset, 550);
     y = 0x06;
     goto RelWOfs;
 RelativeEnemyPosition:
@@ -18016,7 +16854,7 @@ RelativeEnemyPosition:
 RelativeBlockPosition:
     a = 0x09;
     y = 0x04;
-    JSR(VariableObjOfsRelPos, 551)
+    JSR(VariableObjOfsRelPos, 551);
     ++x;
     ++x;
     a = 0x09;
@@ -18026,12 +16864,9 @@ VariableObjOfsRelPos:
     c = 0;
     a += M(0x00);
     x = a;
-    JSR(GetObjRelativePosition, 552)
+    JSR(GetObjRelativePosition, 552);
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetObjRelativePosition:
     a = M(SprObject_Y_Position + x);
     writeData(SprObject_Rel_YPos + y, a);
@@ -18040,26 +16875,23 @@ GetObjRelativePosition:
     a -= M(ScreenLeft_X_Pos);
     writeData(SprObject_Rel_XPos + y, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetPlayerOffscreenBits:
     x = 0x00;
     y = 0x00;
     goto GetOffScreenBitsSet;
 GetFireballOffscreenBits:
     y = 0x00;
-    JSR(GetProperObjOffset, 553)
+    JSR(GetProperObjOffset, 553);
     y = 0x02;
     goto GetOffScreenBitsSet;
 GetBubbleOffscreenBits:
     y = 0x01;
-    JSR(GetProperObjOffset, 554)
+    JSR(GetProperObjOffset, 554);
     y = 0x03;
     goto GetOffScreenBitsSet;
 GetMiscOffscreenBits:
     y = 0x02;
-    JSR(GetProperObjOffset, 555)
+    JSR(GetProperObjOffset, 555);
     y = 0x06;
     goto GetOffScreenBitsSet;
 GetProperObjOffset:
@@ -18068,9 +16900,6 @@ GetProperObjOffset:
     a += M(ObjOffsetData + y);
     x = a;
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetEnemyOffscreenBits:
     a = 0x01;
     y = 0x01;
@@ -18086,7 +16915,7 @@ SetOffscrBitsOffset:
 GetOffScreenBitsSet:
     a = y;
     pha();
-    JSR(RunOffscrBitsSubs, 556)
+    JSR(RunOffscrBitsSubs, 556);
     a <<= 1;
     a <<= 1;
     a <<= 1;
@@ -18099,11 +16928,8 @@ GetOffScreenBitsSet:
     writeData(SprObject_OffscrBits + y, a);
     x = M(ObjectOffset);
     goto Return;
-
-//---------------------------------------------------------------------
-
 RunOffscrBitsSubs:
-    JSR(GetXOffscreenBits, 557)
+    JSR(GetXOffscreenBits, 557);
     a >>= 1;
     a >>= 1;
     a >>= 1;
@@ -18131,7 +16957,7 @@ XOfsLoop:
     a = 0x38;
     writeData(0x06, a);
     a = 0x08;
-    JSR(DividePDiff, 558)
+    JSR(DividePDiff, 558);
 XLdBData:
     a = M(XOffscreenBitsData + x);
     x = M(0x04);
@@ -18143,9 +16969,6 @@ XLdBData:
         goto XOfsLoop;
 ExXOfsBS:
     goto Return;
-
-//---------------------------------------------------------------------
-
 GetYOffscreenBits:
     writeData(0x04, x);
     y = 0x01;
@@ -18167,7 +16990,7 @@ YOfsLoop:
     a = 0x20;
     writeData(0x06, a);
     a = 0x04;
-    JSR(DividePDiff, 559)
+    JSR(DividePDiff, 559);
 YLdBData:
     a = M(YOffscreenBitsData + x);
     x = M(0x04);
@@ -18179,9 +17002,6 @@ YLdBData:
         goto YOfsLoop;
 ExYOfsBS:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DividePDiff:
     writeData(0x05, a);
     a = M(0x07);
@@ -18200,9 +17020,6 @@ SetOscrO:
     x = a;
 ExDivPD:
     goto Return;
-
-//---------------------------------------------------------------------
-
 DrawSpriteObject:
     a = M(0x03);
     a >>= 1;
@@ -18244,18 +17061,12 @@ SetHFAt:
     ++x;
     ++x;
     goto Return;
-
-//---------------------------------------------------------------------
-
 SoundEngine:
     a = M(OperMode);
     if (!z)
         goto SndOn;
     writeData(SND_MASTERCTRL_REG, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 SndOn:
     a = 0xff;
     writeData(JOYPAD_PORT2, a);
@@ -18306,7 +17117,7 @@ PTone2F:
 PTRegC:
     x = 0x84;
     y = 0x7f;
-    JSR(PlaySqu1Sfx, 560)
+    JSR(PlaySqu1Sfx, 560);
 DecPauC:
     --M(Squ1_SfxLenCounter);
     if (!z)
@@ -18325,10 +17136,10 @@ SkipPIn:
     if (z)
         goto SkipSoundSubroutines;
 RunSoundSubroutines:
-    JSR(Square1SfxHandler, 561)
-    JSR(Square2SfxHandler, 562)
-    JSR(NoiseSfxHandler, 563)
-    JSR(MusicHandler, 564)
+    JSR(Square1SfxHandler, 561);
+    JSR(Square2SfxHandler, 562);
+    JSR(NoiseSfxHandler, 563);
+    JSR(MusicHandler, 564);
     a = 0x00;
     writeData(AreaMusicQueue, a);
     writeData(EventMusicQueue, a);
@@ -18355,18 +17166,12 @@ NoIncDAC:
 StrWave:
     writeData(SND_DELTA_REG + 1, y);
     goto Return;
-
-//---------------------------------------------------------------------
-
 Dump_Squ1_Regs:
     writeData(SND_SQUARE1_REG + 1, y);
     writeData(SND_SQUARE1_REG, x);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlaySqu1Sfx:
-    JSR(Dump_Squ1_Regs, 565)
+    JSR(Dump_Squ1_Regs, 565);
 SetFreq_Squ1:
     x = 0x00;
 Dump_Freq_Regs:
@@ -18380,18 +17185,12 @@ Dump_Freq_Regs:
     writeData(SND_REGISTER + 3 + x, a);
 NoTone:
     goto Return;
-
-//---------------------------------------------------------------------
-
 Dump_Sq2_Regs:
     writeData(SND_SQUARE2_REG, x);
     writeData(SND_SQUARE2_REG + 1, y);
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlaySqu2Sfx:
-    JSR(Dump_Sq2_Regs, 566)
+    JSR(Dump_Sq2_Regs, 566);
 SetFreq_Squ2:
     x = 0x04;
     if (!z)
@@ -18404,7 +17203,7 @@ PlayFlagpoleSlide:
     a = 0x40;
     writeData(Squ1_SfxLenCounter, a);
     a = 0x62;
-    JSR(SetFreq_Squ1, 567)
+    JSR(SetFreq_Squ1, 567);
     x = 0x99;
     if (!z)
         goto FPS2nd;
@@ -18417,7 +17216,7 @@ PlayBigJump:
 JumpRegContents:
     x = 0x82;
     y = 0xa7;
-    JSR(PlaySqu1Sfx, 568)
+    JSR(PlaySqu1Sfx, 568);
     a = 0x28;
     writeData(Squ1_SfxLenCounter, a);
 ContinueSndJump:
@@ -18437,7 +17236,7 @@ N2Prt:
 FPS2nd:
     y = 0xbc;
 DmpJpFPS:
-    JSR(Dump_Squ1_Regs, 569)
+    JSR(Dump_Squ1_Regs, 569);
     if (!z)
         goto DecJpFPS;
 PlayFireballThrow:
@@ -18452,7 +17251,7 @@ Fthrow:
     x = 0x9e;
     writeData(Squ1_SfxLenCounter, a);
     a = 0x0c;
-    JSR(PlaySqu1Sfx, 570)
+    JSR(PlaySqu1Sfx, 570);
 ContinueBumpThrow:
     a = M(Squ1_SfxLenCounter);
     compare(a, 0x06);
@@ -18520,16 +17319,13 @@ CheckSfx1Buffer:
         goto DecrementSfx1Length;
 ExS1H:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlaySwimStomp:
     a = 0x0e;
     writeData(Squ1_SfxLenCounter, a);
     y = 0x9c;
     x = 0x9e;
     a = 0x26;
-    JSR(PlaySqu1Sfx, 571)
+    JSR(PlaySqu1Sfx, 571);
 ContinueSwimStomp:
     y = M(Squ1_SfxLenCounter);
     a = M(SwimStompEnvelopeData - 1 + y);
@@ -18548,7 +17344,7 @@ PlaySmackEnemy:
     x = 0x9f;
     writeData(Squ1_SfxLenCounter, a);
     a = 0x28;
-    JSR(PlaySqu1Sfx, 572)
+    JSR(PlaySqu1Sfx, 572);
     if (!z)
         goto DecrementSfx1Length;
 ContinueSmackEnemy:
@@ -18578,9 +17374,6 @@ StopSquare1Sfx:
     writeData(SND_MASTERCTRL_REG, x);
 ExSfx1:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayPipeDownInj:
     a = 0x2f;
     writeData(Squ1_SfxLenCounter, a);
@@ -18598,7 +17391,7 @@ ContinuePipeDownInj:
     y = 0x91;
     x = 0x9a;
     a = 0x44;
-    JSR(PlaySqu1Sfx, 573)
+    JSR(PlaySqu1Sfx, 573);
 NoPDwnL:
     goto DecrementSfx1Length;
 PlayCoinGrab:
@@ -18613,7 +17406,7 @@ CGrab_TTickRegL:
     writeData(Squ2_SfxLenCounter, a);
     y = 0x7f;
     a = 0x42;
-    JSR(PlaySqu2Sfx, 574)
+    JSR(PlaySqu2Sfx, 574);
 ContinueCGrabTTick:
     a = M(Squ2_SfxLenCounter);
     compare(a, 0x30);
@@ -18654,7 +17447,7 @@ ContinuePowerUpGrab:
     x = 0x5d;
     y = 0x7f;
 LoadSqu2Regs:
-    JSR(PlaySqu2Sfx, 575)
+    JSR(PlaySqu2Sfx, 575);
 DecrementSfx2Length:
     --M(Squ2_SfxLenCounter);
     if (!z)
@@ -18669,9 +17462,6 @@ StopSquare2Sfx:
     writeData(SND_MASTERCTRL_REG, x);
 ExSfx2:
     goto Return;
-
-//---------------------------------------------------------------------
-
 Square2SfxHandler:
     a = M(Square2SoundBuffer);
     a &= Sfx_ExtraLife;
@@ -18733,9 +17523,6 @@ CheckSfx2Buffer:
         goto ContinueExtraLife;
 ExS2H:
     goto Return;
-
-//---------------------------------------------------------------------
-
 Cont_CGrab_TTick:
     goto ContinueCGrabTTick;
 JumpToDecLength2:
@@ -18802,11 +17589,8 @@ ContinueGrowItems:
     a = 0x9d;
     writeData(SND_SQUARE2_REG, a);
     a = M(PUp_VGrow_FreqData + y);
-    JSR(SetFreq_Squ2, 576)
+    JSR(SetFreq_Squ2, 576);
     goto Return;
-
-//---------------------------------------------------------------------
-
 StopGrowItems:
     goto EmptySfx2Buffer;
 PlayBrickShatter:
@@ -18835,9 +17619,6 @@ DecrementSfx3Length:
     writeData(NoiseSoundBuffer, a);
 ExSfx3:
     goto Return;
-
-//---------------------------------------------------------------------
-
 NoiseSfxHandler:
     y = M(NoiseSoundQueue);
     if (z)
@@ -18861,9 +17642,6 @@ CheckNoiseBuffer:
         goto ContinueBowserFlame;
 ExNH:
     goto Return;
-
-//---------------------------------------------------------------------
-
 PlayBowserFlame:
     a = 0x40;
     writeData(Noise_SfxLenCounter, a);
@@ -18889,16 +17667,13 @@ MusicHandler:
     if (!z)
         goto ContinueMusic;
     goto Return;
-
-//---------------------------------------------------------------------
-
 LoadEventMusic:
     writeData(EventMusicBuffer, a);
     compare(a, DeathMusic);
     if (!z)
         goto NoStopSfx;
-    JSR(StopSquare1Sfx, 577)
-    JSR(StopSquare2Sfx, 578)
+    JSR(StopSquare1Sfx, 577);
+    JSR(StopSquare2Sfx, 578);
 NoStopSfx:
     x = M(AreaMusicBuffer);
     writeData(AreaMusicBuffer_Alt, x);
@@ -18916,7 +17691,7 @@ LoadAreaMusic:
     compare(a, 0x04);
     if (!z)
         goto NoStop1;
-    JSR(StopSquare1Sfx, 579)
+    JSR(StopSquare1Sfx, 579);
 NoStop1:
     y = 0x10;
 GMLoopB:
@@ -19009,15 +17784,12 @@ NotTRO:
     writeData(SND_SQUARE1_REG, a);
     writeData(SND_SQUARE2_REG, a);
     goto Return;
-
-//---------------------------------------------------------------------
-
 MusicLoopBack:
     goto HandleAreaMusicLoopB;
 VictoryMLoopBack:
     goto LoadEventMusic;
 Squ2LengthHandler:
-    JSR(ProcessLengthData, 580)
+    JSR(ProcessLengthData, 580);
     writeData(Squ2_NoteLenBuffer, a);
     y = M(MusicOffset_Square2);
     ++M(MusicOffset_Square2);
@@ -19026,13 +17798,13 @@ Squ2NoteHandler:
     x = M(Square2SoundBuffer);
     if (!z)
         goto SkipFqL1;
-    JSR(SetFreq_Squ2, 581)
+    JSR(SetFreq_Squ2, 581);
     if (z)
         goto Rest;
-    JSR(LoadControlRegs, 582)
+    JSR(LoadControlRegs, 582);
 Rest:
     writeData(Squ2_EnvelopeDataCtrl, a);
-    JSR(Dump_Sq2_Regs, 583)
+    JSR(Dump_Sq2_Regs, 583);
 SkipFqL1:
     a = M(Squ2_NoteLenBuffer);
     writeData(Squ2_NoteLenCounter, a);
@@ -19049,7 +17821,7 @@ MiscSqu2MusicTasks:
         goto NoDecEnv1;
     --M(Squ2_EnvelopeDataCtrl);
 NoDecEnv1:
-    JSR(LoadEnvelopeData, 584)
+    JSR(LoadEnvelopeData, 584);
     writeData(SND_SQUARE2_REG, a);
     x = 0x7f;
     writeData(SND_SQUARE2_REG + 1, x);
@@ -19074,20 +17846,20 @@ FetchSqu1MusicData:
     if (!z)
         goto FetchSqu1MusicData;
 Squ1NoteHandler:
-    JSR(AlternateLengthHandler, 585)
+    JSR(AlternateLengthHandler, 585);
     writeData(Squ1_NoteLenCounter, a);
     y = M(Square1SoundBuffer);
     if (!z)
         goto HandleTriangleMusic;
     a = x;
     a &= BOOST_BINARY(00111110);
-    JSR(SetFreq_Squ1, 586)
+    JSR(SetFreq_Squ1, 586);
     if (z)
         goto SkipCtrlL;
-    JSR(LoadControlRegs, 587)
+    JSR(LoadControlRegs, 587);
 SkipCtrlL:
     writeData(Squ1_EnvelopeDataCtrl, a);
-    JSR(Dump_Squ1_Regs, 588)
+    JSR(Dump_Squ1_Regs, 588);
 MiscSqu1MusicTasks:
     a = M(Square1SoundBuffer);
     if (!z)
@@ -19101,7 +17873,7 @@ MiscSqu1MusicTasks:
         goto NoDecEnv2;
     --M(Squ1_EnvelopeDataCtrl);
 NoDecEnv2:
-    JSR(LoadEnvelopeData, 589)
+    JSR(LoadEnvelopeData, 589);
     writeData(SND_SQUARE1_REG, a);
 DeathMAltReg:
     a = M(AltRegContentFlag);
@@ -19122,7 +17894,7 @@ HandleTriangleMusic:
         goto LoadTriCtrlReg;
     if (!n)
         goto TriNoteHandler;
-    JSR(ProcessLengthData, 590)
+    JSR(ProcessLengthData, 590);
     writeData(Tri_NoteLenBuffer, a);
     a = 0x1f;
     writeData(SND_TRIANGLE_REG, a);
@@ -19132,7 +17904,7 @@ HandleTriangleMusic:
     if (z)
         goto LoadTriCtrlReg;
 TriNoteHandler:
-    JSR(SetFreq_Tri, 591)
+    JSR(SetFreq_Tri, 591);
     x = M(Tri_NoteLenBuffer);
     writeData(Tri_NoteLenCounter, x);
     a = M(EventMusicBuffer);
@@ -19182,7 +17954,7 @@ FetchNoiseBeatData:
     if (!z)
         goto FetchNoiseBeatData;
 NoiseBeatHandler:
-    JSR(AlternateLengthHandler, 592)
+    JSR(AlternateLengthHandler, 592);
     writeData(Noise_BeatLenCounter, a);
     a = x;
     a &= BOOST_BINARY(00111110);
@@ -19222,9 +17994,6 @@ PlayBeat:
     writeData(SND_NOISE_REG + 3, y);
 ExitMusicHandler:
     goto Return;
-
-//---------------------------------------------------------------------
-
 AlternateLengthHandler:
     x = a;
     a.ror();
@@ -19240,9 +18009,6 @@ ProcessLengthData:
     y = a;
     a = M(MusicLengthLookupTbl + y);
     goto Return;
-
-//---------------------------------------------------------------------
-
 LoadControlRegs:
     a = M(EventMusicBuffer);
     a &= EndOfCastleMusic;
@@ -19265,9 +18031,6 @@ AllMus:
     x = 0x82;
     y = 0x7f;
     goto Return;
-
-//---------------------------------------------------------------------
-
 LoadEnvelopeData:
     a = M(EventMusicBuffer);
     a &= EndOfCastleMusic;
@@ -19275,9 +18038,6 @@ LoadEnvelopeData:
         goto LoadUsualEnvData;
     a = M(EndOfCastleMusicEnvData + y);
     goto Return;
-
-//---------------------------------------------------------------------
-
 LoadUsualEnvData:
     a = M(AreaMusicBuffer);
     a &= BOOST_BINARY(01111101);
@@ -19285,17 +18045,14 @@ LoadUsualEnvData:
         goto LoadWaterEventMusEnvData;
     a = M(AreaMusicEnvData + y);
     goto Return;
-
-//---------------------------------------------------------------------
-
 LoadWaterEventMusEnvData:
     a = M(WaterEventMusEnvData + y);
     goto Return;
-
-//---------------------------------------------------------------------
-
-Return: // Return Handler
-    switch(popReturnIndex())
+// Return handler
+// This emulates the RTS instruction using a generated jump table
+//
+Return:
+    switch (popReturnIndex())
     {
     case 0:
         goto Return_0;

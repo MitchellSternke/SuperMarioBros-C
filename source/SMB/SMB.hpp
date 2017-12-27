@@ -1,8 +1,9 @@
-#ifndef DECOMPILED_HPP
-#define DECOMPILED_HPP
+#ifndef SMB_HPP
+#define SMB_HPP
 
 #include <boost/utility/binary.hpp>
 
+#include "SMBConstants.hpp"
 #include "SMBEngine.hpp"
 
 //---------------------------------------------------------------------
@@ -27,11 +28,11 @@
 /**
  * High/upper byte of a 16-bit integer.
  */
-#define HIBYTE(v) ((v >> 8) & 0xff)
+#define HIBYTE(v) (static_cast<uint8_t>((v >> 8) & 0xff))
 
 /**
  * Low byte of a 16-bit integer.
  */
-#define LOBYTE(v) (v & 0xff)
+#define LOBYTE(v) (static_cast<uint8_t>(v & 0xff))
 
-#endif // DECOMPILED_HPP
+#endif // SMB_HPP

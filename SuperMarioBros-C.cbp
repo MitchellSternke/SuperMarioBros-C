@@ -47,8 +47,10 @@
 		<Unit filename="source/Emulation/PPU.cpp" />
 		<Unit filename="source/Emulation/PPU.hpp" />
 		<Unit filename="source/Main.cpp" />
-		<Unit filename="source/SMB/Decompiled.cpp" />
-		<Unit filename="source/SMB/Decompiled.hpp" />
+		<Unit filename="source/SMB/SMB.cpp" />
+		<Unit filename="source/SMB/SMB.hpp" />
+		<Unit filename="source/SMB/SMBConstants.hpp" />
+		<Unit filename="source/SMB/SMBDataPointers.hpp" />
 		<Unit filename="source/SMB/SMBEngine.cpp" />
 		<Unit filename="source/SMB/SMBEngine.hpp" />
 		<Unit filename="source/Util/Video.cpp" />
