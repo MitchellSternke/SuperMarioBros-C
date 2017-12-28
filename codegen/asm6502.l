@@ -5,7 +5,7 @@
 #include <string.h>
 #include "ast.hpp"
 #include "util.hpp"
-#include "asm6502.tab.h"
+#include "parser.hpp"
 
 #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
 

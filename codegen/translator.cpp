@@ -3,7 +3,7 @@
 
 #include "translator.hpp"
 #include "util.hpp"
-#include "asm6502.tab.h"
+#include "parser.hpp"
 
 // Tab character used in translation (4 spaces)
 //
