@@ -19,9 +19,11 @@ void yyerror(const char* s);
 // Short hand for an instruction AST node
 // there are so many of them, so this saves some typing
 //
-#define INST(r, c, o) \
-    r = new InstructionNode(c, o); r->lineNumber = yylineno
+#define INST(t, r, c, o) \
+    r = new InstructionNode(c, o); r->lineNumber = t.first_line;
 %}
+
+%locations
 
 %union {
     const char* str;
@@ -140,12 +142,14 @@ dir: DIRECTIVE const
 decl: NAME '=' expr 
         {
             $$ = new DeclNode($1, $3);
+            $$->lineNumber = @1.first_line;
         }
     ;
 
 section: LABEL code
         {
             $$ = new LabelNode($1, $2);
+            $$->lineNumber = @1.first_line;
             $2->parent = $$;
         }
        | LABEL section
@@ -186,12 +190,14 @@ code: inst
 data: DATABYTES dlist
         {
             $$ = new AstNode(AST_DATA8);
+            $$->lineNumber = @1.first_line;
             $$->value.node = $2;
             $2->parent = $$;
         }
     | DATAWORDS dlist
         {
             $$ = new AstNode(AST_DATA16);
+            $$->lineNumber = @1.first_line;
             $$->value.node = $2;
             $2->parent = $$;
         }
@@ -212,66 +218,66 @@ dlist: expr
         }
      ;
      
-inst: LDA iexpr { INST($$, LDA, $2); }
-    | LDX iexpr { INST($$, LDX, $2); }
-    | LDY iexpr { INST($$, LDY, $2); }
-    | STA iexpr { INST($$, STA, $2); }
-    | STX iexpr { INST($$, STX, $2); }
-    | STY iexpr { INST($$, STY, $2); }
-    | TAX       { INST($$, TAX, NULL); }
-    | TAY       { INST($$, TAY, NULL); }
-    | TXA       { INST($$, TXA, NULL); }
-    | TYA       { INST($$, TYA, NULL); }
-    | TSX       { INST($$, TSX, NULL); }
-    | TXS       { INST($$, TXS, NULL); }
-    | PHA       { INST($$, PHA, NULL); }
-    | PHP       { INST($$, PHP, NULL); }
-    | PLA       { INST($$, PLA, NULL); }
-    | PLP       { INST($$, PLP, NULL); }
-    | AND iexpr { INST($$, AND, $2); }
-    | EOR iexpr { INST($$, EOR, $2); }
-    | ORA iexpr { INST($$, ORA, $2); }
-    | BIT iexpr { INST($$, BIT, $2); }
-    | ADC iexpr { INST($$, ADC, $2); }
-    | SBC iexpr { INST($$, SBC, $2); }
-    | CMP iexpr { INST($$, CMP, $2); }
-    | CPX iexpr { INST($$, CPX, $2); }
-    | CPY iexpr { INST($$, CPY, $2); }
-    | INC iexpr { INST($$, INC, $2); }
-    | INX       { INST($$, INX, NULL); }
-    | INY       { INST($$, INY, NULL); }
-    | DEC iexpr { INST($$, DEC, $2); }
-    | DEX       { INST($$, DEX, NULL); }
-    | DEY       { INST($$, DEY, NULL); }
-    | ASL       { INST($$, ASL, NULL); }
-    | ASL iexpr { INST($$, ASL, $2); }
-    | LSR       { INST($$, LSR, NULL); }
-    | LSR iexpr { INST($$, LSR, $2); }
-    | ROL       { INST($$, ROL, NULL); }
-    | ROL iexpr { INST($$, ROL, $2); }
-    | ROR       { INST($$, ROR, NULL); }
-    | ROR iexpr { INST($$, ROR, $2); }
-    | JMP iexpr { INST($$, JMP, $2); }
-    | JSR NAME  { INST($$, JSR, $2); }
-    | RTS       { INST($$, RTS, NULL); }
-    | BCC NAME  { INST($$, BCC, $2); }
-    | BCS NAME  { INST($$, BCS, $2); }
-    | BEQ NAME  { INST($$, BEQ, $2); }
-    | BMI NAME  { INST($$, BMI, $2); }
-    | BNE NAME  { INST($$, BNE, $2); }
-    | BPL NAME  { INST($$, BPL, $2); }
-    | BVC NAME  { INST($$, BVC, $2); }
-    | BVS NAME  { INST($$, BVS, $2); }
-    | CLC       { INST($$, CLC, NULL); }
-    | CLD       { INST($$, CLD, NULL); }
-    | CLI       { INST($$, CLI, NULL); }
-    | CLV       { INST($$, CLV, NULL); }
-    | SEC       { INST($$, SEC, NULL); }
-    | SED       { INST($$, SED, NULL); }
-    | SEI       { INST($$, SEI, NULL); }
-    | BRK       { INST($$, BRK, NULL); }
-    | NOP       { INST($$, NOP, NULL); }
-    | RTI       { INST($$, RTI, NULL); }
+inst: LDA iexpr { INST(@1, $$, LDA, $2); }
+    | LDX iexpr { INST(@1, $$, LDX, $2); }
+    | LDY iexpr { INST(@1, $$, LDY, $2); }
+    | STA iexpr { INST(@1, $$, STA, $2); }
+    | STX iexpr { INST(@1, $$, STX, $2); }
+    | STY iexpr { INST(@1, $$, STY, $2); }
+    | TAX       { INST(@1, $$, TAX, NULL); }
+    | TAY       { INST(@1, $$, TAY, NULL); }
+    | TXA       { INST(@1, $$, TXA, NULL); }
+    | TYA       { INST(@1, $$, TYA, NULL); }
+    | TSX       { INST(@1, $$, TSX, NULL); }
+    | TXS       { INST(@1, $$, TXS, NULL); }
+    | PHA       { INST(@1, $$, PHA, NULL); }
+    | PHP       { INST(@1, $$, PHP, NULL); }
+    | PLA       { INST(@1, $$, PLA, NULL); }
+    | PLP       { INST(@1, $$, PLP, NULL); }
+    | AND iexpr { INST(@1, $$, AND, $2); }
+    | EOR iexpr { INST(@1, $$, EOR, $2); }
+    | ORA iexpr { INST(@1, $$, ORA, $2); }
+    | BIT iexpr { INST(@1, $$, BIT, $2); }
+    | ADC iexpr { INST(@1, $$, ADC, $2); }
+    | SBC iexpr { INST(@1, $$, SBC, $2); }
+    | CMP iexpr { INST(@1, $$, CMP, $2); }
+    | CPX iexpr { INST(@1, $$, CPX, $2); }
+    | CPY iexpr { INST(@1, $$, CPY, $2); }
+    | INC iexpr { INST(@1, $$, INC, $2); }
+    | INX       { INST(@1, $$, INX, NULL); }
+    | INY       { INST(@1, $$, INY, NULL); }
+    | DEC iexpr { INST(@1, $$, DEC, $2); }
+    | DEX       { INST(@1, $$, DEX, NULL); }
+    | DEY       { INST(@1, $$, DEY, NULL); }
+    | ASL       { INST(@1, $$, ASL, NULL); }
+    | ASL iexpr { INST(@1, $$, ASL, $2); }
+    | LSR       { INST(@1, $$, LSR, NULL); }
+    | LSR iexpr { INST(@1, $$, LSR, $2); }
+    | ROL       { INST(@1, $$, ROL, NULL); }
+    | ROL iexpr { INST(@1, $$, ROL, $2); }
+    | ROR       { INST(@1, $$, ROR, NULL); }
+    | ROR iexpr { INST(@1, $$, ROR, $2); }
+    | JMP iexpr { INST(@1, $$, JMP, $2); }
+    | JSR NAME  { INST(@1, $$, JSR, $2); }
+    | RTS       { INST(@1, $$, RTS, NULL); }
+    | BCC NAME  { INST(@1, $$, BCC, $2); }
+    | BCS NAME  { INST(@1, $$, BCS, $2); }
+    | BEQ NAME  { INST(@1, $$, BEQ, $2); }
+    | BMI NAME  { INST(@1, $$, BMI, $2); }
+    | BNE NAME  { INST(@1, $$, BNE, $2); }
+    | BPL NAME  { INST(@1, $$, BPL, $2); }
+    | BVC NAME  { INST(@1, $$, BVC, $2); }
+    | BVS NAME  { INST(@1, $$, BVS, $2); }
+    | CLC       { INST(@1, $$, CLC, NULL); }
+    | CLD       { INST(@1, $$, CLD, NULL); }
+    | CLI       { INST(@1, $$, CLI, NULL); }
+    | CLV       { INST(@1, $$, CLV, NULL); }
+    | SEC       { INST(@1, $$, SEC, NULL); }
+    | SED       { INST(@1, $$, SED, NULL); }
+    | SEI       { INST(@1, $$, SEI, NULL); }
+    | BRK       { INST(@1, $$, BRK, NULL); }
+    | NOP       { INST(@1, $$, NOP, NULL); }
+    | RTI       { INST(@1, $$, RTI, NULL); }
     ;
 
 const: HEXCONST

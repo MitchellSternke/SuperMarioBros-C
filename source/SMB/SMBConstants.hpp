@@ -177,16 +177,16 @@
 #define PlayerSize 0x0754
 #define PlayerStatus 0x0756
 #define OnscreenPlayerInfo 0x075a
-#define NumberofLives 0x075a
+#define NumberofLives 0x075a // used by current player
 #define HalfwayPage 0x075b
-#define LevelNumber 0x075c
+#define LevelNumber 0x075c // the actual dash number
 #define Hidden1UpFlag 0x075d
 #define CoinTally 0x075e
 #define WorldNumber 0x075f
-#define AreaNumber 0x0760
+#define AreaNumber 0x0760 // internal number used to find areas
 #define CoinTallyFor1Ups 0x0748
 #define OffscreenPlayerInfo 0x0761
-#define OffScr_NumberofLives 0x0761
+#define OffScr_NumberofLives 0x0761 // used by offscreen player
 #define OffScr_HalfwayPage 0x0762
 #define OffScr_LevelNumber 0x0763
 #define OffScr_Hidden1UpFlag 0x0764

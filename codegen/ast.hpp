@@ -118,15 +118,4 @@ void cleanupAst(RootNode* root);
 //
 void printNode(AstNode* node, int indent = 0);
 
-// We need to be able to duplicate yytext since it is volatile
-//
-inline char* duplicateString(const char* s, size_t n)
-{
-    char* d = new char[n + 1];
-    memcpy(d, s, n);
-    d[n] = '\0';
-    return d;
-}
-#define DUP_YYTEXT (duplicateString(yytext, yyleng))
-
 #endif // AST_HPP
