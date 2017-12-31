@@ -8,6 +8,7 @@ FLEX_TARGET(scanner asm6502.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
 ADD_FLEX_BISON_DEPENDENCY(scanner parser)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+
 add_executable(codegen
     ${BISON_parser_OUTPUTS}
     ${FLEX_scanner_OUTPUTS}
