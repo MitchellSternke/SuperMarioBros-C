@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.5)
 
 project(smbc)
 
@@ -22,6 +22,6 @@ find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 add_executable(smbc ${SOURCE_FILES})
-target_link_libraries(smbc ${SDL2_LIBRARY})
+target_link_libraries(smbc ${SDL2_LIBRARIES})
 
 add_dependencies(smbc codegen)

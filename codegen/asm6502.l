@@ -13,7 +13,7 @@ void yyerror(const char *);
 %}
 
 %%
-[ \t\n]+ {
+[ \t\r\n]+ {
     ;
 }
 
@@ -328,7 +328,7 @@ rti {
 }
 
 . {
-    printf("invalid token: %s\n", yytext);
+    printf("invalid token (line %d): %s\n", yylineno, yytext);
     yyerror(yytext);
 }
 
