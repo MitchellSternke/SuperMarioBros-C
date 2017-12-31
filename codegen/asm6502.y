@@ -346,6 +346,12 @@ iexpr: expr
 
 int main(int argc, char** argv)
 {
+    if (argc < 3)
+    {
+        printf("usage: codegen <INPUT ASM FILE> <OUTPUT ROOT DIRECTORY>\n");
+        exit(1);
+    }
+
     root = new RootNode();
     
     yyin = fopen(argv[1], "r");
@@ -364,13 +370,18 @@ int main(int argc, char** argv)
 
     Translator translator(argv[1], root);
 
-    std::ofstream sourceFile("SMB.cpp");
+    std::string outputDir(argv[2]);
+
+    std::string sourceFilePath = outputDir + "/source/SMB/SMB.cpp";
+    std::ofstream sourceFile(sourceFilePath.c_str());
     sourceFile << translator.getSourceOutput();
 
-    std::ofstream dataHeaderFile("SMBDataPointers.hpp");
+    std::string dataHeaderFilePath = outputDir + "/source/SMB/SMBDataPointers.hpp";
+    std::ofstream dataHeaderFile(dataHeaderFilePath.c_str());
     dataHeaderFile << translator.getDataHeaderOutput();
 
-    std::ofstream constantHeaderFile("SMBConstants.hpp");
+    std::string constantHeaderFilePath = outputDir + "/source/SMB/SMBConstants.hpp";
+    std::ofstream constantHeaderFile(constantHeaderFilePath.c_str());
     constantHeaderFile << translator.getConstantHeaderOutput();
     
     return 0;

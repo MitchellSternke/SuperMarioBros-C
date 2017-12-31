@@ -18,8 +18,19 @@ Building
 - C++11 compiler
 - Boost
 - SDL2
+- Flex
+- Bison
+- CMake
 
-A Code::Blocks project file has been provided for convenience, and it is what is currently used for development. However, this should build on any platform that has a C++11 compiler with SDL2 support.
+From the root of the repo, execute:
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+
+This should create the executable `smbc` in the `build` directory.
 
 Running
 -------

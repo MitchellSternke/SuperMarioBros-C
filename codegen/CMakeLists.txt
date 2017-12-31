@@ -16,3 +16,7 @@ add_executable(codegen
     translator.cpp
     util.cpp
 )
+
+add_custom_command(TARGET codegen
+                   POST_BUILD 
+                   COMMAND $<TARGET_FILE:codegen> ${PROJECT_SOURCE_DIR}/docs/smbdis.asm ${PROJECT_SOURCE_DIR})
