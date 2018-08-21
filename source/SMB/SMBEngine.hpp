@@ -2,6 +2,7 @@
 #define SMBENGINE_HPP
 
 #include <cstdint>
+#include <cstddef>
 
 #include "../Emulation/MemoryAccess.hpp"
 
