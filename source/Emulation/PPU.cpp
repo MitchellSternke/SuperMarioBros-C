@@ -337,7 +337,10 @@ void PPU::render(uint32_t* buffer)
     // Draw sprites in front of the background
     if (ppuMask & (1 << 4))
     {
-        for( int i = 0; i < 64; i++ )
+        // Sprites with the lowest index in OAM take priority.
+        // Therefore, render the array of sprites in reverse order.
+        //
+        for( int i = 63; i >= 0; i-- )
         {
             // Read OAM for the sprite
             uint8_t y          = oam[i * 4];
