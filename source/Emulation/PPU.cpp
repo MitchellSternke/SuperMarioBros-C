@@ -354,15 +354,15 @@ void PPU::render(uint32_t* buffer)
                 continue;
             }
 
-            // Increment y by one since sprite data is delayed by one scanline
-            //
-            y++;
-
             // Check if the sprite is visible
             if( y >= 0xef || x >= 0xf9 )
             {
                 continue;
             }
+
+            // Increment y by one since sprite data is delayed by one scanline
+            //
+            y++;
 
             // Determine the tile to use
             uint16_t tile = index + (ppuCtrl & (1 << 3) ? 256 : 0);
