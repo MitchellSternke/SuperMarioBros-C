@@ -489,6 +489,11 @@ void Translator::generateDataDeclarations()
         }
     }
 
+    // Also store the first address of free space
+    //
+    addresses << TAB << "uint16_t freeSpaceAddress;\n";
+    addressDefaults << TAB << TAB << "this->freeSpaceAddress = 0x" << std::hex << storageAddress << std::dec << ";\n";
+
     // Final stuff for the end of each section...
     //
     addressDefaults << TAB << "}\n";

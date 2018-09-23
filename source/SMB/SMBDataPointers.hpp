@@ -357,6 +357,7 @@ struct SMBDataPointers
     uint16_t WaterEventMusEnvData_ptr;
     uint16_t BowserFlameEnvData_ptr;
     uint16_t BrickShatterEnvData_ptr;
+    uint16_t freeSpaceAddress;
 
     SMBDataPointers()
     {
@@ -709,6 +710,7 @@ struct SMBDataPointers
         this->WaterEventMusEnvData_ptr = 0xa4a1;
         this->BowserFlameEnvData_ptr = 0xa4c9;
         this->BrickShatterEnvData_ptr = 0xa4e9;
+        this->freeSpaceAddress = 0xa4f9;
     }
 };
 
