@@ -468,7 +468,7 @@ void Translator::generateDataDeclarations()
 
                 addressDefines << "#define " << labelName << " (dataPointers." << labelName << "_ptr)\n";
 
-                addressDefaults << TAB << TAB <<  "this->" << labelName << "_ptr = " << storageAddress << ";\n";
+                addressDefaults << TAB << TAB <<  "this->" << labelName << "_ptr = 0x" << std::hex << storageAddress << std::dec << ";\n";
 
                 storageAddress += byteCount;
             }
@@ -484,7 +484,7 @@ void Translator::generateDataDeclarations()
 
                 addressDefines << "#define " << labelName << " (dataPointers." << labelName << "_ptr)\n";
 
-                addressDefaults << TAB << TAB <<  "this->" << labelName << "_ptr = " << storageAddress << ";\n";
+                addressDefaults << TAB << TAB <<  "this->" << labelName << "_ptr = 0x" << std::hex << storageAddress << std::dec << ";\n";
             }
         }
     }
