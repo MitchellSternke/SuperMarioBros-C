@@ -354,6 +354,10 @@ void PPU::render(uint32_t* buffer)
                 continue;
             }
 
+            // Increment y by one since sprite data is delayed by one scanline
+            //
+            y++;
+
             // Check if the sprite is visible
             if( y >= 0xef || x >= 0xf9 )
             {
