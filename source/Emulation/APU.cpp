@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "../Configuration.hpp"
+
 #include "APU.hpp"
 
 static const uint8_t lengthTable[] = {
@@ -547,31 +549,43 @@ void APU::stepFrame()
             break;
         }
 
-        // We need 735 samples per frame for 44.1KHz sound sampling
-        int samplesToWrite = 184;
+        // Calculate the number of samples needed per 1/4 frame
+        //
+        int frequency = Configuration::getAudioFrequency();
+
+        // Example: we need 735 samples per frame for 44.1KHz sound sampling
+        //
+        int samplesToWrite = frequency / 240;
         if (i == 3)
         {
-            samplesToWrite = 183;
+            // Handle the remainder on the final tick of the frame counter
+            //
+            samplesToWrite = (frequency / 60) - 3 * (frequency / 240);
         }
+        
         SDL_LockAudio();
-        int stepIndex = 0;
-        for (int j = 0; j < samplesToWrite; j++)
-        {
-            uint8_t sample = getOutput();
-            audioBuffer[audioBufferLength + j] = sample;
 
-            // Step the timer ~3729 times per quarter frame for most channels
-            while ((stepIndex / 3729.0) < (j / (double)samplesToWrite))
+        // Step the timer ~3729 times per quarter frame for most channels
+        //
+        int j = 0;
+        for (int stepIndex = 0; stepIndex < 3729; stepIndex++)
+        {
+            if (j < samplesToWrite &&
+                (stepIndex / 3729.0) > (j / (double)samplesToWrite))
             {
-                pulse1->stepTimer();
-                pulse2->stepTimer();
-                noise->stepTimer();
-                triangle->stepTimer();
-                triangle->stepTimer();
-                stepIndex++;
+                uint8_t sample = getOutput();
+                audioBuffer[audioBufferLength + j] = sample;
+                j++;
             }
+
+            pulse1->stepTimer();
+            pulse2->stepTimer();
+            noise->stepTimer();
+            triangle->stepTimer();
+            triangle->stepTimer();
         }
         audioBufferLength += samplesToWrite;
+        
         SDL_UnlockAudio();
     }
 }

@@ -7,6 +7,7 @@ add_subdirectory(codegen)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-c++11-narrowing")
 
 set(SOURCE_FILES
+    source/Configuration.cpp
     source/Main.cpp
     source/Emulation/APU.cpp
     source/Emulation/Controller.cpp

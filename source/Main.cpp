@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <iostream>
 
 #include <SDL2/SDL.h>
 
@@ -6,6 +7,7 @@
 #include "SMB/SMBEngine.hpp"
 #include "Util/Video.hpp"
 
+#include "Configuration.hpp"
 #include "Constants.hpp"
 
 uint8_t* romImage;
@@ -21,10 +23,10 @@ static uint32_t renderBuffer[RENDER_WIDTH * RENDER_HEIGHT];
  */
 static bool loadRomImage()
 {
-    // TODO: this should be configurable
-    FILE* file = fopen(ROM_FILENAME, "r");
+    FILE* file = fopen(Configuration::getRomFileName().c_str(), "r");
     if (file == NULL)
     {
+        std::cout << "Failed to open the file \"" << Configuration::getRomFileName() << "\". Exiting.\n";
         return false;
     }
 
@@ -57,6 +59,10 @@ static void audioCallback(void* userdata, uint8_t* buffer, int len)
  */
 static bool initialize()
 {
+    // Load the configuration
+    //
+    Configuration::initialize(CONFIG_FILE_NAME);
+
     // Load the SMB ROM image
     if (!loadRomImage())
     {
@@ -73,8 +79,8 @@ static bool initialize()
     window = SDL_CreateWindow(APP_TITLE,
                               SDL_WINDOWPOS_UNDEFINED,
                               SDL_WINDOWPOS_UNDEFINED,
-                              RENDER_WIDTH * RENDER_SCALE,
-                              RENDER_HEIGHT * RENDER_SCALE,
+                              RENDER_WIDTH * Configuration::getRenderScale(),
+                              RENDER_HEIGHT * Configuration::getRenderScale(),
                               0
     );
 
@@ -87,7 +93,7 @@ static bool initialize()
 
     // Initialize audio
     SDL_AudioSpec desiredSpec;
-    desiredSpec.freq = AUDIO_FREQUENCY_HZ;
+    desiredSpec.freq = Configuration::getAudioFrequency();
     desiredSpec.format = AUDIO_S8;
     desiredSpec.channels = 1;
     desiredSpec.samples = 2048;

@@ -35,7 +35,40 @@ This should create the executable `smbc` in the `build` directory.
 Running
 -------
 
-This requires an *unmodified* copy of the `Super Mario Bros. (JU) (PRG0) [!].nes` ROM in the working directory to run. Without this, the game won't have any graphics, since the CHR data is used for rendering.
+This requires an *unmodified* copy of the `Super Mario Bros. (JU) (PRG0) [!].nes` ROM to run. Without this, the game won't have any graphics, since the CHR data is used for rendering. By default, the program will look for this file in the current working directory, but this can also be configured in `smbc.conf`.
+
+Configuration
+-------------
+
+Optionally, the program can be configured with a file named `smbc.conf` in the working directory. This file has an INI format. For example, the following would configure the option `audio.frequency` to be `22050`:
+
+```
+[audio]
+frequency = 22050
+```
+
+The following is a list of all configurable options:
+
+### [audio] options
+
+#### frequency
+
+- Controls the frequency of sampled audio output, in Hz.
+- Default: 48000
+
+### [game] options
+
+#### rom_file
+
+- The path to the Super Mario Bros. ROM file. Can be either relative to the working directory or absolute.
+- Default: "Super Mario Bros. (JU) (PRG0) [!].nes"
+
+### [video] options
+
+#### scale
+
+- Controls the scale factor for rendered video.
+- Default: 3
 
 Architecture
 ------------

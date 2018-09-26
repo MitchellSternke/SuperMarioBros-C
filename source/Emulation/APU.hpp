@@ -4,7 +4,6 @@
 #include <cstdint>
 
 #define AUDIO_BUFFER_LENGTH 4096
-#define AUDIO_FREQUENCY 44100
 
 class Pulse;
 class Triangle;
