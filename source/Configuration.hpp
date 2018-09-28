@@ -91,6 +91,11 @@ public:
     static void initialize(const std::string& fileName);
 
     /**
+     * Get if audio is enabled or not.
+     */
+    static bool getAudioEnabled();
+
+    /**
      * Get the desired audio frequency, in Hz.
      */
     static int getAudioFrequency();
@@ -111,6 +116,7 @@ public:
     static int getRenderScale();
 
 private:
+    static BasicConfigurationOption<bool> audioEnabled;
     static BasicConfigurationOption<int> audioFrequency;
     static BasicConfigurationOption<int> frameRate;
     static BasicConfigurationOption<int> renderScale;

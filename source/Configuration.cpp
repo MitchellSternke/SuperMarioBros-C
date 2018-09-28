@@ -6,11 +6,19 @@
  * List of all supported configuration options.
  */
 std::list<ConfigurationOption*> Configuration::configurationOptions = {
+    &Configuration::audioEnabled,
     &Configuration::audioFrequency,
     &Configuration::frameRate,
     &Configuration::renderScale,
     &Configuration::romFileName
 };
+
+/**
+ * Whether audio is enabled or not.
+ */
+BasicConfigurationOption<bool> Configuration::audioEnabled(
+    "audio.enabled", true
+);
 
 /**
  * Audio frequency, in Hz
@@ -72,6 +80,11 @@ void Configuration::initialize(const std::string& fileName)
             option->initializeValue(propertyTree);
         }
     }
+}
+
+bool Configuration::getAudioEnabled()
+{
+    return audioEnabled.getValue();
 }
 
 int Configuration::getAudioFrequency()

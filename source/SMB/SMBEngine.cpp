@@ -1,5 +1,7 @@
 #include <cstring>
 
+#include "../Configuration.hpp"
+
 #include "../Emulation/APU.hpp"
 #include "../Emulation/Controller.hpp"
 #include "../Emulation/PPU.hpp"
@@ -69,7 +71,10 @@ void SMBEngine::update()
     code(1);
 
     // Update the APU
-    apu->stepFrame();
+    if (Configuration::getAudioEnabled())
+    {
+        apu->stepFrame();
+    }
 }
 
 //---------------------------------------------------------------------

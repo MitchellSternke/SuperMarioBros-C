@@ -51,6 +51,11 @@ The following is a list of all configurable options:
 
 ### [audio] options
 
+#### enabled
+
+- Allows audio to be enabled (if set to 1) or disabled (if set to 0).
+- Default: 1
+
 #### frequency
 
 - Controls the frequency of sampled audio output, in Hz.

@@ -91,20 +91,23 @@ static bool initialize()
 
     scanlineTexture = generateScanlineTexture(renderer);
 
-    // Initialize audio
-    SDL_AudioSpec desiredSpec;
-    desiredSpec.freq = Configuration::getAudioFrequency();
-    desiredSpec.format = AUDIO_S8;
-    desiredSpec.channels = 1;
-    desiredSpec.samples = 2048;
-    desiredSpec.callback = audioCallback;
-    desiredSpec.userdata = NULL;
+    if (Configuration::getAudioEnabled())
+    {
+        // Initialize audio
+        SDL_AudioSpec desiredSpec;
+        desiredSpec.freq = Configuration::getAudioFrequency();
+        desiredSpec.format = AUDIO_S8;
+        desiredSpec.channels = 1;
+        desiredSpec.samples = 2048;
+        desiredSpec.callback = audioCallback;
+        desiredSpec.userdata = NULL;
 
-    SDL_AudioSpec obtainedSpec;
-    SDL_OpenAudio(&desiredSpec, &obtainedSpec);
+        SDL_AudioSpec obtainedSpec;
+        SDL_OpenAudio(&desiredSpec, &obtainedSpec);
 
-    // Start playing audio
-    SDL_PauseAudio(0);
+        // Start playing audio
+        SDL_PauseAudio(0);
+    }
 
     return true;
 }
