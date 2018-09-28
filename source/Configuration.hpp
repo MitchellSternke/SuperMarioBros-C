@@ -1,6 +1,7 @@
 #ifndef CONFIGURATION_HPP
 #define CONFIGURATION_HPP
 
+#include <iostream>
 #include <list>
 #include <string>
 
@@ -39,57 +40,42 @@ private:
 };
 
 /**
- * Represents a string-valued option.
+ * Basic configuration option template for values that have simple types and only a default value.
  */
-class StringConfigurationOption : public ConfigurationOption
+template <typename T>
+class BasicConfigurationOption : public ConfigurationOption
 {
 public:
     /**
      * Constructor.
      */
-    StringConfigurationOption(
+    BasicConfigurationOption(
         const std::string& path,
-        const std::string& defaultValue);
+        const T& defaultValue) :
+        ConfigurationOption(path),
+        value(defaultValue)
+    {
+    }
     
     /**
-     * Get the string value of the configuration option.
+     * Get the value of the configuration option.
      */
-    const std::string& getValue() const;
+    const T& getValue() const
+    {
+        return value;
+    }
 
     /**
-     * Initialize the string configuration option.
+     * Initialize the configuration option.
      */
-    void initializeValue(const boost::property_tree::ptree& propertyTree) override;
+    void initializeValue(const boost::property_tree::ptree& propertyTree) override
+    {
+        value = propertyTree.get<T>(getPath(), value);
+        std::cout << "Configuration option \"" << getPath() << "\" set to \"" << value << "\"" << std::endl;
+    }
 
 private:
-    std::string stringValue;
-};
-
-/**
- * Represents an integer-valued option.
- */
-class IntegerConfigurationOption : public ConfigurationOption
-{
-public:
-    /**
-     * Constructor.
-     */
-    IntegerConfigurationOption(
-        const std::string& path,
-        int defaultValue);
-
-    /**
-     * Get the integer value of the configuration option.
-     */
-    int getValue() const;
-
-    /**
-     * Initialize the integer configuration option.
-     */
-    void initializeValue(const boost::property_tree::ptree& propertyTree) override;
-
-private:
-    int integerValue;
+    T value;
 };
 
 /**
@@ -125,10 +111,10 @@ public:
     static int getRenderScale();
 
 private:
-    static IntegerConfigurationOption audioFrequency;
-    static IntegerConfigurationOption frameRate;
-    static IntegerConfigurationOption renderScale;
-    static StringConfigurationOption romFileName;
+    static BasicConfigurationOption<int> audioFrequency;
+    static BasicConfigurationOption<int> frameRate;
+    static BasicConfigurationOption<int> renderScale;
+    static BasicConfigurationOption<std::string> romFileName;
 
     static std::list<ConfigurationOption*> configurationOptions;
 };

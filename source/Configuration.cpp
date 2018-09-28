@@ -1,6 +1,4 @@
 #include <fstream>
-#include <iostream>
-#include <list>
 
 #include "Configuration.hpp"
 
@@ -17,28 +15,28 @@ std::list<ConfigurationOption*> Configuration::configurationOptions = {
 /**
  * Audio frequency, in Hz
  */
-IntegerConfigurationOption Configuration::audioFrequency(
+BasicConfigurationOption<int> Configuration::audioFrequency(
     "audio.frequency", 48000
 );
 
 /**
  * Frame rate (per second).
  */
-IntegerConfigurationOption Configuration::frameRate(
+BasicConfigurationOption<int> Configuration::frameRate(
     "game.frame_rate", 60
 );
 
 /**
  * Scaling factor for rendering.
  */
-IntegerConfigurationOption Configuration::renderScale(
+BasicConfigurationOption<int> Configuration::renderScale(
     "video.scale", 3
 );
 
 /**
  * Filename for the SMB ROM image.
  */
-StringConfigurationOption Configuration::romFileName(
+BasicConfigurationOption<std::string> Configuration::romFileName(
     "game.rom_file", "Super Mario Bros. (JU) (PRG0) [!].nes"
 );
 
@@ -51,44 +49,6 @@ ConfigurationOption::ConfigurationOption(
 const std::string& ConfigurationOption::getPath() const
 {
     return path;
-}
-
-StringConfigurationOption::StringConfigurationOption(
-    const std::string& path,
-    const std::string& defaultValue) :
-    ConfigurationOption(path),
-    stringValue(defaultValue)
-{
-}
-
-const std::string& StringConfigurationOption::getValue() const
-{
-    return stringValue;
-}
-
-void StringConfigurationOption::initializeValue(const boost::property_tree::ptree& propertyTree)
-{
-    stringValue = propertyTree.get<std::string>(getPath(), stringValue);
-    std::cout << "Configuration option \"" << getPath() << "\" set to \"" << stringValue << "\"" << std::endl;
-}
-
-IntegerConfigurationOption::IntegerConfigurationOption(
-    const std::string& path,
-    int defaultValue) :
-    ConfigurationOption(path),
-    integerValue(defaultValue)
-{
-}
-
-int IntegerConfigurationOption::getValue() const
-{
-    return integerValue;
-}
-
-void IntegerConfigurationOption::initializeValue(const boost::property_tree::ptree& propertyTree)
-{
-    integerValue = propertyTree.get<int>(getPath(), integerValue);
-    std::cout << "Configuration option \"" << getPath() << "\" set to " << integerValue << std::endl;
 }
 
 void Configuration::initialize(const std::string& fileName)
