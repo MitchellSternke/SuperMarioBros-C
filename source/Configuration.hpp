@@ -106,6 +106,11 @@ public:
     static int getFrameRate();
 
     /**
+     * Get the filename for a custom palette to use for rendering.
+     */
+    static const std::string& getPaletteFileName();
+
+    /**
      * Get the desired ROM file name.
      */
     static const std::string& getRomFileName();
@@ -129,6 +134,7 @@ private:
     static BasicConfigurationOption<bool> audioEnabled;
     static BasicConfigurationOption<int> audioFrequency;
     static BasicConfigurationOption<int> frameRate;
+    static BasicConfigurationOption<std::string> paletteFileName;
     static BasicConfigurationOption<int> renderScale;
     static BasicConfigurationOption<std::string> romFileName;
     static BasicConfigurationOption<bool> scanlinesEnabled;

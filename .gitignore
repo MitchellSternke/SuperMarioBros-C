@@ -1,3 +1,4 @@
 build/
 *.nes
+*.pal
 smbc.conf

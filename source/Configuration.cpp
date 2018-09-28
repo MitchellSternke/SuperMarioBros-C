@@ -9,6 +9,7 @@ std::list<ConfigurationOption*> Configuration::configurationOptions = {
     &Configuration::audioEnabled,
     &Configuration::audioFrequency,
     &Configuration::frameRate,
+    &Configuration::paletteFileName,
     &Configuration::renderScale,
     &Configuration::romFileName,
     &Configuration::scanlinesEnabled,
@@ -34,6 +35,13 @@ BasicConfigurationOption<int> Configuration::audioFrequency(
  */
 BasicConfigurationOption<int> Configuration::frameRate(
     "game.frame_rate", 60
+);
+
+/**
+ * The filename for a custom palette to use for rendering.
+ */
+BasicConfigurationOption<std::string> Configuration::paletteFileName(
+    "video.palette_file", ""
 );
 
 /**
@@ -111,6 +119,11 @@ int Configuration::getAudioFrequency()
 int Configuration::getFrameRate()
 {
     return frameRate.getValue();
+}
+
+const std::string& Configuration::getPaletteFileName()
+{
+    return paletteFileName.getValue();
 }
 
 int Configuration::getRenderScale()

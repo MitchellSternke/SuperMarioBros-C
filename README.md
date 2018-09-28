@@ -75,6 +75,12 @@ The following is a list of all configurable options:
 
 ### [video] options
 
+#### palette_file
+
+- Relative or absolute path to a custom palette file to use for rendering. The following formats are supported:
+  - 192-byte palette file: contains 64 (R,G,B) triples with one byte per color channel. Byte order must be (R,G,B). This is the standard *.pal file format used by many NES emulators. For more documentation see https://wiki.nesdev.com/w/index.php/.pal
+- Default: ""
+
 #### scale
 
 - Controls the scale factor for rendered video.

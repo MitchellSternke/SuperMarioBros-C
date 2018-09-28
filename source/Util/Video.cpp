@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "../Constants.hpp"
 
 #include "Video.hpp"
@@ -172,4 +174,53 @@ SDL_Texture* generateScanlineTexture(SDL_Renderer* renderer)
     delete [] scanlineTextureBuffer;
 
     return scanlineTexture;
+}
+
+const uint32_t* loadPalette(const std::string& fileName)
+{
+    uint32_t* palette = nullptr;
+
+    FILE* file = fopen(fileName.c_str(), "r");
+
+    if (file != nullptr)
+    {
+        // Find the size of the file
+        //
+        fseek(file, 0L, SEEK_END);
+        size_t fileSize = ftell(file);
+        fseek(file, 0L, SEEK_SET);
+
+        // Read the entire file into a buffer
+        //
+        uint8_t* fileBuffer = new uint8_t[fileSize];
+        fread(fileBuffer, sizeof(uint8_t), fileSize, file);
+
+        // Size determines the type of palette file
+        //
+        if (fileSize == 192)
+        {
+            palette = new uint32_t[64];
+            
+            for (int entry = 0; entry < 64; entry++)
+            {
+                palette[entry] = 
+                    (static_cast<uint32_t>(fileBuffer[entry * 3]) << 16) |
+                    (static_cast<uint32_t>(fileBuffer[entry * 3 + 1]) << 8) |
+                    (static_cast<uint32_t>(fileBuffer[entry * 3 + 2]));
+            }
+        }
+        else
+        {
+            delete [] fileBuffer;
+            std::cout << "Unsupported palette file \"" << fileName << "\"" << std::endl;
+        }
+
+        fclose(file);
+    }
+    else
+    {
+        std::cout << "Unable to open palette file \"" << fileName << "\"" << std::endl;
+    }
+
+    return palette;
 }

@@ -91,6 +91,17 @@ static bool initialize()
 
     scanlineTexture = generateScanlineTexture(renderer);
 
+    // Set up custom palette, if configured
+    //
+    if (!Configuration::getPaletteFileName().empty())
+    {
+        const uint32_t* palette = loadPalette(Configuration::getPaletteFileName());
+        if (palette)
+        {
+            paletteRGB = palette;
+        }
+    }
+
     if (Configuration::getAudioEnabled())
     {
         // Initialize audio

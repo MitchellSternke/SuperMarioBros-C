@@ -9,9 +9,9 @@ static const uint8_t nametableMirrorLookup[][4] = {
 };
 
 /**
- * RGB representation of the NES palette.
+ * Default hardcoded palette.
  */
-const uint32_t paletteRGB[64] = {
+static constexpr const uint32_t defaultPaletteRGB[64] = {
     0x7c7c7c,
     0x0000fc,
     0x0000bc,
@@ -77,6 +77,11 @@ const uint32_t paletteRGB[64] = {
     0x000000,
     0x000000
 };
+
+/**
+ * RGB representation of the NES palette.
+ */
+const uint32_t* paletteRGB = defaultPaletteRGB;
 
 PPU::PPU(SMBEngine& engine) :
     engine(engine)

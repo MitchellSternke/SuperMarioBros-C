@@ -46,7 +46,12 @@ void drawText(uint32_t* buffer, int xOffset, int yOffset, const std::string& tex
  */
 SDL_Texture* generateScanlineTexture(SDL_Renderer* renderer);
 
-extern const uint32_t paletteRGB[64];
+/**
+ * Load a palette from file.
+ */
+const uint32_t* loadPalette(const std::string& fileName);
+
+extern const uint32_t* paletteRGB;
 extern uint8_t* romImage;
 
 #endif // VIDEO_HPP
