@@ -116,6 +116,11 @@ public:
     static int getRenderScale();
 
     /**
+     * Get whether scanlines are enabled or not.
+     */
+    static bool getScanlinesEnabled();
+
+    /**
      * Get whether vsync is enabled or not.
      */
     static bool getVsyncEnabled();
@@ -126,6 +131,7 @@ private:
     static BasicConfigurationOption<int> frameRate;
     static BasicConfigurationOption<int> renderScale;
     static BasicConfigurationOption<std::string> romFileName;
+    static BasicConfigurationOption<bool> scanlinesEnabled;
     static BasicConfigurationOption<bool> vsyncEnabled;
 
     static std::list<ConfigurationOption*> configurationOptions;

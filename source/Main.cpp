@@ -199,8 +199,12 @@ static void mainLoop()
         SDL_RenderCopy(renderer, texture, NULL, NULL);
 
         // Render scanlines
-        SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH * 3, RENDER_HEIGHT * 3);
-        SDL_RenderCopy(renderer, scanlineTexture, NULL, NULL);
+        //
+        if (Configuration::getScanlinesEnabled())
+        {
+            SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH * 3, RENDER_HEIGHT * 3);
+            SDL_RenderCopy(renderer, scanlineTexture, NULL, NULL);
+        }
 
         SDL_RenderPresent(renderer);
 

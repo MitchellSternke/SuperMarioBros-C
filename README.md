@@ -80,6 +80,11 @@ The following is a list of all configurable options:
 - Controls the scale factor for rendered video.
 - Default: 3
 
+#### scanlines
+
+- Allows rendering scanlines to be enabled (if set to 1) or disabled (if set to 0)
+- Default: 1
+
 #### vsync
 
 - Allows vsync to be enabled (if set to 1) or disabled (if set to 0).

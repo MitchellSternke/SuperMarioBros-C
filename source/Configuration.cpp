@@ -11,6 +11,7 @@ std::list<ConfigurationOption*> Configuration::configurationOptions = {
     &Configuration::frameRate,
     &Configuration::renderScale,
     &Configuration::romFileName,
+    &Configuration::scanlinesEnabled,
     &Configuration::vsyncEnabled
 };
 
@@ -47,6 +48,13 @@ BasicConfigurationOption<int> Configuration::renderScale(
  */
 BasicConfigurationOption<std::string> Configuration::romFileName(
     "game.rom_file", "Super Mario Bros. (JU) (PRG0) [!].nes"
+);
+
+/**
+ * Whether scanlines are enabled or not.
+ */
+BasicConfigurationOption<bool> Configuration::scanlinesEnabled(
+    "video.scanlines", true
 );
 
 /**
@@ -113,6 +121,11 @@ int Configuration::getRenderScale()
 const std::string& Configuration::getRomFileName()
 {
     return romFileName.getValue();
+}
+
+bool Configuration::getScanlinesEnabled()
+{
+    return scanlinesEnabled.getValue();
 }
 
 bool Configuration::getVsyncEnabled()
