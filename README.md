@@ -1,7 +1,7 @@
 SuperMarioBros-C
 ================
 
-An attempt to manually translate the original Super Mario Bros. for the NES to readable C/C++.
+An attempt to translate the original Super Mario Bros. for the NES to readable C/C++.
 
 I've taken the `smbdis.asm` disassembly of Super Mario Bros. and successfully converted it to C++ using an automated codegen program I wrote (which you can be found in the `codegen/` subdirectory of the repo). Right now, it looks very similar to the original disassembly and is fairly dense code, but it works! Check out `source/SMB/SMB.cpp` if you're curious.
 
