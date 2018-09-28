@@ -110,6 +110,11 @@ public:
     static int getAudioFrequency();
 
     /**
+     * Get the desired frame rate (per second).
+     */
+    static int getFrameRate();
+
+    /**
      * Get the desired ROM file name.
      */
     static const std::string& getRomFileName();
@@ -121,6 +126,7 @@ public:
 
 private:
     static IntegerConfigurationOption audioFrequency;
+    static IntegerConfigurationOption frameRate;
     static IntegerConfigurationOption renderScale;
     static StringConfigurationOption romFileName;
 

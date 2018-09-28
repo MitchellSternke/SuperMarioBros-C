@@ -58,6 +58,11 @@ The following is a list of all configurable options:
 
 ### [game] options
 
+#### frame_rate
+
+- The desired frame rate, in frames per second.
+- Default: 60
+
 #### rom_file
 
 - The path to the Super Mario Bros. ROM file. Can be either relative to the working directory or absolute.

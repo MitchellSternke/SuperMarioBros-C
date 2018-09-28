@@ -9,6 +9,7 @@
  */
 std::list<ConfigurationOption*> Configuration::configurationOptions = {
     &Configuration::audioFrequency,
+    &Configuration::frameRate,
     &Configuration::renderScale,
     &Configuration::romFileName
 };
@@ -18,6 +19,13 @@ std::list<ConfigurationOption*> Configuration::configurationOptions = {
  */
 IntegerConfigurationOption Configuration::audioFrequency(
     "audio.frequency", 48000
+);
+
+/**
+ * Frame rate (per second).
+ */
+IntegerConfigurationOption Configuration::frameRate(
+    "game.frame_rate", 60
 );
 
 /**
@@ -109,6 +117,11 @@ void Configuration::initialize(const std::string& fileName)
 int Configuration::getAudioFrequency()
 {
     return audioFrequency.getValue();
+}
+
+int Configuration::getFrameRate()
+{
+    return frameRate.getValue();
 }
 
 int Configuration::getRenderScale()

@@ -555,12 +555,12 @@ void APU::stepFrame()
 
         // Example: we need 735 samples per frame for 44.1KHz sound sampling
         //
-        int samplesToWrite = frequency / 240;
+        int samplesToWrite = frequency / (Configuration::getFrameRate() * 4);
         if (i == 3)
         {
             // Handle the remainder on the final tick of the frame counter
             //
-            samplesToWrite = (frequency / 60) - 3 * (frequency / 240);
+            samplesToWrite = (frequency / Configuration::getFrameRate()) - 3 * (frequency / (Configuration::getFrameRate() * 4));
         }
         
         SDL_LockAudio();

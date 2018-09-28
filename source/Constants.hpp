@@ -26,11 +26,6 @@
 #define RENDER_HEIGHT 240
 
 /**
- * Desired frames per second
- */
-#define FPS 60
-
-/**
  * MilliSeconds per second
  */
 #define MS_PER_SEC 1000
