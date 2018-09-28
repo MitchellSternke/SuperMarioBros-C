@@ -10,7 +10,8 @@ std::list<ConfigurationOption*> Configuration::configurationOptions = {
     &Configuration::audioFrequency,
     &Configuration::frameRate,
     &Configuration::renderScale,
-    &Configuration::romFileName
+    &Configuration::romFileName,
+    &Configuration::vsyncEnabled
 };
 
 /**
@@ -46,6 +47,13 @@ BasicConfigurationOption<int> Configuration::renderScale(
  */
 BasicConfigurationOption<std::string> Configuration::romFileName(
     "game.rom_file", "Super Mario Bros. (JU) (PRG0) [!].nes"
+);
+
+/**
+ * Whether vsync is enabled for video.
+ */
+BasicConfigurationOption<bool> Configuration::vsyncEnabled(
+    "video.vsync", true
 );
 
 ConfigurationOption::ConfigurationOption(
@@ -105,4 +113,9 @@ int Configuration::getRenderScale()
 const std::string& Configuration::getRomFileName()
 {
     return romFileName.getValue();
+}
+
+bool Configuration::getVsyncEnabled()
+{
+    return vsyncEnabled.getValue();
 }

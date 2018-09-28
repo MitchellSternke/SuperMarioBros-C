@@ -65,7 +65,7 @@ The following is a list of all configurable options:
 
 #### frame_rate
 
-- The desired frame rate, in frames per second.
+- The desired frame rate, in frames per second. Note that on some systems it may be necessary to disable vsync (see video.vsync) in order to achieve a frame rate higher than 60 fps.
 - Default: 60
 
 #### rom_file
@@ -79,6 +79,11 @@ The following is a list of all configurable options:
 
 - Controls the scale factor for rendered video.
 - Default: 3
+
+#### vsync
+
+- Allows vsync to be enabled (if set to 1) or disabled (if set to 0).
+- Default: 1
 
 Architecture
 ------------

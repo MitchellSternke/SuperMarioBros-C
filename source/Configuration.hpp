@@ -115,12 +115,18 @@ public:
      */
     static int getRenderScale();
 
+    /**
+     * Get whether vsync is enabled or not.
+     */
+    static bool getVsyncEnabled();
+
 private:
     static BasicConfigurationOption<bool> audioEnabled;
     static BasicConfigurationOption<int> audioFrequency;
     static BasicConfigurationOption<int> frameRate;
     static BasicConfigurationOption<int> renderScale;
     static BasicConfigurationOption<std::string> romFileName;
+    static BasicConfigurationOption<bool> vsyncEnabled;
 
     static std::list<ConfigurationOption*> configurationOptions;
 };
