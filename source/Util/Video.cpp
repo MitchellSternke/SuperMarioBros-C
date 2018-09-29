@@ -197,7 +197,8 @@ const uint32_t* loadPalette(const std::string& fileName)
 
         // Size determines the type of palette file
         //
-        if (fileSize == 192)
+        if (fileSize == 192 ||
+            fileSize == 1536)
         {
             palette = new uint32_t[64];
             

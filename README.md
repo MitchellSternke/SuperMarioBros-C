@@ -79,6 +79,7 @@ The following is a list of all configurable options:
 
 - Relative or absolute path to a custom palette file to use for rendering. The following formats are supported:
   - 192-byte palette file: contains 64 (R,G,B) triples with one byte per color channel. Byte order must be (R,G,B). This is the standard *.pal file format used by many NES emulators. For more documentation see https://wiki.nesdev.com/w/index.php/.pal
+  - 1536-byte palette file: similar to the 192-byte palette file format described above. Only the first 192 bytes are used, as the rest are used by emphasis bits which are not supported by Super Mario Bros.
 - Default: ""
 
 #### scale
