@@ -237,7 +237,7 @@ void PPU::render(uint32_t* buffer)
         // Sprites with the lowest index in OAM take priority.
         // Therefore, render the array of sprites in reverse order.
         //
-        for( int i = 63; i >= 0; i-- )
+        for (int i = 63; i >= 0; i--)
         {
             // Read OAM for the sprite
             uint8_t y          = oam[i * 4];
@@ -256,6 +256,10 @@ void PPU::render(uint32_t* buffer)
             {
                 continue;
             }
+
+            // Increment y by one since sprite data is delayed by one scanline
+            //
+            y++;
 
             // Determine the tile to use
             uint16_t tile = index + (ppuCtrl & (1 << 3) ? 256 : 0);
@@ -348,8 +352,14 @@ void PPU::render(uint32_t* buffer)
         // Sprites with the lowest index in OAM take priority.
         // Therefore, render the array of sprites in reverse order.
         //
-        for( int i = 63; i >= 0; i-- )
+        // We render sprite 0 first as a special case (coin indicator).
+        //
+        for (int j = 64; j > 0; j--)
         {
+            // Start at 0, then 63, 62, 61, ..., 1
+            //
+            int i = j % 64;
+
             // Read OAM for the sprite
             uint8_t y          = oam[i * 4];
             uint8_t index      = oam[i * 4 + 1];
@@ -357,7 +367,11 @@ void PPU::render(uint32_t* buffer)
             uint8_t x          = oam[i * 4 + 3];
 
             // Check if the sprite has the correct priority
-            if (attributes & (1 << 5))
+            //
+            // Special case for sprite 0, tile 0xff in Super Mario Bros.
+            // (part of the pixels for the coin indicator)
+            //
+            if (attributes & (1 << 5) && !(i == 0 && index == 0xff))
             {
                 continue;
             }
@@ -408,6 +422,14 @@ void PPU::render(uint32_t* buffer)
                     int xPixel = (int)x + xOffset;
                     int yPixel = (int)y + yOffset;
                     if (xPixel < 0 || xPixel >= 256 || yPixel < 0 || yPixel >= 240)
+                    {
+                        continue;
+                    }
+
+                    // Special case for sprite 0, tile 0xff in Super Mario Bros.
+                    // (part of the pixels for the coin indicator)
+                    //
+                    if (i == 0 && index == 0xff && row == 5 && column > 3 && column < 6)
                     {
                         continue;
                     }
