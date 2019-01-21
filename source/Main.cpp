@@ -72,6 +72,7 @@ static bool initialize()
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
+        std::cout << "SDL_Init() failed during initialize(): " << SDL_GetError() << std::endl;
         return false;
     }
 
@@ -81,15 +82,38 @@ static bool initialize()
                               SDL_WINDOWPOS_UNDEFINED,
                               RENDER_WIDTH * Configuration::getRenderScale(),
                               RENDER_HEIGHT * Configuration::getRenderScale(),
-                              0
-    );
+                              0);
+    if (window == nullptr)
+    {
+        std::cout << "SDL_CreateWindow() failed during initialize(): " << SDL_GetError() << std::endl;
+        return false;
+    }
 
     // Setup the renderer and texture buffer
     renderer = SDL_CreateRenderer(window, -1, (Configuration::getVsyncEnabled() ? SDL_RENDERER_PRESENTVSYNC : 0) | SDL_RENDERER_ACCELERATED);
-    SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH, RENDER_HEIGHT);
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RENDER_WIDTH, RENDER_HEIGHT);
+    if (renderer == nullptr)
+    {
+        std::cout << "SDL_CreateRenderer() failed during initialize(): " << SDL_GetError() << std::endl;
+        return false;
+    }
 
-    scanlineTexture = generateScanlineTexture(renderer);
+    if (SDL_RenderSetLogicalSize(renderer, RENDER_WIDTH, RENDER_HEIGHT) < 0)
+    {
+        std::cout << "SDL_RenderSetLogicalSize() failed during initialize(): " << SDL_GetError() << std::endl;
+        return false;
+    }
+
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RENDER_WIDTH, RENDER_HEIGHT);
+    if (texture == nullptr)
+    {
+        std::cout << "SDL_CreateTexture() failed during initialize(): " << SDL_GetError() << std::endl;
+        return false;
+    }
+
+    if (Configuration::getScanlinesEnabled())
+    {
+        scanlineTexture = generateScanlineTexture(renderer);
+    }
 
     // Set up custom palette, if configured
     //
@@ -242,6 +266,7 @@ int main(int argc, char** argv)
 {
     if (!initialize())
     {
+        std::cout << "Failed to initialize. Please check previous error messages for more information. The program will now exit.\n";
         return -1;
     }
 
