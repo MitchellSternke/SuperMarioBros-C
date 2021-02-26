@@ -27,3 +27,4 @@ add_executable(smbc ${SOURCE_FILES})
 target_link_libraries(smbc ${SDL2_LIBRARY} ${SDL2_LIBRARIES})
 
 add_dependencies(smbc codegen)
+target_link_libraries(smbc SDL2)
