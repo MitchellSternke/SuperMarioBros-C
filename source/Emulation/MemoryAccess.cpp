@@ -12,7 +12,7 @@ MemoryAccess::MemoryAccess(SMBEngine& engine, uint8_t constant) :
     engine(engine)
 {
     this->constant = constant;
-    this->value = &constant;
+    this->value = &this->constant;
 }
 
 MemoryAccess& MemoryAccess::operator = (uint8_t value)
