@@ -1,5 +1,5 @@
-// This is an automatically generated file.
-// Do not edit directly.
+// This file is generated from docs/smbdis.asm by codegen.
+// Do not edit directly: build the 'regenerate' target instead.
 //
 #include "SMB.hpp"
 
@@ -7,54 +7,54 @@ void SMBEngine::loadConstantData()
 {
     // VRAM_AddrTable_Low
     //
-    const uint8_t VRAM_AddrTable_Low_data[] = {
-        LOBYTE(VRAM_Buffer1), LOBYTE(WaterPaletteData), LOBYTE(GroundPaletteData),
-        LOBYTE(UndergroundPaletteData), LOBYTE(CastlePaletteData), LOBYTE(VRAM_Buffer1_Offset),
-        LOBYTE(VRAM_Buffer2), LOBYTE(VRAM_Buffer2), LOBYTE(BowserPaletteData),
-        LOBYTE(DaySnowPaletteData), LOBYTE(NightSnowPaletteData), LOBYTE(MushroomPaletteData),
-        LOBYTE(MarioThanksMessage), LOBYTE(LuigiThanksMessage), LOBYTE(MushroomRetainerSaved),
-        LOBYTE(PrincessSaved1), LOBYTE(PrincessSaved2), LOBYTE(WorldSelectMessage1),
-        LOBYTE(WorldSelectMessage2)
+    static constexpr uint8_t VRAM_AddrTable_Low_data[] = {
+        lowByte(VRAM_Buffer1), lowByte(WaterPaletteData), lowByte(GroundPaletteData),
+        lowByte(UndergroundPaletteData), lowByte(CastlePaletteData), lowByte(VRAM_Buffer1_Offset),
+        lowByte(VRAM_Buffer2), lowByte(VRAM_Buffer2), lowByte(BowserPaletteData),
+        lowByte(DaySnowPaletteData), lowByte(NightSnowPaletteData), lowByte(MushroomPaletteData),
+        lowByte(MarioThanksMessage), lowByte(LuigiThanksMessage), lowByte(MushroomRetainerSaved),
+        lowByte(PrincessSaved1), lowByte(PrincessSaved2), lowByte(WorldSelectMessage1),
+        lowByte(WorldSelectMessage2)
     };
     writeData(VRAM_AddrTable_Low, VRAM_AddrTable_Low_data, sizeof(VRAM_AddrTable_Low_data));
 
     // VRAM_AddrTable_High
     //
-    const uint8_t VRAM_AddrTable_High_data[] = {
-        HIBYTE(VRAM_Buffer1), HIBYTE(WaterPaletteData), HIBYTE(GroundPaletteData),
-        HIBYTE(UndergroundPaletteData), HIBYTE(CastlePaletteData), HIBYTE(VRAM_Buffer1_Offset),
-        HIBYTE(VRAM_Buffer2), HIBYTE(VRAM_Buffer2), HIBYTE(BowserPaletteData),
-        HIBYTE(DaySnowPaletteData), HIBYTE(NightSnowPaletteData), HIBYTE(MushroomPaletteData),
-        HIBYTE(MarioThanksMessage), HIBYTE(LuigiThanksMessage), HIBYTE(MushroomRetainerSaved),
-        HIBYTE(PrincessSaved1), HIBYTE(PrincessSaved2), HIBYTE(WorldSelectMessage1),
-        HIBYTE(WorldSelectMessage2)
+    static constexpr uint8_t VRAM_AddrTable_High_data[] = {
+        highByte(VRAM_Buffer1), highByte(WaterPaletteData), highByte(GroundPaletteData),
+        highByte(UndergroundPaletteData), highByte(CastlePaletteData), highByte(VRAM_Buffer1_Offset),
+        highByte(VRAM_Buffer2), highByte(VRAM_Buffer2), highByte(BowserPaletteData),
+        highByte(DaySnowPaletteData), highByte(NightSnowPaletteData), highByte(MushroomPaletteData),
+        highByte(MarioThanksMessage), highByte(LuigiThanksMessage), highByte(MushroomRetainerSaved),
+        highByte(PrincessSaved1), highByte(PrincessSaved2), highByte(WorldSelectMessage1),
+        highByte(WorldSelectMessage2)
     };
     writeData(VRAM_AddrTable_High, VRAM_AddrTable_High_data, sizeof(VRAM_AddrTable_High_data));
 
     // VRAM_Buffer_Offset
     //
-    const uint8_t VRAM_Buffer_Offset_data[] = {
-        LOBYTE(VRAM_Buffer1_Offset), LOBYTE(VRAM_Buffer2_Offset)
+    static constexpr uint8_t VRAM_Buffer_Offset_data[] = {
+        lowByte(VRAM_Buffer1_Offset), lowByte(VRAM_Buffer2_Offset)
     };
     writeData(VRAM_Buffer_Offset, VRAM_Buffer_Offset_data, sizeof(VRAM_Buffer_Offset_data));
 
     // WSelectBufferTemplate
     //
-    const uint8_t WSelectBufferTemplate_data[] = {
+    static constexpr uint8_t WSelectBufferTemplate_data[] = {
         0x04, 0x20, 0x73, 0x01, 0x00, 0x00
     };
     writeData(WSelectBufferTemplate, WSelectBufferTemplate_data, sizeof(WSelectBufferTemplate_data));
 
     // MushroomIconData
     //
-    const uint8_t MushroomIconData_data[] = {
+    static constexpr uint8_t MushroomIconData_data[] = {
         0x07, 0x22, 0x49, 0x83, 0xce, 0x24, 0x24, 0x00
     };
     writeData(MushroomIconData, MushroomIconData_data, sizeof(MushroomIconData_data));
 
     // DemoActionData
     //
-    const uint8_t DemoActionData_data[] = {
+    static constexpr uint8_t DemoActionData_data[] = {
         0x01, 0x80, 0x02, 0x81, 0x41, 0x80, 0x01,
         0x42, 0xc2, 0x02, 0x80, 0x41, 0xc1, 0x41, 0xc1,
         0x01, 0xc1, 0x01, 0x02, 0x80, 0x00
@@ -63,7 +63,7 @@ void SMBEngine::loadConstantData()
 
     // DemoTimingData
     //
-    const uint8_t DemoTimingData_data[] = {
+    static constexpr uint8_t DemoTimingData_data[] = {
         0x9b, 0x10, 0x18, 0x05, 0x2c, 0x20, 0x24,
         0x15, 0x5a, 0x10, 0x20, 0x28, 0x30, 0x20, 0x10,
         0x80, 0x20, 0x30, 0x30, 0x01, 0xff, 0x00
@@ -72,7 +72,7 @@ void SMBEngine::loadConstantData()
 
     // FloateyNumTileData
     //
-    const uint8_t FloateyNumTileData_data[] = {
+    static constexpr uint8_t FloateyNumTileData_data[] = {
         0xff, 0xff, // dummy
         0xf6, 0xfb, //  "100"
         0xf7, 0xfb, //  "200"
@@ -90,7 +90,7 @@ void SMBEngine::loadConstantData()
 
     // ScoreUpdateData
     //
-    const uint8_t ScoreUpdateData_data[] = {
+    static constexpr uint8_t ScoreUpdateData_data[] = {
         0xff, // dummy
         0x41, 0x42, 0x44, 0x45, 0x48,
         0x31, 0x32, 0x34, 0x35, 0x38, 0x00
@@ -99,21 +99,21 @@ void SMBEngine::loadConstantData()
 
     // AreaPalette
     //
-    const uint8_t AreaPalette_data[] = {
+    static constexpr uint8_t AreaPalette_data[] = {
         0x01, 0x02, 0x03, 0x04
     };
     writeData(AreaPalette, AreaPalette_data, sizeof(AreaPalette_data));
 
     // BGColorCtrl_Addr
     //
-    const uint8_t BGColorCtrl_Addr_data[] = {
+    static constexpr uint8_t BGColorCtrl_Addr_data[] = {
         0x00, 0x09, 0x0a, 0x04
     };
     writeData(BGColorCtrl_Addr, BGColorCtrl_Addr_data, sizeof(BGColorCtrl_Addr_data));
 
     // BackgroundColors
     //
-    const uint8_t BackgroundColors_data[] = {
+    static constexpr uint8_t BackgroundColors_data[] = {
         0x22, 0x22, 0x0f, 0x0f, // used by area type if bg color ctrl not set
         0x0f, 0x22, 0x0f, 0x0f // used by background color control if set
     };
@@ -121,7 +121,7 @@ void SMBEngine::loadConstantData()
 
     // PlayerColors
     //
-    const uint8_t PlayerColors_data[] = {
+    static constexpr uint8_t PlayerColors_data[] = {
         0x22, 0x16, 0x27, 0x18, // mario's colors
         0x22, 0x30, 0x27, 0x19, // luigi's colors
         0x22, 0x37, 0x27, 0x16 // fiery (used by both)
@@ -130,7 +130,7 @@ void SMBEngine::loadConstantData()
 
     // TopStatusBarLine
     //
-    const uint8_t TopStatusBarLine_data[] = {
+    static constexpr uint8_t TopStatusBarLine_data[] = {
         0x20, 0x43, 0x05, 0x16, 0x0a, 0x1b, 0x12, 0x18, //  "MARIO"
         0x20, 0x52, 0x0b, 0x20, 0x18, 0x1b, 0x15, 0x0d, //  "WORLD  TIME"
         0x24, 0x24, 0x1d, 0x12, 0x16, 0x0e,
@@ -143,7 +143,7 @@ void SMBEngine::loadConstantData()
 
     // WorldLivesDisplay
     //
-    const uint8_t WorldLivesDisplay_data[] = {
+    static constexpr uint8_t WorldLivesDisplay_data[] = {
         0x21, 0xcd, 0x07, 0x24, 0x24, //  cross with spaces used on
         0x29, 0x24, 0x24, 0x24, 0x24, //  lives display
         0x21, 0x4b, 0x09, 0x20, 0x18, //  "WORLD  - " used on lives display
@@ -156,14 +156,14 @@ void SMBEngine::loadConstantData()
 
     // TwoPlayerTimeUp
     //
-    const uint8_t TwoPlayerTimeUp_data[] = {
+    static constexpr uint8_t TwoPlayerTimeUp_data[] = {
         0x21, 0xcd, 0x05, 0x16, 0x0a, 0x1b, 0x12, 0x18 //  "MARIO"
     };
     writeData(TwoPlayerTimeUp, TwoPlayerTimeUp_data, sizeof(TwoPlayerTimeUp_data));
 
     // OnePlayerTimeUp
     //
-    const uint8_t OnePlayerTimeUp_data[] = {
+    static constexpr uint8_t OnePlayerTimeUp_data[] = {
         0x22, 0x0c, 0x07, 0x1d, 0x12, 0x16, 0x0e, 0x24, 0x1e, 0x19, //  "TIME UP"
         0xff
     };
@@ -171,14 +171,14 @@ void SMBEngine::loadConstantData()
 
     // TwoPlayerGameOver
     //
-    const uint8_t TwoPlayerGameOver_data[] = {
+    static constexpr uint8_t TwoPlayerGameOver_data[] = {
         0x21, 0xcd, 0x05, 0x16, 0x0a, 0x1b, 0x12, 0x18 //  "MARIO"
     };
     writeData(TwoPlayerGameOver, TwoPlayerGameOver_data, sizeof(TwoPlayerGameOver_data));
 
     // OnePlayerGameOver
     //
-    const uint8_t OnePlayerGameOver_data[] = {
+    static constexpr uint8_t OnePlayerGameOver_data[] = {
         0x22, 0x0b, 0x09, 0x10, 0x0a, 0x16, 0x0e, 0x24, //  "GAME OVER"
         0x18, 0x1f, 0x0e, 0x1b,
         0xff
@@ -187,7 +187,7 @@ void SMBEngine::loadConstantData()
 
     // WarpZoneWelcome
     //
-    const uint8_t WarpZoneWelcome_data[] = {
+    static constexpr uint8_t WarpZoneWelcome_data[] = {
         0x25, 0x84, 0x15, 0x20, 0x0e, 0x15, 0x0c, 0x18, 0x16, //  "WELCOME TO WARP ZONE!"
         0x0e, 0x24, 0x1d, 0x18, 0x24, 0x20, 0x0a, 0x1b, 0x19,
         0x24, 0x23, 0x18, 0x17, 0x0e, 0x2b,
@@ -202,14 +202,14 @@ void SMBEngine::loadConstantData()
 
     // LuigiName
     //
-    const uint8_t LuigiName_data[] = {
+    static constexpr uint8_t LuigiName_data[] = {
         0x15, 0x1e, 0x12, 0x10, 0x12 //  "LUIGI", no address or length
     };
     writeData(LuigiName, LuigiName_data, sizeof(LuigiName_data));
 
     // WarpZoneNumbers
     //
-    const uint8_t WarpZoneNumbers_data[] = {
+    static constexpr uint8_t WarpZoneNumbers_data[] = {
         0x04, 0x03, 0x02, 0x00, //  warp zone numbers, note spaces on middle
         0x24, 0x05, 0x24, 0x00, //  zone, partly responsible for
         0x08, 0x07, 0x06, 0x00 //  the minus world
@@ -218,7 +218,7 @@ void SMBEngine::loadConstantData()
 
     // GameTextOffsets
     //
-    const uint8_t GameTextOffsets_data[] = {
+    static constexpr uint8_t GameTextOffsets_data[] = {
         TopStatusBarLine - GameText, TopStatusBarLine - GameText,
         WorldLivesDisplay - GameText, WorldLivesDisplay - GameText,
         TwoPlayerTimeUp - GameText, OnePlayerTimeUp - GameText,
@@ -229,21 +229,21 @@ void SMBEngine::loadConstantData()
 
     // ColorRotatePalette
     //
-    const uint8_t ColorRotatePalette_data[] = {
+    static constexpr uint8_t ColorRotatePalette_data[] = {
         0x27, 0x27, 0x27, 0x17, 0x07, 0x17
     };
     writeData(ColorRotatePalette, ColorRotatePalette_data, sizeof(ColorRotatePalette_data));
 
     // BlankPalette
     //
-    const uint8_t BlankPalette_data[] = {
+    static constexpr uint8_t BlankPalette_data[] = {
         0x3f, 0x0c, 0x04, 0xff, 0xff, 0xff, 0xff, 0x00
     };
     writeData(BlankPalette, BlankPalette_data, sizeof(BlankPalette_data));
 
     // Palette3Data
     //
-    const uint8_t Palette3Data_data[] = {
+    static constexpr uint8_t Palette3Data_data[] = {
         0x0f, 0x07, 0x12, 0x0f,
         0x0f, 0x07, 0x17, 0x0f,
         0x0f, 0x07, 0x17, 0x1c,
@@ -253,7 +253,7 @@ void SMBEngine::loadConstantData()
 
     // BlockGfxData
     //
-    const uint8_t BlockGfxData_data[] = {
+    static constexpr uint8_t BlockGfxData_data[] = {
         0x45, 0x45, 0x47, 0x47,
         0x47, 0x47, 0x47, 0x47,
         0x57, 0x58, 0x59, 0x5a,
@@ -264,21 +264,21 @@ void SMBEngine::loadConstantData()
 
     // MetatileGraphics_Low
     //
-    const uint8_t MetatileGraphics_Low_data[] = {
-        LOBYTE(Palette0_MTiles), LOBYTE(Palette1_MTiles), LOBYTE(Palette2_MTiles), LOBYTE(Palette3_MTiles)
+    static constexpr uint8_t MetatileGraphics_Low_data[] = {
+        lowByte(Palette0_MTiles), lowByte(Palette1_MTiles), lowByte(Palette2_MTiles), lowByte(Palette3_MTiles)
     };
     writeData(MetatileGraphics_Low, MetatileGraphics_Low_data, sizeof(MetatileGraphics_Low_data));
 
     // MetatileGraphics_High
     //
-    const uint8_t MetatileGraphics_High_data[] = {
-        HIBYTE(Palette0_MTiles), HIBYTE(Palette1_MTiles), HIBYTE(Palette2_MTiles), HIBYTE(Palette3_MTiles)
+    static constexpr uint8_t MetatileGraphics_High_data[] = {
+        highByte(Palette0_MTiles), highByte(Palette1_MTiles), highByte(Palette2_MTiles), highByte(Palette3_MTiles)
     };
     writeData(MetatileGraphics_High, MetatileGraphics_High_data, sizeof(MetatileGraphics_High_data));
 
     // Palette0_MTiles
     //
-    const uint8_t Palette0_MTiles_data[] = {
+    static constexpr uint8_t Palette0_MTiles_data[] = {
         0x24, 0x24, 0x24, 0x24, // blank
         0x27, 0x27, 0x27, 0x27, // black metatile
         0x24, 0x24, 0x24, 0x35, // bush left
@@ -323,7 +323,7 @@ void SMBEngine::loadConstantData()
 
     // Palette1_MTiles
     //
-    const uint8_t Palette1_MTiles_data[] = {
+    static constexpr uint8_t Palette1_MTiles_data[] = {
         0xa2, 0xa2, 0xa3, 0xa3, // vertical rope
         0x99, 0x24, 0x99, 0x24, // horizontal rope
         0x24, 0xa2, 0x3e, 0x3f, // left pulley
@@ -375,7 +375,7 @@ void SMBEngine::loadConstantData()
 
     // Palette2_MTiles
     //
-    const uint8_t Palette2_MTiles_data[] = {
+    static constexpr uint8_t Palette2_MTiles_data[] = {
         0x24, 0x24, 0x24, 0x35, // cloud left
         0x36, 0x25, 0x37, 0x25, // cloud middle
         0x24, 0x38, 0x24, 0x24, // cloud right
@@ -391,7 +391,7 @@ void SMBEngine::loadConstantData()
 
     // Palette3_MTiles
     //
-    const uint8_t Palette3_MTiles_data[] = {
+    static constexpr uint8_t Palette3_MTiles_data[] = {
         0x53, 0x55, 0x54, 0x56, // question block (coin)
         0x53, 0x55, 0x54, 0x56, // question block (power-up)
         0xa5, 0xa7, 0xa6, 0xa8, // coin
@@ -403,7 +403,7 @@ void SMBEngine::loadConstantData()
 
     // WaterPaletteData
     //
-    const uint8_t WaterPaletteData_data[] = {
+    static constexpr uint8_t WaterPaletteData_data[] = {
         0x3f, 0x00, 0x20,
         0x0f, 0x15, 0x12, 0x25,
         0x0f, 0x3a, 0x1a, 0x0f,
@@ -419,7 +419,7 @@ void SMBEngine::loadConstantData()
 
     // GroundPaletteData
     //
-    const uint8_t GroundPaletteData_data[] = {
+    static constexpr uint8_t GroundPaletteData_data[] = {
         0x3f, 0x00, 0x20,
         0x0f, 0x29, 0x1a, 0x0f,
         0x0f, 0x36, 0x17, 0x0f,
@@ -435,7 +435,7 @@ void SMBEngine::loadConstantData()
 
     // UndergroundPaletteData
     //
-    const uint8_t UndergroundPaletteData_data[] = {
+    static constexpr uint8_t UndergroundPaletteData_data[] = {
         0x3f, 0x00, 0x20,
         0x0f, 0x29, 0x1a, 0x09,
         0x0f, 0x3c, 0x1c, 0x0f,
@@ -451,7 +451,7 @@ void SMBEngine::loadConstantData()
 
     // CastlePaletteData
     //
-    const uint8_t CastlePaletteData_data[] = {
+    static constexpr uint8_t CastlePaletteData_data[] = {
         0x3f, 0x00, 0x20,
         0x0f, 0x30, 0x10, 0x00,
         0x0f, 0x30, 0x10, 0x00,
@@ -467,7 +467,7 @@ void SMBEngine::loadConstantData()
 
     // DaySnowPaletteData
     //
-    const uint8_t DaySnowPaletteData_data[] = {
+    static constexpr uint8_t DaySnowPaletteData_data[] = {
         0x3f, 0x00, 0x04,
         0x22, 0x30, 0x00, 0x10,
         0x00
@@ -476,7 +476,7 @@ void SMBEngine::loadConstantData()
 
     // NightSnowPaletteData
     //
-    const uint8_t NightSnowPaletteData_data[] = {
+    static constexpr uint8_t NightSnowPaletteData_data[] = {
         0x3f, 0x00, 0x04,
         0x0f, 0x30, 0x00, 0x10,
         0x00
@@ -485,7 +485,7 @@ void SMBEngine::loadConstantData()
 
     // MushroomPaletteData
     //
-    const uint8_t MushroomPaletteData_data[] = {
+    static constexpr uint8_t MushroomPaletteData_data[] = {
         0x3f, 0x00, 0x04,
         0x22, 0x27, 0x16, 0x0f,
         0x00
@@ -494,7 +494,7 @@ void SMBEngine::loadConstantData()
 
     // BowserPaletteData
     //
-    const uint8_t BowserPaletteData_data[] = {
+    static constexpr uint8_t BowserPaletteData_data[] = {
         0x3f, 0x14, 0x04,
         0x0f, 0x1a, 0x30, 0x27,
         0x00
@@ -503,7 +503,7 @@ void SMBEngine::loadConstantData()
 
     // MarioThanksMessage
     //
-    const uint8_t MarioThanksMessage_data[] = {
+    static constexpr uint8_t MarioThanksMessage_data[] = {
         0x25, 0x48, 0x10,
         0x1d, 0x11, 0x0a, 0x17, 0x14, 0x24,
         0x22, 0x18, 0x1e, 0x24,
@@ -514,7 +514,7 @@ void SMBEngine::loadConstantData()
 
     // LuigiThanksMessage
     //
-    const uint8_t LuigiThanksMessage_data[] = {
+    static constexpr uint8_t LuigiThanksMessage_data[] = {
         0x25, 0x48, 0x10,
         0x1d, 0x11, 0x0a, 0x17, 0x14, 0x24,
         0x22, 0x18, 0x1e, 0x24,
@@ -525,7 +525,7 @@ void SMBEngine::loadConstantData()
 
     // MushroomRetainerSaved
     //
-    const uint8_t MushroomRetainerSaved_data[] = {
+    static constexpr uint8_t MushroomRetainerSaved_data[] = {
         0x25, 0xc5, 0x16,
         0x0b, 0x1e, 0x1d, 0x24, 0x18, 0x1e, 0x1b, 0x24,
         0x19, 0x1b, 0x12, 0x17, 0x0c, 0x0e, 0x1c, 0x1c, 0x24,
@@ -538,7 +538,7 @@ void SMBEngine::loadConstantData()
 
     // PrincessSaved1
     //
-    const uint8_t PrincessSaved1_data[] = {
+    static constexpr uint8_t PrincessSaved1_data[] = {
         0x25, 0xa7, 0x13,
         0x22, 0x18, 0x1e, 0x1b, 0x24,
         0x1a, 0x1e, 0x0e, 0x1c, 0x1d, 0x24,
@@ -549,7 +549,7 @@ void SMBEngine::loadConstantData()
 
     // PrincessSaved2
     //
-    const uint8_t PrincessSaved2_data[] = {
+    static constexpr uint8_t PrincessSaved2_data[] = {
         0x25, 0xe3, 0x1b,
         0x20, 0x0e, 0x24,
         0x19, 0x1b, 0x0e, 0x1c, 0x0e, 0x17, 0x1d, 0x24,
@@ -561,7 +561,7 @@ void SMBEngine::loadConstantData()
 
     // WorldSelectMessage1
     //
-    const uint8_t WorldSelectMessage1_data[] = {
+    static constexpr uint8_t WorldSelectMessage1_data[] = {
         0x26, 0x4a, 0x0d,
         0x19, 0x1e, 0x1c, 0x11, 0x24,
         0x0b, 0x1e, 0x1d, 0x1d, 0x18, 0x17, 0x24, 0x0b,
@@ -571,7 +571,7 @@ void SMBEngine::loadConstantData()
 
     // WorldSelectMessage2
     //
-    const uint8_t WorldSelectMessage2_data[] = {
+    static constexpr uint8_t WorldSelectMessage2_data[] = {
         0x26, 0x88, 0x11,
         0x1d, 0x18, 0x24, 0x1c, 0x0e, 0x15, 0x0e, 0x0c, 0x1d, 0x24,
         0x0a, 0x24, 0x20, 0x18, 0x1b, 0x15, 0x0d,
@@ -581,7 +581,7 @@ void SMBEngine::loadConstantData()
 
     // StatusBarData
     //
-    const uint8_t StatusBarData_data[] = {
+    static constexpr uint8_t StatusBarData_data[] = {
         0xf0, 0x06, //  top score display on title screen
         0x62, 0x06, //  player score
         0x62, 0x06,
@@ -593,14 +593,14 @@ void SMBEngine::loadConstantData()
 
     // StatusBarOffset
     //
-    const uint8_t StatusBarOffset_data[] = {
+    static constexpr uint8_t StatusBarOffset_data[] = {
         0x06, 0x0c, 0x12, 0x18, 0x1e, 0x24
     };
     writeData(StatusBarOffset, StatusBarOffset_data, sizeof(StatusBarOffset_data));
 
     // DefaultSprOffsets
     //
-    const uint8_t DefaultSprOffsets_data[] = {
+    static constexpr uint8_t DefaultSprOffsets_data[] = {
         0x04, 0x30, 0x48, 0x60, 0x78, 0x90, 0xa8, 0xc0,
         0xd8, 0xe8, 0x24, 0xf8, 0xfc, 0x28, 0x2c
     };
@@ -608,14 +608,14 @@ void SMBEngine::loadConstantData()
 
     // Sprite0Data
     //
-    const uint8_t Sprite0Data_data[] = {
+    static constexpr uint8_t Sprite0Data_data[] = {
         0x18, 0xff, 0x23, 0x58
     };
     writeData(Sprite0Data, Sprite0Data_data, sizeof(Sprite0Data_data));
 
     // MusicSelectData
     //
-    const uint8_t MusicSelectData_data[] = {
+    static constexpr uint8_t MusicSelectData_data[] = {
         WaterMusic, GroundMusic, UndergroundMusic, CastleMusic,
         CloudMusic, PipeIntroMusic
     };
@@ -623,7 +623,7 @@ void SMBEngine::loadConstantData()
 
     // PlayerStarting_X_Pos
     //
-    const uint8_t PlayerStarting_X_Pos_data[] = {
+    static constexpr uint8_t PlayerStarting_X_Pos_data[] = {
         0x28, 0x18,
         0x38, 0x28
     };
@@ -631,14 +631,14 @@ void SMBEngine::loadConstantData()
 
     // AltYPosOffset
     //
-    const uint8_t AltYPosOffset_data[] = {
+    static constexpr uint8_t AltYPosOffset_data[] = {
         0x08, 0x00
     };
     writeData(AltYPosOffset, AltYPosOffset_data, sizeof(AltYPosOffset_data));
 
     // PlayerStarting_Y_Pos
     //
-    const uint8_t PlayerStarting_Y_Pos_data[] = {
+    static constexpr uint8_t PlayerStarting_Y_Pos_data[] = {
         0x00, 0x20, 0xb0, 0x50, 0x00, 0x00, 0xb0, 0xb0,
         0xf0
     };
@@ -646,14 +646,14 @@ void SMBEngine::loadConstantData()
 
     // PlayerBGPriorityData
     //
-    const uint8_t PlayerBGPriorityData_data[] = {
+    static constexpr uint8_t PlayerBGPriorityData_data[] = {
         0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
     writeData(PlayerBGPriorityData, PlayerBGPriorityData_data, sizeof(PlayerBGPriorityData_data));
 
     // GameTimerData
     //
-    const uint8_t GameTimerData_data[] = {
+    static constexpr uint8_t GameTimerData_data[] = {
         0x20, // dummy byte, used as part of bg priority data
         0x04, 0x03, 0x02
     };
@@ -661,7 +661,7 @@ void SMBEngine::loadConstantData()
 
     // HalfwayPageNybbles
     //
-    const uint8_t HalfwayPageNybbles_data[] = {
+    static constexpr uint8_t HalfwayPageNybbles_data[] = {
         0x56, 0x40,
         0x65, 0x70,
         0x66, 0x40,
@@ -675,14 +675,14 @@ void SMBEngine::loadConstantData()
 
     // BSceneDataOffsets
     //
-    const uint8_t BSceneDataOffsets_data[] = {
+    static constexpr uint8_t BSceneDataOffsets_data[] = {
         0x00, 0x30, 0x60
     };
     writeData(BSceneDataOffsets, BSceneDataOffsets_data, sizeof(BSceneDataOffsets_data));
 
     // BackSceneryData
     //
-    const uint8_t BackSceneryData_data[] = {
+    static constexpr uint8_t BackSceneryData_data[] = {
         0x93, 0x00, 0x00, 0x11, 0x12, 0x12, 0x13, 0x00, // clouds
         0x00, 0x51, 0x52, 0x53, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x01, 0x02, 0x02, 0x03, 0x00, 0x00,
@@ -706,7 +706,7 @@ void SMBEngine::loadConstantData()
 
     // BackSceneryMetatiles
     //
-    const uint8_t BackSceneryMetatiles_data[] = {
+    static constexpr uint8_t BackSceneryMetatiles_data[] = {
         0x80, 0x83, 0x00, // cloud left
         0x81, 0x84, 0x00, // cloud middle
         0x82, 0x85, 0x00, // cloud right
@@ -724,14 +724,14 @@ void SMBEngine::loadConstantData()
 
     // FSceneDataOffsets
     //
-    const uint8_t FSceneDataOffsets_data[] = {
+    static constexpr uint8_t FSceneDataOffsets_data[] = {
         0x00, 0x0d, 0x1a
     };
     writeData(FSceneDataOffsets, FSceneDataOffsets_data, sizeof(FSceneDataOffsets_data));
 
     // ForeSceneryData
     //
-    const uint8_t ForeSceneryData_data[] = {
+    static constexpr uint8_t ForeSceneryData_data[] = {
         0x86, 0x87, 0x87, 0x87, 0x87, 0x87, 0x87, // in water
         0x87, 0x87, 0x87, 0x87, 0x69, 0x69,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x45, 0x47, // wall
@@ -743,57 +743,57 @@ void SMBEngine::loadConstantData()
 
     // TerrainMetatiles
     //
-    const uint8_t TerrainMetatiles_data[] = {
+    static constexpr uint8_t TerrainMetatiles_data[] = {
         0x69, 0x54, 0x52, 0x62
     };
     writeData(TerrainMetatiles, TerrainMetatiles_data, sizeof(TerrainMetatiles_data));
 
     // TerrainRenderBits
     //
-    const uint8_t TerrainRenderBits_data[] = {
-        BOOST_BINARY(00000000), BOOST_BINARY(00000000), // no ceiling or floor
-        BOOST_BINARY(00000000), BOOST_BINARY(00011000), // no ceiling, floor 2
-        BOOST_BINARY(00000001), BOOST_BINARY(00011000), // ceiling 1, floor 2
-        BOOST_BINARY(00000111), BOOST_BINARY(00011000), // ceiling 3, floor 2
-        BOOST_BINARY(00001111), BOOST_BINARY(00011000), // ceiling 4, floor 2
-        BOOST_BINARY(11111111), BOOST_BINARY(00011000), // ceiling 8, floor 2
-        BOOST_BINARY(00000001), BOOST_BINARY(00011111), // ceiling 1, floor 5
-        BOOST_BINARY(00000111), BOOST_BINARY(00011111), // ceiling 3, floor 5
-        BOOST_BINARY(00001111), BOOST_BINARY(00011111), // ceiling 4, floor 5
-        BOOST_BINARY(10000001), BOOST_BINARY(00011111), // ceiling 1, floor 6
-        BOOST_BINARY(00000001), BOOST_BINARY(00000000), // ceiling 1, no floor
-        BOOST_BINARY(10001111), BOOST_BINARY(00011111), // ceiling 4, floor 6
-        BOOST_BINARY(11110001), BOOST_BINARY(00011111), // ceiling 1, floor 9
-        BOOST_BINARY(11111001), BOOST_BINARY(00011000), // ceiling 1, middle 5, floor 2
-        BOOST_BINARY(11110001), BOOST_BINARY(00011000), // ceiling 1, middle 4, floor 2
-        BOOST_BINARY(11111111), BOOST_BINARY(00011111) // completely solid top to bottom
+    static constexpr uint8_t TerrainRenderBits_data[] = {
+        0b00000000, 0b00000000, // no ceiling or floor
+        0b00000000, 0b00011000, // no ceiling, floor 2
+        0b00000001, 0b00011000, // ceiling 1, floor 2
+        0b00000111, 0b00011000, // ceiling 3, floor 2
+        0b00001111, 0b00011000, // ceiling 4, floor 2
+        0b11111111, 0b00011000, // ceiling 8, floor 2
+        0b00000001, 0b00011111, // ceiling 1, floor 5
+        0b00000111, 0b00011111, // ceiling 3, floor 5
+        0b00001111, 0b00011111, // ceiling 4, floor 5
+        0b10000001, 0b00011111, // ceiling 1, floor 6
+        0b00000001, 0b00000000, // ceiling 1, no floor
+        0b10001111, 0b00011111, // ceiling 4, floor 6
+        0b11110001, 0b00011111, // ceiling 1, floor 9
+        0b11111001, 0b00011000, // ceiling 1, middle 5, floor 2
+        0b11110001, 0b00011000, // ceiling 1, middle 4, floor 2
+        0b11111111, 0b00011111 // completely solid top to bottom
     };
     writeData(TerrainRenderBits, TerrainRenderBits_data, sizeof(TerrainRenderBits_data));
 
     // BlockBuffLowBounds
     //
-    const uint8_t BlockBuffLowBounds_data[] = {
+    static constexpr uint8_t BlockBuffLowBounds_data[] = {
         0x10, 0x51, 0x88, 0xc0
     };
     writeData(BlockBuffLowBounds, BlockBuffLowBounds_data, sizeof(BlockBuffLowBounds_data));
 
     // FrenzyIDData
     //
-    const uint8_t FrenzyIDData_data[] = {
+    static constexpr uint8_t FrenzyIDData_data[] = {
         FlyCheepCheepFrenzy, BBill_CCheep_Frenzy, Stop_Frenzy
     };
     writeData(FrenzyIDData, FrenzyIDData_data, sizeof(FrenzyIDData_data));
 
     // PulleyRopeMetatiles
     //
-    const uint8_t PulleyRopeMetatiles_data[] = {
+    static constexpr uint8_t PulleyRopeMetatiles_data[] = {
         0x42, 0x41, 0x43
     };
     writeData(PulleyRopeMetatiles, PulleyRopeMetatiles_data, sizeof(PulleyRopeMetatiles_data));
 
     // CastleMetatiles
     //
-    const uint8_t CastleMetatiles_data[] = {
+    static constexpr uint8_t CastleMetatiles_data[] = {
         0x00, 0x45, 0x45, 0x45, 0x00,
         0x00, 0x48, 0x47, 0x46, 0x00,
         0x45, 0x49, 0x49, 0x49, 0x45,
@@ -810,7 +810,7 @@ void SMBEngine::loadConstantData()
 
     // SidePipeShaftData
     //
-    const uint8_t SidePipeShaftData_data[] = {
+    static constexpr uint8_t SidePipeShaftData_data[] = {
         0x15, 0x14, // used to control whether or not vertical pipe shaft
         0x00, 0x00 // is drawn, and if so, controls the metatile number
     };
@@ -818,7 +818,7 @@ void SMBEngine::loadConstantData()
 
     // SidePipeTopPart
     //
-    const uint8_t SidePipeTopPart_data[] = {
+    static constexpr uint8_t SidePipeTopPart_data[] = {
         0x15, 0x1e, // top part of sideways part of pipe
         0x1d, 0x1c
     };
@@ -826,7 +826,7 @@ void SMBEngine::loadConstantData()
 
     // SidePipeBottomPart
     //
-    const uint8_t SidePipeBottomPart_data[] = {
+    static constexpr uint8_t SidePipeBottomPart_data[] = {
         0x15, 0x21, // bottom part of sideways part of pipe
         0x20, 0x1f
     };
@@ -834,7 +834,7 @@ void SMBEngine::loadConstantData()
 
     // VerticalPipeData
     //
-    const uint8_t VerticalPipeData_data[] = {
+    static constexpr uint8_t VerticalPipeData_data[] = {
         0x11, 0x10, // used by pipes that lead somewhere
         0x15, 0x14,
         0x13, 0x12, // used by decoration pipes
@@ -844,35 +844,35 @@ void SMBEngine::loadConstantData()
 
     // CoinMetatileData
     //
-    const uint8_t CoinMetatileData_data[] = {
+    static constexpr uint8_t CoinMetatileData_data[] = {
         0xc3, 0xc2, 0xc2, 0xc2
     };
     writeData(CoinMetatileData, CoinMetatileData_data, sizeof(CoinMetatileData_data));
 
     // C_ObjectRow
     //
-    const uint8_t C_ObjectRow_data[] = {
+    static constexpr uint8_t C_ObjectRow_data[] = {
         0x06, 0x07, 0x08
     };
     writeData(C_ObjectRow, C_ObjectRow_data, sizeof(C_ObjectRow_data));
 
     // C_ObjectMetatile
     //
-    const uint8_t C_ObjectMetatile_data[] = {
+    static constexpr uint8_t C_ObjectMetatile_data[] = {
         0xc5, 0x0c, 0x89
     };
     writeData(C_ObjectMetatile, C_ObjectMetatile_data, sizeof(C_ObjectMetatile_data));
 
     // SolidBlockMetatiles
     //
-    const uint8_t SolidBlockMetatiles_data[] = {
+    static constexpr uint8_t SolidBlockMetatiles_data[] = {
         0x69, 0x61, 0x61, 0x62
     };
     writeData(SolidBlockMetatiles, SolidBlockMetatiles_data, sizeof(SolidBlockMetatiles_data));
 
     // BrickMetatiles
     //
-    const uint8_t BrickMetatiles_data[] = {
+    static constexpr uint8_t BrickMetatiles_data[] = {
         0x22, 0x51, 0x52, 0x52,
         0x88 // used only by row of bricks object
     };
@@ -880,43 +880,43 @@ void SMBEngine::loadConstantData()
 
     // StaircaseHeightData
     //
-    const uint8_t StaircaseHeightData_data[] = {
+    static constexpr uint8_t StaircaseHeightData_data[] = {
         0x07, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00
     };
     writeData(StaircaseHeightData, StaircaseHeightData_data, sizeof(StaircaseHeightData_data));
 
     // StaircaseRowData
     //
-    const uint8_t StaircaseRowData_data[] = {
+    static constexpr uint8_t StaircaseRowData_data[] = {
         0x03, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a
     };
     writeData(StaircaseRowData, StaircaseRowData_data, sizeof(StaircaseRowData_data));
 
     // HoleMetatiles
     //
-    const uint8_t HoleMetatiles_data[] = {
+    static constexpr uint8_t HoleMetatiles_data[] = {
         0x87, 0x00, 0x00, 0x00
     };
     writeData(HoleMetatiles, HoleMetatiles_data, sizeof(HoleMetatiles_data));
 
     // BlockBufferAddr
     //
-    const uint8_t BlockBufferAddr_data[] = {
-        LOBYTE(Block_Buffer_1), LOBYTE(Block_Buffer_2),
-        HIBYTE(Block_Buffer_1), HIBYTE(Block_Buffer_2)
+    static constexpr uint8_t BlockBufferAddr_data[] = {
+        lowByte(Block_Buffer_1), lowByte(Block_Buffer_2),
+        highByte(Block_Buffer_1), highByte(Block_Buffer_2)
     };
     writeData(BlockBufferAddr, BlockBufferAddr_data, sizeof(BlockBufferAddr_data));
 
     // AreaDataOfsLoopback
     //
-    const uint8_t AreaDataOfsLoopback_data[] = {
+    static constexpr uint8_t AreaDataOfsLoopback_data[] = {
         0x12, 0x36, 0x0e, 0x0e, 0x0e, 0x32, 0x32, 0x32, 0x0a, 0x26, 0x40
     };
     writeData(AreaDataOfsLoopback, AreaDataOfsLoopback_data, sizeof(AreaDataOfsLoopback_data));
 
     // WorldAddrOffsets
     //
-    const uint8_t WorldAddrOffsets_data[] = {
+    static constexpr uint8_t WorldAddrOffsets_data[] = {
         World1Areas - AreaAddrOffsets, World2Areas - AreaAddrOffsets,
         World3Areas - AreaAddrOffsets, World4Areas - AreaAddrOffsets,
         World5Areas - AreaAddrOffsets, World6Areas - AreaAddrOffsets,
@@ -926,125 +926,125 @@ void SMBEngine::loadConstantData()
 
     // World1Areas
     //
-    const uint8_t World1Areas_data[] = {
+    static constexpr uint8_t World1Areas_data[] = {
         0x25, 0x29, 0xc0, 0x26, 0x60
     };
     writeData(World1Areas, World1Areas_data, sizeof(World1Areas_data));
 
     // World2Areas
     //
-    const uint8_t World2Areas_data[] = {
+    static constexpr uint8_t World2Areas_data[] = {
         0x28, 0x29, 0x01, 0x27, 0x62
     };
     writeData(World2Areas, World2Areas_data, sizeof(World2Areas_data));
 
     // World3Areas
     //
-    const uint8_t World3Areas_data[] = {
+    static constexpr uint8_t World3Areas_data[] = {
         0x24, 0x35, 0x20, 0x63
     };
     writeData(World3Areas, World3Areas_data, sizeof(World3Areas_data));
 
     // World4Areas
     //
-    const uint8_t World4Areas_data[] = {
+    static constexpr uint8_t World4Areas_data[] = {
         0x22, 0x29, 0x41, 0x2c, 0x61
     };
     writeData(World4Areas, World4Areas_data, sizeof(World4Areas_data));
 
     // World5Areas
     //
-    const uint8_t World5Areas_data[] = {
+    static constexpr uint8_t World5Areas_data[] = {
         0x2a, 0x31, 0x26, 0x62
     };
     writeData(World5Areas, World5Areas_data, sizeof(World5Areas_data));
 
     // World6Areas
     //
-    const uint8_t World6Areas_data[] = {
+    static constexpr uint8_t World6Areas_data[] = {
         0x2e, 0x23, 0x2d, 0x60
     };
     writeData(World6Areas, World6Areas_data, sizeof(World6Areas_data));
 
     // World7Areas
     //
-    const uint8_t World7Areas_data[] = {
+    static constexpr uint8_t World7Areas_data[] = {
         0x33, 0x29, 0x01, 0x27, 0x64
     };
     writeData(World7Areas, World7Areas_data, sizeof(World7Areas_data));
 
     // World8Areas
     //
-    const uint8_t World8Areas_data[] = {
+    static constexpr uint8_t World8Areas_data[] = {
         0x30, 0x32, 0x21, 0x65
     };
     writeData(World8Areas, World8Areas_data, sizeof(World8Areas_data));
 
     // EnemyAddrHOffsets
     //
-    const uint8_t EnemyAddrHOffsets_data[] = {
+    static constexpr uint8_t EnemyAddrHOffsets_data[] = {
         0x1f, 0x06, 0x1c, 0x00
     };
     writeData(EnemyAddrHOffsets, EnemyAddrHOffsets_data, sizeof(EnemyAddrHOffsets_data));
 
     // EnemyDataAddrLow
     //
-    const uint8_t EnemyDataAddrLow_data[] = {
-        LOBYTE(E_CastleArea1), LOBYTE(E_CastleArea2), LOBYTE(E_CastleArea3), LOBYTE(E_CastleArea4), LOBYTE(E_CastleArea5), LOBYTE(E_CastleArea6),
-        LOBYTE(E_GroundArea1), LOBYTE(E_GroundArea2), LOBYTE(E_GroundArea3), LOBYTE(E_GroundArea4), LOBYTE(E_GroundArea5), LOBYTE(E_GroundArea6),
-        LOBYTE(E_GroundArea7), LOBYTE(E_GroundArea8), LOBYTE(E_GroundArea9), LOBYTE(E_GroundArea10), LOBYTE(E_GroundArea11), LOBYTE(E_GroundArea12),
-        LOBYTE(E_GroundArea13), LOBYTE(E_GroundArea14), LOBYTE(E_GroundArea15), LOBYTE(E_GroundArea16), LOBYTE(E_GroundArea17), LOBYTE(E_GroundArea18),
-        LOBYTE(E_GroundArea19), LOBYTE(E_GroundArea20), LOBYTE(E_GroundArea21), LOBYTE(E_GroundArea22), LOBYTE(E_UndergroundArea1),
-        LOBYTE(E_UndergroundArea2), LOBYTE(E_UndergroundArea3), LOBYTE(E_WaterArea1), LOBYTE(E_WaterArea2), LOBYTE(E_WaterArea3)
+    static constexpr uint8_t EnemyDataAddrLow_data[] = {
+        lowByte(E_CastleArea1), lowByte(E_CastleArea2), lowByte(E_CastleArea3), lowByte(E_CastleArea4), lowByte(E_CastleArea5), lowByte(E_CastleArea6),
+        lowByte(E_GroundArea1), lowByte(E_GroundArea2), lowByte(E_GroundArea3), lowByte(E_GroundArea4), lowByte(E_GroundArea5), lowByte(E_GroundArea6),
+        lowByte(E_GroundArea7), lowByte(E_GroundArea8), lowByte(E_GroundArea9), lowByte(E_GroundArea10), lowByte(E_GroundArea11), lowByte(E_GroundArea12),
+        lowByte(E_GroundArea13), lowByte(E_GroundArea14), lowByte(E_GroundArea15), lowByte(E_GroundArea16), lowByte(E_GroundArea17), lowByte(E_GroundArea18),
+        lowByte(E_GroundArea19), lowByte(E_GroundArea20), lowByte(E_GroundArea21), lowByte(E_GroundArea22), lowByte(E_UndergroundArea1),
+        lowByte(E_UndergroundArea2), lowByte(E_UndergroundArea3), lowByte(E_WaterArea1), lowByte(E_WaterArea2), lowByte(E_WaterArea3)
     };
     writeData(EnemyDataAddrLow, EnemyDataAddrLow_data, sizeof(EnemyDataAddrLow_data));
 
     // EnemyDataAddrHigh
     //
-    const uint8_t EnemyDataAddrHigh_data[] = {
-        HIBYTE(E_CastleArea1), HIBYTE(E_CastleArea2), HIBYTE(E_CastleArea3), HIBYTE(E_CastleArea4), HIBYTE(E_CastleArea5), HIBYTE(E_CastleArea6),
-        HIBYTE(E_GroundArea1), HIBYTE(E_GroundArea2), HIBYTE(E_GroundArea3), HIBYTE(E_GroundArea4), HIBYTE(E_GroundArea5), HIBYTE(E_GroundArea6),
-        HIBYTE(E_GroundArea7), HIBYTE(E_GroundArea8), HIBYTE(E_GroundArea9), HIBYTE(E_GroundArea10), HIBYTE(E_GroundArea11), HIBYTE(E_GroundArea12),
-        HIBYTE(E_GroundArea13), HIBYTE(E_GroundArea14), HIBYTE(E_GroundArea15), HIBYTE(E_GroundArea16), HIBYTE(E_GroundArea17), HIBYTE(E_GroundArea18),
-        HIBYTE(E_GroundArea19), HIBYTE(E_GroundArea20), HIBYTE(E_GroundArea21), HIBYTE(E_GroundArea22), HIBYTE(E_UndergroundArea1),
-        HIBYTE(E_UndergroundArea2), HIBYTE(E_UndergroundArea3), HIBYTE(E_WaterArea1), HIBYTE(E_WaterArea2), HIBYTE(E_WaterArea3)
+    static constexpr uint8_t EnemyDataAddrHigh_data[] = {
+        highByte(E_CastleArea1), highByte(E_CastleArea2), highByte(E_CastleArea3), highByte(E_CastleArea4), highByte(E_CastleArea5), highByte(E_CastleArea6),
+        highByte(E_GroundArea1), highByte(E_GroundArea2), highByte(E_GroundArea3), highByte(E_GroundArea4), highByte(E_GroundArea5), highByte(E_GroundArea6),
+        highByte(E_GroundArea7), highByte(E_GroundArea8), highByte(E_GroundArea9), highByte(E_GroundArea10), highByte(E_GroundArea11), highByte(E_GroundArea12),
+        highByte(E_GroundArea13), highByte(E_GroundArea14), highByte(E_GroundArea15), highByte(E_GroundArea16), highByte(E_GroundArea17), highByte(E_GroundArea18),
+        highByte(E_GroundArea19), highByte(E_GroundArea20), highByte(E_GroundArea21), highByte(E_GroundArea22), highByte(E_UndergroundArea1),
+        highByte(E_UndergroundArea2), highByte(E_UndergroundArea3), highByte(E_WaterArea1), highByte(E_WaterArea2), highByte(E_WaterArea3)
     };
     writeData(EnemyDataAddrHigh, EnemyDataAddrHigh_data, sizeof(EnemyDataAddrHigh_data));
 
     // AreaDataHOffsets
     //
-    const uint8_t AreaDataHOffsets_data[] = {
+    static constexpr uint8_t AreaDataHOffsets_data[] = {
         0x00, 0x03, 0x19, 0x1c
     };
     writeData(AreaDataHOffsets, AreaDataHOffsets_data, sizeof(AreaDataHOffsets_data));
 
     // AreaDataAddrLow
     //
-    const uint8_t AreaDataAddrLow_data[] = {
-        LOBYTE(L_WaterArea1), LOBYTE(L_WaterArea2), LOBYTE(L_WaterArea3), LOBYTE(L_GroundArea1), LOBYTE(L_GroundArea2), LOBYTE(L_GroundArea3),
-        LOBYTE(L_GroundArea4), LOBYTE(L_GroundArea5), LOBYTE(L_GroundArea6), LOBYTE(L_GroundArea7), LOBYTE(L_GroundArea8), LOBYTE(L_GroundArea9),
-        LOBYTE(L_GroundArea10), LOBYTE(L_GroundArea11), LOBYTE(L_GroundArea12), LOBYTE(L_GroundArea13), LOBYTE(L_GroundArea14), LOBYTE(L_GroundArea15),
-        LOBYTE(L_GroundArea16), LOBYTE(L_GroundArea17), LOBYTE(L_GroundArea18), LOBYTE(L_GroundArea19), LOBYTE(L_GroundArea20), LOBYTE(L_GroundArea21),
-        LOBYTE(L_GroundArea22), LOBYTE(L_UndergroundArea1), LOBYTE(L_UndergroundArea2), LOBYTE(L_UndergroundArea3), LOBYTE(L_CastleArea1),
-        LOBYTE(L_CastleArea2), LOBYTE(L_CastleArea3), LOBYTE(L_CastleArea4), LOBYTE(L_CastleArea5), LOBYTE(L_CastleArea6)
+    static constexpr uint8_t AreaDataAddrLow_data[] = {
+        lowByte(L_WaterArea1), lowByte(L_WaterArea2), lowByte(L_WaterArea3), lowByte(L_GroundArea1), lowByte(L_GroundArea2), lowByte(L_GroundArea3),
+        lowByte(L_GroundArea4), lowByte(L_GroundArea5), lowByte(L_GroundArea6), lowByte(L_GroundArea7), lowByte(L_GroundArea8), lowByte(L_GroundArea9),
+        lowByte(L_GroundArea10), lowByte(L_GroundArea11), lowByte(L_GroundArea12), lowByte(L_GroundArea13), lowByte(L_GroundArea14), lowByte(L_GroundArea15),
+        lowByte(L_GroundArea16), lowByte(L_GroundArea17), lowByte(L_GroundArea18), lowByte(L_GroundArea19), lowByte(L_GroundArea20), lowByte(L_GroundArea21),
+        lowByte(L_GroundArea22), lowByte(L_UndergroundArea1), lowByte(L_UndergroundArea2), lowByte(L_UndergroundArea3), lowByte(L_CastleArea1),
+        lowByte(L_CastleArea2), lowByte(L_CastleArea3), lowByte(L_CastleArea4), lowByte(L_CastleArea5), lowByte(L_CastleArea6)
     };
     writeData(AreaDataAddrLow, AreaDataAddrLow_data, sizeof(AreaDataAddrLow_data));
 
     // AreaDataAddrHigh
     //
-    const uint8_t AreaDataAddrHigh_data[] = {
-        HIBYTE(L_WaterArea1), HIBYTE(L_WaterArea2), HIBYTE(L_WaterArea3), HIBYTE(L_GroundArea1), HIBYTE(L_GroundArea2), HIBYTE(L_GroundArea3),
-        HIBYTE(L_GroundArea4), HIBYTE(L_GroundArea5), HIBYTE(L_GroundArea6), HIBYTE(L_GroundArea7), HIBYTE(L_GroundArea8), HIBYTE(L_GroundArea9),
-        HIBYTE(L_GroundArea10), HIBYTE(L_GroundArea11), HIBYTE(L_GroundArea12), HIBYTE(L_GroundArea13), HIBYTE(L_GroundArea14), HIBYTE(L_GroundArea15),
-        HIBYTE(L_GroundArea16), HIBYTE(L_GroundArea17), HIBYTE(L_GroundArea18), HIBYTE(L_GroundArea19), HIBYTE(L_GroundArea20), HIBYTE(L_GroundArea21),
-        HIBYTE(L_GroundArea22), HIBYTE(L_UndergroundArea1), HIBYTE(L_UndergroundArea2), HIBYTE(L_UndergroundArea3), HIBYTE(L_CastleArea1),
-        HIBYTE(L_CastleArea2), HIBYTE(L_CastleArea3), HIBYTE(L_CastleArea4), HIBYTE(L_CastleArea5), HIBYTE(L_CastleArea6)
+    static constexpr uint8_t AreaDataAddrHigh_data[] = {
+        highByte(L_WaterArea1), highByte(L_WaterArea2), highByte(L_WaterArea3), highByte(L_GroundArea1), highByte(L_GroundArea2), highByte(L_GroundArea3),
+        highByte(L_GroundArea4), highByte(L_GroundArea5), highByte(L_GroundArea6), highByte(L_GroundArea7), highByte(L_GroundArea8), highByte(L_GroundArea9),
+        highByte(L_GroundArea10), highByte(L_GroundArea11), highByte(L_GroundArea12), highByte(L_GroundArea13), highByte(L_GroundArea14), highByte(L_GroundArea15),
+        highByte(L_GroundArea16), highByte(L_GroundArea17), highByte(L_GroundArea18), highByte(L_GroundArea19), highByte(L_GroundArea20), highByte(L_GroundArea21),
+        highByte(L_GroundArea22), highByte(L_UndergroundArea1), highByte(L_UndergroundArea2), highByte(L_UndergroundArea3), highByte(L_CastleArea1),
+        highByte(L_CastleArea2), highByte(L_CastleArea3), highByte(L_CastleArea4), highByte(L_CastleArea5), highByte(L_CastleArea6)
     };
     writeData(AreaDataAddrHigh, AreaDataAddrHigh_data, sizeof(AreaDataAddrHigh_data));
 
     // E_CastleArea1
     //
-    const uint8_t E_CastleArea1_data[] = {
+    static constexpr uint8_t E_CastleArea1_data[] = {
         0x76, 0xdd, 0xbb, 0x4c, 0xea, 0x1d, 0x1b, 0xcc, 0x56, 0x5d,
         0x16, 0x9d, 0xc6, 0x1d, 0x36, 0x9d, 0xc9, 0x1d, 0x04, 0xdb,
         0x49, 0x1d, 0x84, 0x1b, 0xc9, 0x5d, 0x88, 0x95, 0x0f, 0x08,
@@ -1055,7 +1055,7 @@ void SMBEngine::loadConstantData()
 
     // E_CastleArea2
     //
-    const uint8_t E_CastleArea2_data[] = {
+    static constexpr uint8_t E_CastleArea2_data[] = {
         0x0f, 0x03, 0x56, 0x1b, 0xc9, 0x1b, 0x0f, 0x07, 0x36, 0x1b,
         0xaa, 0x1b, 0x48, 0x95, 0x0f, 0x0a, 0x2a, 0x1b, 0x5b, 0x0c,
         0x78, 0x2d, 0x90, 0xb5,
@@ -1065,7 +1065,7 @@ void SMBEngine::loadConstantData()
 
     // E_CastleArea3
     //
-    const uint8_t E_CastleArea3_data[] = {
+    static constexpr uint8_t E_CastleArea3_data[] = {
         0x0b, 0x8c, 0x4b, 0x4c, 0x77, 0x5f, 0xeb, 0x0c, 0xbd, 0xdb,
         0x19, 0x9d, 0x75, 0x1d, 0x7d, 0x5b, 0xd9, 0x1d, 0x3d, 0xdd,
         0x99, 0x1d, 0x26, 0x9d, 0x5a, 0x2b, 0x8a, 0x2c, 0xca, 0x1b,
@@ -1077,7 +1077,7 @@ void SMBEngine::loadConstantData()
 
     // E_CastleArea4
     //
-    const uint8_t E_CastleArea4_data[] = {
+    static constexpr uint8_t E_CastleArea4_data[] = {
         0x0b, 0x8c, 0x3b, 0x1d, 0x8b, 0x1d, 0xab, 0x0c, 0xdb, 0x1d,
         0x0f, 0x03, 0x65, 0x1d, 0x6b, 0x1b, 0x05, 0x9d, 0x0b, 0x1b,
         0x05, 0x9b, 0x0b, 0x1d, 0x8b, 0x0c, 0x1b, 0x8c, 0x70, 0x15,
@@ -1089,7 +1089,7 @@ void SMBEngine::loadConstantData()
 
     // E_CastleArea5
     //
-    const uint8_t E_CastleArea5_data[] = {
+    static constexpr uint8_t E_CastleArea5_data[] = {
         0x27, 0xa9, 0x4b, 0x0c, 0x68, 0x29, 0x0f, 0x06, 0x77, 0x1b,
         0x0f, 0x0b, 0x60, 0x15, 0x4b, 0x8c, 0x78, 0x2d, 0x90, 0xb5,
         0xff
@@ -1098,7 +1098,7 @@ void SMBEngine::loadConstantData()
 
     // E_CastleArea6
     //
-    const uint8_t E_CastleArea6_data[] = {
+    static constexpr uint8_t E_CastleArea6_data[] = {
         0x0f, 0x03, 0x8e, 0x65, 0xe1, 0xbb, 0x38, 0x6d, 0xa8, 0x3e, 0xe5, 0xe7,
         0x0f, 0x08, 0x0b, 0x02, 0x2b, 0x02, 0x5e, 0x65, 0xe1, 0xbb, 0x0e,
         0xdb, 0x0e, 0xbb, 0x8e, 0xdb, 0x0e, 0xfe, 0x65, 0xec, 0x0f, 0x0d,
@@ -1110,7 +1110,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea1
     //
-    const uint8_t E_GroundArea1_data[] = {
+    static constexpr uint8_t E_GroundArea1_data[] = {
         0xa5, 0x86, 0xe4, 0x28, 0x18, 0xa8, 0x45, 0x83, 0x69, 0x03,
         0xc6, 0x29, 0x9b, 0x83, 0x16, 0xa4, 0x88, 0x24, 0xe9, 0x28,
         0x05, 0xa8, 0x7b, 0x28, 0x24, 0x8f, 0xc8, 0x03, 0xe8, 0x03,
@@ -1121,7 +1121,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea2
     //
-    const uint8_t E_GroundArea2_data[] = {
+    static constexpr uint8_t E_GroundArea2_data[] = {
         0xeb, 0x8e, 0x0f, 0x03, 0xfb, 0x05, 0x17, 0x85, 0xdb, 0x8e,
         0x0f, 0x07, 0x57, 0x05, 0x7b, 0x05, 0x9b, 0x80, 0x2b, 0x85,
         0xfb, 0x05, 0x0f, 0x0b, 0x1b, 0x05, 0x9b, 0x05,
@@ -1131,7 +1131,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea3
     //
-    const uint8_t E_GroundArea3_data[] = {
+    static constexpr uint8_t E_GroundArea3_data[] = {
         0x2e, 0xc2, 0x66, 0xe2, 0x11, 0x0f, 0x07, 0x02, 0x11, 0x0f, 0x0c,
         0x12, 0x11,
         0xff
@@ -1140,7 +1140,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea4
     //
-    const uint8_t E_GroundArea4_data[] = {
+    static constexpr uint8_t E_GroundArea4_data[] = {
         0x0e, 0xc2, 0xa8, 0xab, 0x00, 0xbb, 0x8e, 0x6b, 0x82, 0xde, 0x00, 0xa0,
         0x33, 0x86, 0x43, 0x06, 0x3e, 0xb4, 0xa0, 0xcb, 0x02, 0x0f, 0x07,
         0x7e, 0x42, 0xa6, 0x83, 0x02, 0x0f, 0x0a, 0x3b, 0x02, 0xcb, 0x37,
@@ -1151,7 +1151,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea5
     //
-    const uint8_t E_GroundArea5_data[] = {
+    static constexpr uint8_t E_GroundArea5_data[] = {
         0x9b, 0x8e, 0xca, 0x0e, 0xee, 0x42, 0x44, 0x5b, 0x86, 0x80, 0xb8,
         0x1b, 0x80, 0x50, 0xba, 0x10, 0xb7, 0x5b, 0x00, 0x17, 0x85,
         0x4b, 0x05, 0xfe, 0x34, 0x40, 0xb7, 0x86, 0xc6, 0x06, 0x5b, 0x80,
@@ -1163,7 +1163,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea6
     //
-    const uint8_t E_GroundArea6_data[] = {
+    static constexpr uint8_t E_GroundArea6_data[] = {
         0x1e, 0xc2, 0x00, 0x6b, 0x06, 0x8b, 0x86, 0x63, 0xb7, 0x0f, 0x05,
         0x03, 0x06, 0x23, 0x06, 0x4b, 0xb7, 0xbb, 0x00, 0x5b, 0xb7,
         0xfb, 0x37, 0x3b, 0xb7, 0x0f, 0x0b, 0x1b, 0x37,
@@ -1173,7 +1173,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea7
     //
-    const uint8_t E_GroundArea7_data[] = {
+    static constexpr uint8_t E_GroundArea7_data[] = {
         0x2b, 0xd7, 0xe3, 0x03, 0xc2, 0x86, 0xe2, 0x06, 0x76, 0xa5,
         0xa3, 0x8f, 0x03, 0x86, 0x2b, 0x57, 0x68, 0x28, 0xe9, 0x28,
         0xe5, 0x83, 0x24, 0x8f, 0x36, 0xa8, 0x5b, 0x03,
@@ -1183,7 +1183,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea8
     //
-    const uint8_t E_GroundArea8_data[] = {
+    static constexpr uint8_t E_GroundArea8_data[] = {
         0x0f, 0x02, 0x78, 0x40, 0x48, 0xce, 0xf8, 0xc3, 0xf8, 0xc3,
         0x0f, 0x07, 0x7b, 0x43, 0xc6, 0xd0, 0x0f, 0x8a, 0xc8, 0x50,
         0xff
@@ -1192,7 +1192,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea9
     //
-    const uint8_t E_GroundArea9_data[] = {
+    static constexpr uint8_t E_GroundArea9_data[] = {
         0x85, 0x86, 0x0b, 0x80, 0x1b, 0x00, 0xdb, 0x37, 0x77, 0x80,
         0xeb, 0x37, 0xfe, 0x2b, 0x20, 0x2b, 0x80, 0x7b, 0x38, 0xab, 0xb8,
         0x77, 0x86, 0xfe, 0x42, 0x20, 0x49, 0x86, 0x8b, 0x06, 0x9b, 0x80,
@@ -1202,14 +1202,14 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea10
     //
-    const uint8_t E_GroundArea10_data[] = {
+    static constexpr uint8_t E_GroundArea10_data[] = {
         0xff
     };
     writeData(E_GroundArea10, E_GroundArea10_data, sizeof(E_GroundArea10_data));
 
     // E_GroundArea11
     //
-    const uint8_t E_GroundArea11_data[] = {
+    static constexpr uint8_t E_GroundArea11_data[] = {
         0x0b, 0x80, 0x60, 0x38, 0x10, 0xb8, 0xc0, 0x3b, 0xdb, 0x8e,
         0x40, 0xb8, 0xf0, 0x38, 0x7b, 0x8e, 0xa0, 0xb8, 0xc0, 0xb8,
         0xfb, 0x00, 0xa0, 0xb8, 0x30, 0xbb, 0xee, 0x42, 0x88, 0x0f, 0x0b,
@@ -1220,7 +1220,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea12
     //
-    const uint8_t E_GroundArea12_data[] = {
+    static constexpr uint8_t E_GroundArea12_data[] = {
         0x0a, 0xaa, 0x0e, 0x28, 0x2a, 0x0e, 0x31, 0x88,
         0xff
     };
@@ -1228,7 +1228,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea13
     //
-    const uint8_t E_GroundArea13_data[] = {
+    static constexpr uint8_t E_GroundArea13_data[] = {
         0xc7, 0x83, 0xd7, 0x03, 0x42, 0x8f, 0x7a, 0x03, 0x05, 0xa4,
         0x78, 0x24, 0xa6, 0x25, 0xe4, 0x25, 0x4b, 0x83, 0xe3, 0x03,
         0x05, 0xa4, 0x89, 0x24, 0xb5, 0x24, 0x09, 0xa4, 0x65, 0x24,
@@ -1239,7 +1239,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea14
     //
-    const uint8_t E_GroundArea14_data[] = {
+    static constexpr uint8_t E_GroundArea14_data[] = {
         0xcd, 0xa5, 0xb5, 0xa8, 0x07, 0xa8, 0x76, 0x28, 0xcc, 0x25,
         0x65, 0xa4, 0xa9, 0x24, 0xe5, 0x24, 0x19, 0xa4, 0x0f, 0x07,
         0x95, 0x28, 0xe6, 0x24, 0x19, 0xa4, 0xd7, 0x29, 0x16, 0xa9,
@@ -1250,7 +1250,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea15
     //
-    const uint8_t E_GroundArea15_data[] = {
+    static constexpr uint8_t E_GroundArea15_data[] = {
         0x0f, 0x02, 0x02, 0x11, 0x0f, 0x07, 0x02, 0x11,
         0xff
     };
@@ -1258,14 +1258,14 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea16
     //
-    const uint8_t E_GroundArea16_data[] = {
+    static constexpr uint8_t E_GroundArea16_data[] = {
         0xff
     };
     writeData(E_GroundArea16, E_GroundArea16_data, sizeof(E_GroundArea16_data));
 
     // E_GroundArea17
     //
-    const uint8_t E_GroundArea17_data[] = {
+    static constexpr uint8_t E_GroundArea17_data[] = {
         0x2b, 0x82, 0xab, 0x38, 0xde, 0x42, 0xe2, 0x1b, 0xb8, 0xeb,
         0x3b, 0xdb, 0x80, 0x8b, 0xb8, 0x1b, 0x82, 0xfb, 0xb8, 0x7b,
         0x80, 0xfb, 0x3c, 0x5b, 0xbc, 0x7b, 0xb8, 0x1b, 0x8e, 0xcb,
@@ -1278,7 +1278,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea18
     //
-    const uint8_t E_GroundArea18_data[] = {
+    static constexpr uint8_t E_GroundArea18_data[] = {
         0x7b, 0x80, 0xae, 0x00, 0x80, 0x8b, 0x8e, 0xe8, 0x05, 0xf9, 0x86,
         0x17, 0x86, 0x16, 0x85, 0x4e, 0x2b, 0x80, 0xab, 0x8e, 0x87, 0x85,
         0xc3, 0x05, 0x8b, 0x82, 0x9b, 0x02, 0xab, 0x02, 0xbb, 0x86,
@@ -1289,7 +1289,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea19
     //
-    const uint8_t E_GroundArea19_data[] = {
+    static constexpr uint8_t E_GroundArea19_data[] = {
         0x29, 0x8e, 0x52, 0x11, 0x83, 0x0e, 0x0f, 0x03, 0x9b, 0x0e,
         0x2b, 0x8e, 0x5b, 0x0e, 0xcb, 0x8e, 0xfb, 0x0e, 0xfb, 0x82,
         0x9b, 0x82, 0xbb, 0x02, 0xfe, 0x42, 0xe8, 0xbb, 0x8e, 0x0f, 0x0a,
@@ -1301,7 +1301,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea20
     //
-    const uint8_t E_GroundArea20_data[] = {
+    static constexpr uint8_t E_GroundArea20_data[] = {
         0xab, 0xce, 0xde, 0x42, 0xc0, 0xcb, 0xce, 0x5b, 0x8e, 0x1b, 0xce,
         0x4b, 0x85, 0x67, 0x45, 0x0f, 0x07, 0x2b, 0x00, 0x7b, 0x85,
         0x97, 0x05, 0x0f, 0x0a, 0x92, 0x02,
@@ -1311,7 +1311,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea21
     //
-    const uint8_t E_GroundArea21_data[] = {
+    static constexpr uint8_t E_GroundArea21_data[] = {
         0x0a, 0xaa, 0x0e, 0x24, 0x4a, 0x1e, 0x23, 0xaa,
         0xff
     };
@@ -1319,7 +1319,7 @@ void SMBEngine::loadConstantData()
 
     // E_GroundArea22
     //
-    const uint8_t E_GroundArea22_data[] = {
+    static constexpr uint8_t E_GroundArea22_data[] = {
         0x1b, 0x80, 0xbb, 0x38, 0x4b, 0xbc, 0xeb, 0x3b, 0x0f, 0x04,
         0x2b, 0x00, 0xab, 0x38, 0xeb, 0x00, 0xcb, 0x8e, 0xfb, 0x80,
         0xab, 0xb8, 0x6b, 0x80, 0xfb, 0x3c, 0x9b, 0xbb, 0x5b, 0xbc,
@@ -1330,7 +1330,7 @@ void SMBEngine::loadConstantData()
 
     // E_UndergroundArea1
     //
-    const uint8_t E_UndergroundArea1_data[] = {
+    static constexpr uint8_t E_UndergroundArea1_data[] = {
         0x0b, 0x86, 0x1a, 0x06, 0xdb, 0x06, 0xde, 0xc2, 0x02, 0xf0, 0x3b,
         0xbb, 0x80, 0xeb, 0x06, 0x0b, 0x86, 0x93, 0x06, 0xf0, 0x39,
         0x0f, 0x06, 0x60, 0xb8, 0x1b, 0x86, 0xa0, 0xb9, 0xb7, 0x27,
@@ -1342,7 +1342,7 @@ void SMBEngine::loadConstantData()
 
     // E_UndergroundArea2
     //
-    const uint8_t E_UndergroundArea2_data[] = {
+    static constexpr uint8_t E_UndergroundArea2_data[] = {
         0x0f, 0x02, 0x1e, 0x2f, 0x60, 0xe0, 0x3a, 0xa5, 0xa7, 0xdb, 0x80,
         0x3b, 0x82, 0x8b, 0x02, 0xfe, 0x42, 0x68, 0x70, 0xbb, 0x25, 0xa7,
         0x2c, 0x27, 0xb2, 0x26, 0xb9, 0x26, 0x9b, 0x80, 0xa8, 0x82,
@@ -1354,7 +1354,7 @@ void SMBEngine::loadConstantData()
 
     // E_UndergroundArea3
     //
-    const uint8_t E_UndergroundArea3_data[] = {
+    static constexpr uint8_t E_UndergroundArea3_data[] = {
         0x1e, 0xa5, 0x0a, 0x2e, 0x28, 0x27, 0x2e, 0x33, 0xc7, 0x0f, 0x03, 0x1e, 0x40, 0x07,
         0x2e, 0x30, 0xe7, 0x0f, 0x05, 0x1e, 0x24, 0x44, 0x0f, 0x07, 0x1e, 0x22, 0x6a,
         0x2e, 0x23, 0xab, 0x0f, 0x09, 0x1e, 0x41, 0x68, 0x1e, 0x2a, 0x8a, 0x2e, 0x23, 0xa2,
@@ -1365,7 +1365,7 @@ void SMBEngine::loadConstantData()
 
     // E_WaterArea1
     //
-    const uint8_t E_WaterArea1_data[] = {
+    static constexpr uint8_t E_WaterArea1_data[] = {
         0x3b, 0x87, 0x66, 0x27, 0xcc, 0x27, 0xee, 0x31, 0x87, 0xee, 0x23, 0xa7,
         0x3b, 0x87, 0xdb, 0x07,
         0xff
@@ -1374,7 +1374,7 @@ void SMBEngine::loadConstantData()
 
     // E_WaterArea2
     //
-    const uint8_t E_WaterArea2_data[] = {
+    static constexpr uint8_t E_WaterArea2_data[] = {
         0x0f, 0x01, 0x2e, 0x25, 0x2b, 0x2e, 0x25, 0x4b, 0x4e, 0x25, 0xcb, 0x6b, 0x07,
         0x97, 0x47, 0xe9, 0x87, 0x47, 0xc7, 0x7a, 0x07, 0xd6, 0xc7,
         0x78, 0x07, 0x38, 0x87, 0xab, 0x47, 0xe3, 0x07, 0x9b, 0x87,
@@ -1385,7 +1385,7 @@ void SMBEngine::loadConstantData()
 
     // E_WaterArea3
     //
-    const uint8_t E_WaterArea3_data[] = {
+    static constexpr uint8_t E_WaterArea3_data[] = {
         0x47, 0x9b, 0xcb, 0x07, 0xfa, 0x1d, 0x86, 0x9b, 0x3a, 0x87,
         0x56, 0x07, 0x88, 0x1b, 0x07, 0x9d, 0x2e, 0x65, 0xf0,
         0xff
@@ -1394,7 +1394,7 @@ void SMBEngine::loadConstantData()
 
     // L_CastleArea1
     //
-    const uint8_t L_CastleArea1_data[] = {
+    static constexpr uint8_t L_CastleArea1_data[] = {
         0x9b, 0x07,
         0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xce, 0x03, 0xdc, 0x51,
         0xee, 0x07, 0x73, 0xe0, 0x74, 0x0a, 0x7e, 0x06, 0x9e, 0x0a,
@@ -1412,7 +1412,7 @@ void SMBEngine::loadConstantData()
 
     // L_CastleArea2
     //
-    const uint8_t L_CastleArea2_data[] = {
+    static constexpr uint8_t L_CastleArea2_data[] = {
         0x5b, 0x07,
         0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0x5e, 0x0a, 0x68, 0x64,
         0x98, 0x64, 0xa8, 0x64, 0xce, 0x06, 0xfe, 0x02, 0x0d, 0x01,
@@ -1433,7 +1433,7 @@ void SMBEngine::loadConstantData()
 
     // L_CastleArea3
     //
-    const uint8_t L_CastleArea3_data[] = {
+    static constexpr uint8_t L_CastleArea3_data[] = {
         0x9b, 0x07,
         0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xfe, 0x00, 0x27, 0xb1,
         0x65, 0x32, 0x75, 0x0a, 0x71, 0x00, 0xb7, 0x31, 0x08, 0xe4,
@@ -1453,7 +1453,7 @@ void SMBEngine::loadConstantData()
 
     // L_CastleArea4
     //
-    const uint8_t L_CastleArea4_data[] = {
+    static constexpr uint8_t L_CastleArea4_data[] = {
         0x9b, 0x07,
         0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xfe, 0x06, 0x0c, 0x81,
         0x39, 0x0a, 0x5c, 0x01, 0x89, 0x0a, 0xac, 0x01, 0xd9, 0x0a,
@@ -1472,7 +1472,7 @@ void SMBEngine::loadConstantData()
 
     // L_CastleArea5
     //
-    const uint8_t L_CastleArea5_data[] = {
+    static constexpr uint8_t L_CastleArea5_data[] = {
         0x5b, 0x07,
         0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0xfe, 0x0a, 0xae, 0x86,
         0xbe, 0x07, 0xfe, 0x02, 0x0d, 0x02, 0x27, 0x32, 0x46, 0x61,
@@ -1494,7 +1494,7 @@ void SMBEngine::loadConstantData()
 
     // L_CastleArea6
     //
-    const uint8_t L_CastleArea6_data[] = {
+    static constexpr uint8_t L_CastleArea6_data[] = {
         0x5b, 0x06,
         0x05, 0x32, 0x06, 0x33, 0x07, 0x34, 0x5e, 0x0a, 0xae, 0x02,
         0x0d, 0x01, 0x39, 0x73, 0x0d, 0x03, 0x39, 0x7b, 0x4d, 0x4b,
@@ -1513,7 +1513,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea1
     //
-    const uint8_t L_GroundArea1_data[] = {
+    static constexpr uint8_t L_GroundArea1_data[] = {
         0x94, 0x11,
         0x0f, 0x26, 0xfe, 0x10, 0x28, 0x94, 0x65, 0x15, 0xeb, 0x12,
         0xfa, 0x41, 0x4a, 0x96, 0x54, 0x40, 0xa4, 0x42, 0xb7, 0x13,
@@ -1531,7 +1531,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea2
     //
-    const uint8_t L_GroundArea2_data[] = {
+    static constexpr uint8_t L_GroundArea2_data[] = {
         0x90, 0xb1,
         0x0f, 0x26, 0x29, 0x91, 0x7e, 0x42, 0xfe, 0x40, 0x28, 0x92,
         0x4e, 0x42, 0x2e, 0xc0, 0x57, 0x73, 0xc3, 0x25, 0xc7, 0x27,
@@ -1550,7 +1550,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea3
     //
-    const uint8_t L_GroundArea3_data[] = {
+    static constexpr uint8_t L_GroundArea3_data[] = {
         0x52, 0x21,
         0x0f, 0x20, 0x6e, 0x40, 0x58, 0xf2, 0x93, 0x01, 0x97, 0x00,
         0x0c, 0x81, 0x97, 0x40, 0xa6, 0x41, 0xc7, 0x40, 0x0d, 0x04,
@@ -1566,7 +1566,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea4
     //
-    const uint8_t L_GroundArea4_data[] = {
+    static constexpr uint8_t L_GroundArea4_data[] = {
         0x54, 0x21,
         0x0f, 0x26, 0xa7, 0x22, 0x37, 0xfb, 0x73, 0x20, 0x83, 0x07,
         0x87, 0x02, 0x93, 0x20, 0xc7, 0x73, 0x04, 0xf1, 0x06, 0x31,
@@ -1588,7 +1588,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea5
     //
-    const uint8_t L_GroundArea5_data[] = {
+    static constexpr uint8_t L_GroundArea5_data[] = {
         0x52, 0x31,
         0x0f, 0x20, 0x6e, 0x66, 0x07, 0x81, 0x36, 0x01, 0x66, 0x00,
         0xa7, 0x22, 0x08, 0xf2, 0x67, 0x7b, 0xdc, 0x02, 0x98, 0xf2,
@@ -1608,7 +1608,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea6
     //
-    const uint8_t L_GroundArea6_data[] = {
+    static constexpr uint8_t L_GroundArea6_data[] = {
         0x50, 0x21,
         0x07, 0x81, 0x47, 0x24, 0x57, 0x00, 0x63, 0x01, 0x77, 0x01,
         0xc9, 0x71, 0x68, 0xf2, 0xe7, 0x73, 0x97, 0xfb, 0x06, 0x83,
@@ -1626,7 +1626,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea7
     //
-    const uint8_t L_GroundArea7_data[] = {
+    static constexpr uint8_t L_GroundArea7_data[] = {
         0x90, 0x11,
         0x0f, 0x26, 0xfe, 0x10, 0x2a, 0x93, 0x87, 0x17, 0xa3, 0x14,
         0xb2, 0x42, 0x0a, 0x92, 0x19, 0x40, 0x36, 0x14, 0x50, 0x41,
@@ -1643,7 +1643,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea8
     //
-    const uint8_t L_GroundArea8_data[] = {
+    static constexpr uint8_t L_GroundArea8_data[] = {
         0x90, 0x11,
         0x0f, 0x26, 0x6e, 0x10, 0x8b, 0x17, 0xaf, 0x32, 0xd8, 0x62,
         0xe8, 0x62, 0xfc, 0x3f, 0xad, 0xc8, 0xf8, 0x64, 0x0c, 0xbe,
@@ -1664,7 +1664,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea9
     //
-    const uint8_t L_GroundArea9_data[] = {
+    static constexpr uint8_t L_GroundArea9_data[] = {
         0x52, 0x31,
         0x0f, 0x20, 0x6e, 0x40, 0xf7, 0x20, 0x07, 0x84, 0x17, 0x20,
         0x4f, 0x34, 0xc3, 0x03, 0xc7, 0x02, 0xd3, 0x22, 0x27, 0xe3,
@@ -1682,7 +1682,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea10
     //
-    const uint8_t L_GroundArea10_data[] = {
+    static constexpr uint8_t L_GroundArea10_data[] = {
         0x38, 0x11,
         0x0f, 0x26, 0xad, 0x40, 0x3d, 0xc7,
         0xfd
@@ -1691,7 +1691,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea11
     //
-    const uint8_t L_GroundArea11_data[] = {
+    static constexpr uint8_t L_GroundArea11_data[] = {
         0x95, 0xb1,
         0x0f, 0x26, 0x0d, 0x02, 0xc8, 0x72, 0x1c, 0x81, 0x38, 0x72,
         0x0d, 0x05, 0x97, 0x34, 0x98, 0x62, 0xa3, 0x20, 0xb3, 0x06,
@@ -1705,7 +1705,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea12
     //
-    const uint8_t L_GroundArea12_data[] = {
+    static constexpr uint8_t L_GroundArea12_data[] = {
         0x00, 0xc1,
         0x4c, 0x00, 0xf4, 0x4f, 0x0d, 0x02, 0x02, 0x42, 0x43, 0x4f,
         0x52, 0xc2, 0xde, 0x00, 0x5a, 0xc2, 0x4d, 0xc7,
@@ -1715,7 +1715,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea13
     //
-    const uint8_t L_GroundArea13_data[] = {
+    static constexpr uint8_t L_GroundArea13_data[] = {
         0x90, 0x51,
         0x0f, 0x26, 0xee, 0x10, 0x0b, 0x94, 0x33, 0x14, 0x42, 0x42,
         0x77, 0x16, 0x86, 0x44, 0x02, 0x92, 0x4a, 0x16, 0x69, 0x42,
@@ -1733,7 +1733,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea14
     //
-    const uint8_t L_GroundArea14_data[] = {
+    static constexpr uint8_t L_GroundArea14_data[] = {
         0x97, 0x11,
         0x0f, 0x26, 0xfe, 0x10, 0x2b, 0x92, 0x57, 0x12, 0x8b, 0x12,
         0xc0, 0x41, 0xf7, 0x13, 0x5b, 0x92, 0x69, 0x0b, 0xbb, 0x12,
@@ -1751,7 +1751,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea15
     //
-    const uint8_t L_GroundArea15_data[] = {
+    static constexpr uint8_t L_GroundArea15_data[] = {
         0x52, 0x21,
         0x0f, 0x20, 0x6e, 0x44, 0x0c, 0xf1, 0x4c, 0x01, 0xaa, 0x35,
         0xd9, 0x34, 0xee, 0x20, 0x08, 0xb3, 0x37, 0x32, 0x43, 0x04,
@@ -1771,7 +1771,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea16
     //
-    const uint8_t L_GroundArea16_data[] = {
+    static constexpr uint8_t L_GroundArea16_data[] = {
         0x10, 0x51,
         0x4c, 0x00, 0xc7, 0x12, 0xc6, 0x42, 0x03, 0x92, 0x02, 0x42,
         0x29, 0x12, 0x63, 0x12, 0x62, 0x42, 0x69, 0x14, 0xa5, 0x12,
@@ -1784,7 +1784,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea17
     //
-    const uint8_t L_GroundArea17_data[] = {
+    static constexpr uint8_t L_GroundArea17_data[] = {
         0x92, 0x31,
         0x0f, 0x20, 0x6e, 0x40, 0x0d, 0x02, 0x37, 0x73, 0xec, 0x00,
         0x0c, 0x80, 0x3c, 0x00, 0x6c, 0x00, 0x9c, 0x00, 0x06, 0xc0,
@@ -1807,7 +1807,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea18
     //
-    const uint8_t L_GroundArea18_data[] = {
+    static constexpr uint8_t L_GroundArea18_data[] = {
         0x55, 0xb1,
         0x0f, 0x26, 0xcf, 0x33, 0x07, 0xb2, 0x15, 0x11, 0x52, 0x42,
         0x99, 0x0b, 0xac, 0x02, 0xd3, 0x24, 0xd6, 0x42, 0xd7, 0x25,
@@ -1827,7 +1827,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea19
     //
-    const uint8_t L_GroundArea19_data[] = {
+    static constexpr uint8_t L_GroundArea19_data[] = {
         0x50, 0xb1,
         0x0f, 0x26, 0xfc, 0x00, 0x1f, 0xb3, 0x5c, 0x00, 0x65, 0x65,
         0x74, 0x66, 0x83, 0x67, 0x93, 0x67, 0xdc, 0x73, 0x4c, 0x80,
@@ -1847,7 +1847,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea20
     //
-    const uint8_t L_GroundArea20_data[] = {
+    static constexpr uint8_t L_GroundArea20_data[] = {
         0x52, 0xb1,
         0x0f, 0x20, 0x6e, 0x45, 0x39, 0x91, 0xb3, 0x04, 0xc3, 0x21,
         0xc8, 0x11, 0xca, 0x10, 0x49, 0x91, 0x7c, 0x73, 0xe8, 0x12,
@@ -1864,7 +1864,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea21
     //
-    const uint8_t L_GroundArea21_data[] = {
+    static constexpr uint8_t L_GroundArea21_data[] = {
         0x06, 0xc1,
         0x4c, 0x00, 0xf4, 0x4f, 0x0d, 0x02, 0x06, 0x20, 0x24, 0x4f,
         0x35, 0xa0, 0x36, 0x20, 0x53, 0x46, 0xd5, 0x20, 0xd6, 0x20,
@@ -1876,7 +1876,7 @@ void SMBEngine::loadConstantData()
 
     // L_GroundArea22
     //
-    const uint8_t L_GroundArea22_data[] = {
+    static constexpr uint8_t L_GroundArea22_data[] = {
         0x96, 0x31,
         0x0f, 0x26, 0x0d, 0x03, 0x1a, 0x60, 0x77, 0x42, 0xc4, 0x00,
         0xc8, 0x62, 0xb9, 0xe1, 0xd3, 0x06, 0xd7, 0x07, 0xf9, 0x61,
@@ -1889,7 +1889,7 @@ void SMBEngine::loadConstantData()
 
     // L_UndergroundArea1
     //
-    const uint8_t L_UndergroundArea1_data[] = {
+    static constexpr uint8_t L_UndergroundArea1_data[] = {
         0x48, 0x0f,
         0x0e, 0x01, 0x5e, 0x02, 0xa7, 0x00, 0xbc, 0x73, 0x1a, 0xe0,
         0x39, 0x61, 0x58, 0x62, 0x77, 0x63, 0x97, 0x63, 0xb8, 0x62,
@@ -1913,7 +1913,7 @@ void SMBEngine::loadConstantData()
 
     // L_UndergroundArea2
     //
-    const uint8_t L_UndergroundArea2_data[] = {
+    static constexpr uint8_t L_UndergroundArea2_data[] = {
         0x48, 0x0f,
         0x0e, 0x01, 0x5e, 0x02, 0xbc, 0x01, 0xfc, 0x01, 0x2c, 0x82,
         0x41, 0x52, 0x4e, 0x04, 0x67, 0x25, 0x68, 0x24, 0x69, 0x24,
@@ -1937,7 +1937,7 @@ void SMBEngine::loadConstantData()
 
     // L_UndergroundArea3
     //
-    const uint8_t L_UndergroundArea3_data[] = {
+    static constexpr uint8_t L_UndergroundArea3_data[] = {
         0x48, 0x01,
         0x0e, 0x01, 0x00, 0x5a, 0x3e, 0x06, 0x45, 0x46, 0x47, 0x46,
         0x53, 0x44, 0xae, 0x01, 0xdf, 0x4a, 0x4d, 0xc7, 0x0e, 0x81,
@@ -1959,7 +1959,7 @@ void SMBEngine::loadConstantData()
 
     // L_WaterArea1
     //
-    const uint8_t L_WaterArea1_data[] = {
+    static constexpr uint8_t L_WaterArea1_data[] = {
         0x41, 0x01,
         0xb4, 0x34, 0xc8, 0x52, 0xf2, 0x51, 0x47, 0xd3, 0x6c, 0x03,
         0x65, 0x49, 0x9e, 0x07, 0xbe, 0x01, 0xcc, 0x03, 0xfe, 0x07,
@@ -1973,7 +1973,7 @@ void SMBEngine::loadConstantData()
 
     // L_WaterArea2
     //
-    const uint8_t L_WaterArea2_data[] = {
+    static constexpr uint8_t L_WaterArea2_data[] = {
         0x41, 0x01,
         0xb8, 0x52, 0xea, 0x41, 0x27, 0xb2, 0xb3, 0x42, 0x16, 0xd4,
         0x4a, 0x42, 0xa5, 0x51, 0xa7, 0x31, 0x27, 0xd3, 0x08, 0xe2,
@@ -1993,7 +1993,7 @@ void SMBEngine::loadConstantData()
 
     // L_WaterArea3
     //
-    const uint8_t L_WaterArea3_data[] = {
+    static constexpr uint8_t L_WaterArea3_data[] = {
         0x49, 0x0f,
         0x1e, 0x01, 0x39, 0x73, 0x5e, 0x07, 0xae, 0x0b, 0x1e, 0x82,
         0x6e, 0x88, 0x9e, 0x02, 0x0d, 0x04, 0x2e, 0x0b, 0x45, 0x09,
@@ -2005,77 +2005,77 @@ void SMBEngine::loadConstantData()
 
     // X_SubtracterData
     //
-    const uint8_t X_SubtracterData_data[] = {
+    static constexpr uint8_t X_SubtracterData_data[] = {
         0x00, 0x10
     };
     writeData(X_SubtracterData, X_SubtracterData_data, sizeof(X_SubtracterData_data));
 
     // OffscrJoypadBitsData
     //
-    const uint8_t OffscrJoypadBitsData_data[] = {
+    static constexpr uint8_t OffscrJoypadBitsData_data[] = {
         0x01, 0x02
     };
     writeData(OffscrJoypadBitsData, OffscrJoypadBitsData_data, sizeof(OffscrJoypadBitsData_data));
 
     // Hidden1UpCoinAmts
     //
-    const uint8_t Hidden1UpCoinAmts_data[] = {
+    static constexpr uint8_t Hidden1UpCoinAmts_data[] = {
         0x15, 0x23, 0x16, 0x1b, 0x17, 0x18, 0x23, 0x63
     };
     writeData(Hidden1UpCoinAmts, Hidden1UpCoinAmts_data, sizeof(Hidden1UpCoinAmts_data));
 
     // ClimbAdderLow
     //
-    const uint8_t ClimbAdderLow_data[] = {
+    static constexpr uint8_t ClimbAdderLow_data[] = {
         0x0e, 0x04, 0xfc, 0xf2
     };
     writeData(ClimbAdderLow, ClimbAdderLow_data, sizeof(ClimbAdderLow_data));
 
     // ClimbAdderHigh
     //
-    const uint8_t ClimbAdderHigh_data[] = {
+    static constexpr uint8_t ClimbAdderHigh_data[] = {
         0x00, 0x00, 0xff, 0xff
     };
     writeData(ClimbAdderHigh, ClimbAdderHigh_data, sizeof(ClimbAdderHigh_data));
 
     // JumpMForceData
     //
-    const uint8_t JumpMForceData_data[] = {
+    static constexpr uint8_t JumpMForceData_data[] = {
         0x20, 0x20, 0x1e, 0x28, 0x28, 0x0d, 0x04
     };
     writeData(JumpMForceData, JumpMForceData_data, sizeof(JumpMForceData_data));
 
     // FallMForceData
     //
-    const uint8_t FallMForceData_data[] = {
+    static constexpr uint8_t FallMForceData_data[] = {
         0x70, 0x70, 0x60, 0x90, 0x90, 0x0a, 0x09
     };
     writeData(FallMForceData, FallMForceData_data, sizeof(FallMForceData_data));
 
     // PlayerYSpdData
     //
-    const uint8_t PlayerYSpdData_data[] = {
+    static constexpr uint8_t PlayerYSpdData_data[] = {
         0xfc, 0xfc, 0xfc, 0xfb, 0xfb, 0xfe, 0xff
     };
     writeData(PlayerYSpdData, PlayerYSpdData_data, sizeof(PlayerYSpdData_data));
 
     // InitMForceData
     //
-    const uint8_t InitMForceData_data[] = {
+    static constexpr uint8_t InitMForceData_data[] = {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00
     };
     writeData(InitMForceData, InitMForceData_data, sizeof(InitMForceData_data));
 
     // MaxLeftXSpdData
     //
-    const uint8_t MaxLeftXSpdData_data[] = {
+    static constexpr uint8_t MaxLeftXSpdData_data[] = {
         0xd8, 0xe8, 0xf0
     };
     writeData(MaxLeftXSpdData, MaxLeftXSpdData_data, sizeof(MaxLeftXSpdData_data));
 
     // MaxRightXSpdData
     //
-    const uint8_t MaxRightXSpdData_data[] = {
+    static constexpr uint8_t MaxRightXSpdData_data[] = {
         0x28, 0x18, 0x10,
         0x0c // used for pipe intros
     };
@@ -2083,98 +2083,98 @@ void SMBEngine::loadConstantData()
 
     // FrictionData
     //
-    const uint8_t FrictionData_data[] = {
+    static constexpr uint8_t FrictionData_data[] = {
         0xe4, 0x98, 0xd0
     };
     writeData(FrictionData, FrictionData_data, sizeof(FrictionData_data));
 
     // Climb_Y_SpeedData
     //
-    const uint8_t Climb_Y_SpeedData_data[] = {
+    static constexpr uint8_t Climb_Y_SpeedData_data[] = {
         0x00, 0xff, 0x01
     };
     writeData(Climb_Y_SpeedData, Climb_Y_SpeedData_data, sizeof(Climb_Y_SpeedData_data));
 
     // Climb_Y_MForceData
     //
-    const uint8_t Climb_Y_MForceData_data[] = {
+    static constexpr uint8_t Climb_Y_MForceData_data[] = {
         0x00, 0x20, 0xff
     };
     writeData(Climb_Y_MForceData, Climb_Y_MForceData_data, sizeof(Climb_Y_MForceData_data));
 
     // PlayerAnimTmrData
     //
-    const uint8_t PlayerAnimTmrData_data[] = {
+    static constexpr uint8_t PlayerAnimTmrData_data[] = {
         0x02, 0x04, 0x07
     };
     writeData(PlayerAnimTmrData, PlayerAnimTmrData_data, sizeof(PlayerAnimTmrData_data));
 
     // FireballXSpdData
     //
-    const uint8_t FireballXSpdData_data[] = {
+    static constexpr uint8_t FireballXSpdData_data[] = {
         0x40, 0xc0
     };
     writeData(FireballXSpdData, FireballXSpdData_data, sizeof(FireballXSpdData_data));
 
     // Bubble_MForceData
     //
-    const uint8_t Bubble_MForceData_data[] = {
+    static constexpr uint8_t Bubble_MForceData_data[] = {
         0xff, 0x50
     };
     writeData(Bubble_MForceData, Bubble_MForceData_data, sizeof(Bubble_MForceData_data));
 
     // BubbleTimerData
     //
-    const uint8_t BubbleTimerData_data[] = {
+    static constexpr uint8_t BubbleTimerData_data[] = {
         0x40, 0x20
     };
     writeData(BubbleTimerData, BubbleTimerData_data, sizeof(BubbleTimerData_data));
 
     // FlagpoleScoreMods
     //
-    const uint8_t FlagpoleScoreMods_data[] = {
+    static constexpr uint8_t FlagpoleScoreMods_data[] = {
         0x05, 0x02, 0x08, 0x04, 0x01
     };
     writeData(FlagpoleScoreMods, FlagpoleScoreMods_data, sizeof(FlagpoleScoreMods_data));
 
     // FlagpoleScoreDigits
     //
-    const uint8_t FlagpoleScoreDigits_data[] = {
+    static constexpr uint8_t FlagpoleScoreDigits_data[] = {
         0x03, 0x03, 0x04, 0x04, 0x04
     };
     writeData(FlagpoleScoreDigits, FlagpoleScoreDigits_data, sizeof(FlagpoleScoreDigits_data));
 
     // Jumpspring_Y_PosData
     //
-    const uint8_t Jumpspring_Y_PosData_data[] = {
+    static constexpr uint8_t Jumpspring_Y_PosData_data[] = {
         0x08, 0x10, 0x08, 0x00
     };
     writeData(Jumpspring_Y_PosData, Jumpspring_Y_PosData_data, sizeof(Jumpspring_Y_PosData_data));
 
     // VineHeightData
     //
-    const uint8_t VineHeightData_data[] = {
+    static constexpr uint8_t VineHeightData_data[] = {
         0x30, 0x60
     };
     writeData(VineHeightData, VineHeightData_data, sizeof(VineHeightData_data));
 
     // CannonBitmasks
     //
-    const uint8_t CannonBitmasks_data[] = {
-        BOOST_BINARY(00001111), BOOST_BINARY(00000111)
+    static constexpr uint8_t CannonBitmasks_data[] = {
+        0b00001111, 0b00000111
     };
     writeData(CannonBitmasks, CannonBitmasks_data, sizeof(CannonBitmasks_data));
 
     // BulletBillXSpdData
     //
-    const uint8_t BulletBillXSpdData_data[] = {
+    static constexpr uint8_t BulletBillXSpdData_data[] = {
         0x18, 0xe8
     };
     writeData(BulletBillXSpdData, BulletBillXSpdData_data, sizeof(BulletBillXSpdData_data));
 
     // HammerEnemyOfsData
     //
-    const uint8_t HammerEnemyOfsData_data[] = {
+    static constexpr uint8_t HammerEnemyOfsData_data[] = {
         0x04, 0x04, 0x04, 0x05, 0x05, 0x05,
         0x06, 0x06, 0x06
     };
@@ -2182,42 +2182,42 @@ void SMBEngine::loadConstantData()
 
     // HammerXSpdData
     //
-    const uint8_t HammerXSpdData_data[] = {
+    static constexpr uint8_t HammerXSpdData_data[] = {
         0x10, 0xf0
     };
     writeData(HammerXSpdData, HammerXSpdData_data, sizeof(HammerXSpdData_data));
 
     // CoinTallyOffsets
     //
-    const uint8_t CoinTallyOffsets_data[] = {
+    static constexpr uint8_t CoinTallyOffsets_data[] = {
         0x17, 0x1d
     };
     writeData(CoinTallyOffsets, CoinTallyOffsets_data, sizeof(CoinTallyOffsets_data));
 
     // ScoreOffsets
     //
-    const uint8_t ScoreOffsets_data[] = {
+    static constexpr uint8_t ScoreOffsets_data[] = {
         0x0b, 0x11
     };
     writeData(ScoreOffsets, ScoreOffsets_data, sizeof(ScoreOffsets_data));
 
     // StatusBarNybbles
     //
-    const uint8_t StatusBarNybbles_data[] = {
+    static constexpr uint8_t StatusBarNybbles_data[] = {
         0x02, 0x13
     };
     writeData(StatusBarNybbles, StatusBarNybbles_data, sizeof(StatusBarNybbles_data));
 
     // BlockYPosAdderData
     //
-    const uint8_t BlockYPosAdderData_data[] = {
+    static constexpr uint8_t BlockYPosAdderData_data[] = {
         0x04, 0x12
     };
     writeData(BlockYPosAdderData, BlockYPosAdderData_data, sizeof(BlockYPosAdderData_data));
 
     // BrickQBlockMetatiles
     //
-    const uint8_t BrickQBlockMetatiles_data[] = {
+    static constexpr uint8_t BrickQBlockMetatiles_data[] = {
         0xc1, 0xc0, 0x5f, 0x60, // used by question blocks
         0x55, 0x56, 0x57, 0x58, 0x59, // used by ground level types
         0x5a, 0x5b, 0x5c, 0x5d, 0x5e // used by other level types
@@ -2226,49 +2226,49 @@ void SMBEngine::loadConstantData()
 
     // MaxSpdBlockData
     //
-    const uint8_t MaxSpdBlockData_data[] = {
+    static constexpr uint8_t MaxSpdBlockData_data[] = {
         0x06, 0x08
     };
     writeData(MaxSpdBlockData, MaxSpdBlockData_data, sizeof(MaxSpdBlockData_data));
 
     // LoopCmdWorldNumber
     //
-    const uint8_t LoopCmdWorldNumber_data[] = {
+    static constexpr uint8_t LoopCmdWorldNumber_data[] = {
         0x03, 0x03, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x07, 0x07, 0x07
     };
     writeData(LoopCmdWorldNumber, LoopCmdWorldNumber_data, sizeof(LoopCmdWorldNumber_data));
 
     // LoopCmdPageNumber
     //
-    const uint8_t LoopCmdPageNumber_data[] = {
+    static constexpr uint8_t LoopCmdPageNumber_data[] = {
         0x05, 0x09, 0x04, 0x05, 0x06, 0x08, 0x09, 0x0a, 0x06, 0x0b, 0x10
     };
     writeData(LoopCmdPageNumber, LoopCmdPageNumber_data, sizeof(LoopCmdPageNumber_data));
 
     // LoopCmdYPosition
     //
-    const uint8_t LoopCmdYPosition_data[] = {
+    static constexpr uint8_t LoopCmdYPosition_data[] = {
         0x40, 0xb0, 0xb0, 0x80, 0x40, 0x40, 0x80, 0x40, 0xf0, 0xf0, 0xf0
     };
     writeData(LoopCmdYPosition, LoopCmdYPosition_data, sizeof(LoopCmdYPosition_data));
 
     // NormalXSpdData
     //
-    const uint8_t NormalXSpdData_data[] = {
+    static constexpr uint8_t NormalXSpdData_data[] = {
         0xf8, 0xf4
     };
     writeData(NormalXSpdData, NormalXSpdData_data, sizeof(NormalXSpdData_data));
 
     // HBroWalkingTimerData
     //
-    const uint8_t HBroWalkingTimerData_data[] = {
+    static constexpr uint8_t HBroWalkingTimerData_data[] = {
         0x80, 0x50
     };
     writeData(HBroWalkingTimerData, HBroWalkingTimerData_data, sizeof(HBroWalkingTimerData_data));
 
     // PRDiffAdjustData
     //
-    const uint8_t PRDiffAdjustData_data[] = {
+    static constexpr uint8_t PRDiffAdjustData_data[] = {
         0x26, 0x2c, 0x32, 0x38,
         0x20, 0x22, 0x24, 0x26,
         0x13, 0x14, 0x15, 0x16
@@ -2277,21 +2277,21 @@ void SMBEngine::loadConstantData()
 
     // FirebarSpinSpdData
     //
-    const uint8_t FirebarSpinSpdData_data[] = {
+    static constexpr uint8_t FirebarSpinSpdData_data[] = {
         0x28, 0x38, 0x28, 0x38, 0x28
     };
     writeData(FirebarSpinSpdData, FirebarSpinSpdData_data, sizeof(FirebarSpinSpdData_data));
 
     // FirebarSpinDirData
     //
-    const uint8_t FirebarSpinDirData_data[] = {
+    static constexpr uint8_t FirebarSpinDirData_data[] = {
         0x00, 0x00, 0x10, 0x10, 0x00
     };
     writeData(FirebarSpinDirData, FirebarSpinDirData_data, sizeof(FirebarSpinDirData_data));
 
     // FlyCCXPositionData
     //
-    const uint8_t FlyCCXPositionData_data[] = {
+    static constexpr uint8_t FlyCCXPositionData_data[] = {
         0x80, 0x30, 0x40, 0x80,
         0x30, 0x50, 0x50, 0x70,
         0x20, 0x40, 0x80, 0xa0,
@@ -2301,7 +2301,7 @@ void SMBEngine::loadConstantData()
 
     // FlyCCXSpeedData
     //
-    const uint8_t FlyCCXSpeedData_data[] = {
+    static constexpr uint8_t FlyCCXSpeedData_data[] = {
         0x0e, 0x05, 0x06, 0x0e,
         0x1c, 0x20, 0x10, 0x0c,
         0x1e, 0x22, 0x18, 0x14
@@ -2310,112 +2310,112 @@ void SMBEngine::loadConstantData()
 
     // FlyCCTimerData
     //
-    const uint8_t FlyCCTimerData_data[] = {
+    static constexpr uint8_t FlyCCTimerData_data[] = {
         0x10, 0x60, 0x20, 0x48
     };
     writeData(FlyCCTimerData, FlyCCTimerData_data, sizeof(FlyCCTimerData_data));
 
     // FlameYPosData
     //
-    const uint8_t FlameYPosData_data[] = {
+    static constexpr uint8_t FlameYPosData_data[] = {
         0x90, 0x80, 0x70, 0x90
     };
     writeData(FlameYPosData, FlameYPosData_data, sizeof(FlameYPosData_data));
 
     // FlameYMFAdderData
     //
-    const uint8_t FlameYMFAdderData_data[] = {
+    static constexpr uint8_t FlameYMFAdderData_data[] = {
         0xff, 0x01
     };
     writeData(FlameYMFAdderData, FlameYMFAdderData_data, sizeof(FlameYMFAdderData_data));
 
     // FireworksXPosData
     //
-    const uint8_t FireworksXPosData_data[] = {
+    static constexpr uint8_t FireworksXPosData_data[] = {
         0x00, 0x30, 0x60, 0x60, 0x00, 0x20
     };
     writeData(FireworksXPosData, FireworksXPosData_data, sizeof(FireworksXPosData_data));
 
     // FireworksYPosData
     //
-    const uint8_t FireworksYPosData_data[] = {
+    static constexpr uint8_t FireworksYPosData_data[] = {
         0x60, 0x40, 0x70, 0x40, 0x60, 0x30
     };
     writeData(FireworksYPosData, FireworksYPosData_data, sizeof(FireworksYPosData_data));
 
     // Bitmasks
     //
-    const uint8_t Bitmasks_data[] = {
-        BOOST_BINARY(00000001), BOOST_BINARY(00000010), BOOST_BINARY(00000100), BOOST_BINARY(00001000), BOOST_BINARY(00010000), BOOST_BINARY(00100000), BOOST_BINARY(01000000), BOOST_BINARY(10000000)
+    static constexpr uint8_t Bitmasks_data[] = {
+        0b00000001, 0b00000010, 0b00000100, 0b00001000, 0b00010000, 0b00100000, 0b01000000, 0b10000000
     };
     writeData(Bitmasks, Bitmasks_data, sizeof(Bitmasks_data));
 
     // Enemy17YPosData
     //
-    const uint8_t Enemy17YPosData_data[] = {
+    static constexpr uint8_t Enemy17YPosData_data[] = {
         0x40, 0x30, 0x90, 0x50, 0x20, 0x60, 0xa0, 0x70
     };
     writeData(Enemy17YPosData, Enemy17YPosData_data, sizeof(Enemy17YPosData_data));
 
     // SwimCC_IDData
     //
-    const uint8_t SwimCC_IDData_data[] = {
+    static constexpr uint8_t SwimCC_IDData_data[] = {
         0x0a, 0x0b
     };
     writeData(SwimCC_IDData, SwimCC_IDData_data, sizeof(SwimCC_IDData_data));
 
     // PlatPosDataLow
     //
-    const uint8_t PlatPosDataLow_data[] = {
+    static constexpr uint8_t PlatPosDataLow_data[] = {
         0x08, 0x0c, 0xf8
     };
     writeData(PlatPosDataLow, PlatPosDataLow_data, sizeof(PlatPosDataLow_data));
 
     // PlatPosDataHigh
     //
-    const uint8_t PlatPosDataHigh_data[] = {
+    static constexpr uint8_t PlatPosDataHigh_data[] = {
         0x00, 0x00, 0xff
     };
     writeData(PlatPosDataHigh, PlatPosDataHigh_data, sizeof(PlatPosDataHigh_data));
 
     // HammerThrowTmrData
     //
-    const uint8_t HammerThrowTmrData_data[] = {
+    static constexpr uint8_t HammerThrowTmrData_data[] = {
         0x30, 0x1c
     };
     writeData(HammerThrowTmrData, HammerThrowTmrData_data, sizeof(HammerThrowTmrData_data));
 
     // XSpeedAdderData
     //
-    const uint8_t XSpeedAdderData_data[] = {
+    static constexpr uint8_t XSpeedAdderData_data[] = {
         0x00, 0xe8, 0x00, 0x18
     };
     writeData(XSpeedAdderData, XSpeedAdderData_data, sizeof(XSpeedAdderData_data));
 
     // RevivedXSpeed
     //
-    const uint8_t RevivedXSpeed_data[] = {
+    static constexpr uint8_t RevivedXSpeed_data[] = {
         0x08, 0xf8, 0x0c, 0xf4
     };
     writeData(RevivedXSpeed, RevivedXSpeed_data, sizeof(RevivedXSpeed_data));
 
     // HammerBroJumpLData
     //
-    const uint8_t HammerBroJumpLData_data[] = {
+    static constexpr uint8_t HammerBroJumpLData_data[] = {
         0x20, 0x37
     };
     writeData(HammerBroJumpLData, HammerBroJumpLData_data, sizeof(HammerBroJumpLData_data));
 
     // BlooberBitmasks
     //
-    const uint8_t BlooberBitmasks_data[] = {
-        BOOST_BINARY(00111111), BOOST_BINARY(00000011)
+    static constexpr uint8_t BlooberBitmasks_data[] = {
+        0b00111111, 0b00000011
     };
     writeData(BlooberBitmasks, BlooberBitmasks_data, sizeof(BlooberBitmasks_data));
 
     // SwimCCXMoveData
     //
-    const uint8_t SwimCCXMoveData_data[] = {
+    static constexpr uint8_t SwimCCXMoveData_data[] = {
         0x40, 0x80,
         0x04, 0x04 // residual data, not used
     };
@@ -2423,7 +2423,7 @@ void SMBEngine::loadConstantData()
 
     // FirebarPosLookupTbl
     //
-    const uint8_t FirebarPosLookupTbl_data[] = {
+    static constexpr uint8_t FirebarPosLookupTbl_data[] = {
         0x00, 0x01, 0x03, 0x04, 0x05, 0x06, 0x07, 0x07, 0x08,
         0x00, 0x03, 0x06, 0x09, 0x0b, 0x0d, 0x0e, 0x0f, 0x10,
         0x00, 0x04, 0x09, 0x0d, 0x10, 0x13, 0x16, 0x17, 0x18,
@@ -2440,14 +2440,14 @@ void SMBEngine::loadConstantData()
 
     // FirebarMirrorData
     //
-    const uint8_t FirebarMirrorData_data[] = {
+    static constexpr uint8_t FirebarMirrorData_data[] = {
         0x01, 0x03, 0x02, 0x00
     };
     writeData(FirebarMirrorData, FirebarMirrorData_data, sizeof(FirebarMirrorData_data));
 
     // FirebarTblOffsets
     //
-    const uint8_t FirebarTblOffsets_data[] = {
+    static constexpr uint8_t FirebarTblOffsets_data[] = {
         0x00, 0x09, 0x12, 0x1b, 0x24, 0x2d,
         0x36, 0x3f, 0x48, 0x51, 0x5a, 0x63
     };
@@ -2455,35 +2455,35 @@ void SMBEngine::loadConstantData()
 
     // FirebarYPos
     //
-    const uint8_t FirebarYPos_data[] = {
+    static constexpr uint8_t FirebarYPos_data[] = {
         0x0c, 0x18
     };
     writeData(FirebarYPos, FirebarYPos_data, sizeof(FirebarYPos_data));
 
     // PRandomSubtracter
     //
-    const uint8_t PRandomSubtracter_data[] = {
+    static constexpr uint8_t PRandomSubtracter_data[] = {
         0xf8, 0xa0, 0x70, 0xbd, 0x00
     };
     writeData(PRandomSubtracter, PRandomSubtracter_data, sizeof(PRandomSubtracter_data));
 
     // FlyCCBPriority
     //
-    const uint8_t FlyCCBPriority_data[] = {
+    static constexpr uint8_t FlyCCBPriority_data[] = {
         0x20, 0x20, 0x20, 0x00, 0x00
     };
     writeData(FlyCCBPriority, FlyCCBPriority_data, sizeof(FlyCCBPriority_data));
 
     // LakituDiffAdj
     //
-    const uint8_t LakituDiffAdj_data[] = {
+    static constexpr uint8_t LakituDiffAdj_data[] = {
         0x15, 0x30, 0x40
     };
     writeData(LakituDiffAdj, LakituDiffAdj_data, sizeof(LakituDiffAdj_data));
 
     // BridgeCollapseData
     //
-    const uint8_t BridgeCollapseData_data[] = {
+    static constexpr uint8_t BridgeCollapseData_data[] = {
         0x1a, // axe
         0x58, // chain
         0x98, 0x96, 0x94, 0x92, 0x90, 0x8e, 0x8c, // bridge
@@ -2493,175 +2493,175 @@ void SMBEngine::loadConstantData()
 
     // PRandomRange
     //
-    const uint8_t PRandomRange_data[] = {
+    static constexpr uint8_t PRandomRange_data[] = {
         0x21, 0x41, 0x11, 0x31
     };
     writeData(PRandomRange, PRandomRange_data, sizeof(PRandomRange_data));
 
     // FlameTimerData
     //
-    const uint8_t FlameTimerData_data[] = {
+    static constexpr uint8_t FlameTimerData_data[] = {
         0xbf, 0x40, 0xbf, 0xbf, 0xbf, 0x40, 0x40, 0xbf
     };
     writeData(FlameTimerData, FlameTimerData_data, sizeof(FlameTimerData_data));
 
     // StarFlagYPosAdder
     //
-    const uint8_t StarFlagYPosAdder_data[] = {
+    static constexpr uint8_t StarFlagYPosAdder_data[] = {
         0x00, 0x00, 0x08, 0x08
     };
     writeData(StarFlagYPosAdder, StarFlagYPosAdder_data, sizeof(StarFlagYPosAdder_data));
 
     // StarFlagXPosAdder
     //
-    const uint8_t StarFlagXPosAdder_data[] = {
+    static constexpr uint8_t StarFlagXPosAdder_data[] = {
         0x00, 0x08, 0x00, 0x08
     };
     writeData(StarFlagXPosAdder, StarFlagXPosAdder_data, sizeof(StarFlagXPosAdder_data));
 
     // StarFlagTileData
     //
-    const uint8_t StarFlagTileData_data[] = {
+    static constexpr uint8_t StarFlagTileData_data[] = {
         0x54, 0x55, 0x56, 0x57
     };
     writeData(StarFlagTileData, StarFlagTileData_data, sizeof(StarFlagTileData_data));
 
     // BowserIdentities
     //
-    const uint8_t BowserIdentities_data[] = {
+    static constexpr uint8_t BowserIdentities_data[] = {
         Goomba, GreenKoopa, BuzzyBeetle, Spiny, Lakitu, Bloober, HammerBro, Bowser
     };
     writeData(BowserIdentities, BowserIdentities_data, sizeof(BowserIdentities_data));
 
     // ResidualXSpdData
     //
-    const uint8_t ResidualXSpdData_data[] = {
+    static constexpr uint8_t ResidualXSpdData_data[] = {
         0x18, 0xe8
     };
     writeData(ResidualXSpdData, ResidualXSpdData_data, sizeof(ResidualXSpdData_data));
 
     // KickedShellXSpdData
     //
-    const uint8_t KickedShellXSpdData_data[] = {
+    static constexpr uint8_t KickedShellXSpdData_data[] = {
         0x30, 0xd0
     };
     writeData(KickedShellXSpdData, KickedShellXSpdData_data, sizeof(KickedShellXSpdData_data));
 
     // DemotedKoopaXSpdData
     //
-    const uint8_t DemotedKoopaXSpdData_data[] = {
+    static constexpr uint8_t DemotedKoopaXSpdData_data[] = {
         0x08, 0xf8
     };
     writeData(DemotedKoopaXSpdData, DemotedKoopaXSpdData_data, sizeof(DemotedKoopaXSpdData_data));
 
     // KickedShellPtsData
     //
-    const uint8_t KickedShellPtsData_data[] = {
+    static constexpr uint8_t KickedShellPtsData_data[] = {
         0x0a, 0x06, 0x04
     };
     writeData(KickedShellPtsData, KickedShellPtsData_data, sizeof(KickedShellPtsData_data));
 
     // StompedEnemyPtsData
     //
-    const uint8_t StompedEnemyPtsData_data[] = {
+    static constexpr uint8_t StompedEnemyPtsData_data[] = {
         0x02, 0x06, 0x05, 0x06
     };
     writeData(StompedEnemyPtsData, StompedEnemyPtsData_data, sizeof(StompedEnemyPtsData_data));
 
     // RevivalRateData
     //
-    const uint8_t RevivalRateData_data[] = {
+    static constexpr uint8_t RevivalRateData_data[] = {
         0x10, 0x0b
     };
     writeData(RevivalRateData, RevivalRateData_data, sizeof(RevivalRateData_data));
 
     // SetBitsMask
     //
-    const uint8_t SetBitsMask_data[] = {
-        BOOST_BINARY(10000000), BOOST_BINARY(01000000), BOOST_BINARY(00100000), BOOST_BINARY(00010000), BOOST_BINARY(00001000), BOOST_BINARY(00000100), BOOST_BINARY(00000010)
+    static constexpr uint8_t SetBitsMask_data[] = {
+        0b10000000, 0b01000000, 0b00100000, 0b00010000, 0b00001000, 0b00000100, 0b00000010
     };
     writeData(SetBitsMask, SetBitsMask_data, sizeof(SetBitsMask_data));
 
     // ClearBitsMask
     //
-    const uint8_t ClearBitsMask_data[] = {
-        BOOST_BINARY(01111111), BOOST_BINARY(10111111), BOOST_BINARY(11011111), BOOST_BINARY(11101111), BOOST_BINARY(11110111), BOOST_BINARY(11111011), BOOST_BINARY(11111101)
+    static constexpr uint8_t ClearBitsMask_data[] = {
+        0b01111111, 0b10111111, 0b11011111, 0b11101111, 0b11110111, 0b11111011, 0b11111101
     };
     writeData(ClearBitsMask, ClearBitsMask_data, sizeof(ClearBitsMask_data));
 
     // PlayerPosSPlatData
     //
-    const uint8_t PlayerPosSPlatData_data[] = {
+    static constexpr uint8_t PlayerPosSPlatData_data[] = {
         0x80, 0x00
     };
     writeData(PlayerPosSPlatData, PlayerPosSPlatData_data, sizeof(PlayerPosSPlatData_data));
 
     // PlayerBGUpperExtent
     //
-    const uint8_t PlayerBGUpperExtent_data[] = {
+    static constexpr uint8_t PlayerBGUpperExtent_data[] = {
         0x20, 0x10
     };
     writeData(PlayerBGUpperExtent, PlayerBGUpperExtent_data, sizeof(PlayerBGUpperExtent_data));
 
     // AreaChangeTimerData
     //
-    const uint8_t AreaChangeTimerData_data[] = {
+    static constexpr uint8_t AreaChangeTimerData_data[] = {
         0xa0, 0x34
     };
     writeData(AreaChangeTimerData, AreaChangeTimerData_data, sizeof(AreaChangeTimerData_data));
 
     // ClimbXPosAdder
     //
-    const uint8_t ClimbXPosAdder_data[] = {
+    static constexpr uint8_t ClimbXPosAdder_data[] = {
         0xf9, 0x07
     };
     writeData(ClimbXPosAdder, ClimbXPosAdder_data, sizeof(ClimbXPosAdder_data));
 
     // ClimbPLocAdder
     //
-    const uint8_t ClimbPLocAdder_data[] = {
+    static constexpr uint8_t ClimbPLocAdder_data[] = {
         0xff, 0x00
     };
     writeData(ClimbPLocAdder, ClimbPLocAdder_data, sizeof(ClimbPLocAdder_data));
 
     // FlagpoleYPosData
     //
-    const uint8_t FlagpoleYPosData_data[] = {
+    static constexpr uint8_t FlagpoleYPosData_data[] = {
         0x18, 0x22, 0x50, 0x68, 0x90
     };
     writeData(FlagpoleYPosData, FlagpoleYPosData_data, sizeof(FlagpoleYPosData_data));
 
     // SolidMTileUpperExt
     //
-    const uint8_t SolidMTileUpperExt_data[] = {
+    static constexpr uint8_t SolidMTileUpperExt_data[] = {
         0x10, 0x61, 0x88, 0xc4
     };
     writeData(SolidMTileUpperExt, SolidMTileUpperExt_data, sizeof(SolidMTileUpperExt_data));
 
     // ClimbMTileUpperExt
     //
-    const uint8_t ClimbMTileUpperExt_data[] = {
+    static constexpr uint8_t ClimbMTileUpperExt_data[] = {
         0x24, 0x6d, 0x8a, 0xc6
     };
     writeData(ClimbMTileUpperExt, ClimbMTileUpperExt_data, sizeof(ClimbMTileUpperExt_data));
 
     // EnemyBGCStateData
     //
-    const uint8_t EnemyBGCStateData_data[] = {
+    static constexpr uint8_t EnemyBGCStateData_data[] = {
         0x01, 0x01, 0x02, 0x02, 0x02, 0x05
     };
     writeData(EnemyBGCStateData, EnemyBGCStateData_data, sizeof(EnemyBGCStateData_data));
 
     // EnemyBGCXSpdData
     //
-    const uint8_t EnemyBGCXSpdData_data[] = {
+    static constexpr uint8_t EnemyBGCXSpdData_data[] = {
         0x10, 0xf0
     };
     writeData(EnemyBGCXSpdData, EnemyBGCXSpdData_data, sizeof(EnemyBGCXSpdData_data));
 
     // BoundBoxCtrlData
     //
-    const uint8_t BoundBoxCtrlData_data[] = {
+    static constexpr uint8_t BoundBoxCtrlData_data[] = {
         0x02, 0x08, 0x0e, 0x20,
         0x03, 0x14, 0x0d, 0x20,
         0x02, 0x14, 0x0e, 0x20,
@@ -2679,14 +2679,14 @@ void SMBEngine::loadConstantData()
 
     // BlockBufferAdderData
     //
-    const uint8_t BlockBufferAdderData_data[] = {
+    static constexpr uint8_t BlockBufferAdderData_data[] = {
         0x00, 0x07, 0x0e
     };
     writeData(BlockBufferAdderData, BlockBufferAdderData_data, sizeof(BlockBufferAdderData_data));
 
     // BlockBuffer_X_Adder
     //
-    const uint8_t BlockBuffer_X_Adder_data[] = {
+    static constexpr uint8_t BlockBuffer_X_Adder_data[] = {
         0x08, 0x03, 0x0c, 0x02, 0x02, 0x0d, 0x0d, 0x08,
         0x03, 0x0c, 0x02, 0x02, 0x0d, 0x0d, 0x08, 0x03,
         0x0c, 0x02, 0x02, 0x0d, 0x0d, 0x08, 0x00, 0x10,
@@ -2696,7 +2696,7 @@ void SMBEngine::loadConstantData()
 
     // BlockBuffer_Y_Adder
     //
-    const uint8_t BlockBuffer_Y_Adder_data[] = {
+    static constexpr uint8_t BlockBuffer_Y_Adder_data[] = {
         0x04, 0x20, 0x20, 0x08, 0x18, 0x08, 0x18, 0x02,
         0x20, 0x20, 0x08, 0x18, 0x08, 0x18, 0x12, 0x20,
         0x20, 0x18, 0x18, 0x18, 0x18, 0x18, 0x14, 0x14,
@@ -2706,63 +2706,63 @@ void SMBEngine::loadConstantData()
 
     // VineYPosAdder
     //
-    const uint8_t VineYPosAdder_data[] = {
+    static constexpr uint8_t VineYPosAdder_data[] = {
         0x00, 0x30
     };
     writeData(VineYPosAdder, VineYPosAdder_data, sizeof(VineYPosAdder_data));
 
     // FirstSprXPos
     //
-    const uint8_t FirstSprXPos_data[] = {
+    static constexpr uint8_t FirstSprXPos_data[] = {
         0x04, 0x00, 0x04, 0x00
     };
     writeData(FirstSprXPos, FirstSprXPos_data, sizeof(FirstSprXPos_data));
 
     // FirstSprYPos
     //
-    const uint8_t FirstSprYPos_data[] = {
+    static constexpr uint8_t FirstSprYPos_data[] = {
         0x00, 0x04, 0x00, 0x04
     };
     writeData(FirstSprYPos, FirstSprYPos_data, sizeof(FirstSprYPos_data));
 
     // SecondSprXPos
     //
-    const uint8_t SecondSprXPos_data[] = {
+    static constexpr uint8_t SecondSprXPos_data[] = {
         0x00, 0x08, 0x00, 0x08
     };
     writeData(SecondSprXPos, SecondSprXPos_data, sizeof(SecondSprXPos_data));
 
     // SecondSprYPos
     //
-    const uint8_t SecondSprYPos_data[] = {
+    static constexpr uint8_t SecondSprYPos_data[] = {
         0x08, 0x00, 0x08, 0x00
     };
     writeData(SecondSprYPos, SecondSprYPos_data, sizeof(SecondSprYPos_data));
 
     // FirstSprTilenum
     //
-    const uint8_t FirstSprTilenum_data[] = {
+    static constexpr uint8_t FirstSprTilenum_data[] = {
         0x80, 0x82, 0x81, 0x83
     };
     writeData(FirstSprTilenum, FirstSprTilenum_data, sizeof(FirstSprTilenum_data));
 
     // SecondSprTilenum
     //
-    const uint8_t SecondSprTilenum_data[] = {
+    static constexpr uint8_t SecondSprTilenum_data[] = {
         0x81, 0x83, 0x80, 0x82
     };
     writeData(SecondSprTilenum, SecondSprTilenum_data, sizeof(SecondSprTilenum_data));
 
     // HammerSprAttrib
     //
-    const uint8_t HammerSprAttrib_data[] = {
+    static constexpr uint8_t HammerSprAttrib_data[] = {
         0x03, 0x03, 0xc3, 0xc3
     };
     writeData(HammerSprAttrib, HammerSprAttrib_data, sizeof(HammerSprAttrib_data));
 
     // FlagpoleScoreNumTiles
     //
-    const uint8_t FlagpoleScoreNumTiles_data[] = {
+    static constexpr uint8_t FlagpoleScoreNumTiles_data[] = {
         0xf9, 0x50,
         0xf7, 0x50,
         0xfa, 0xfb,
@@ -2773,14 +2773,14 @@ void SMBEngine::loadConstantData()
 
     // JumpingCoinTiles
     //
-    const uint8_t JumpingCoinTiles_data[] = {
+    static constexpr uint8_t JumpingCoinTiles_data[] = {
         0x60, 0x61, 0x62, 0x63
     };
     writeData(JumpingCoinTiles, JumpingCoinTiles_data, sizeof(JumpingCoinTiles_data));
 
     // PowerUpGfxTable
     //
-    const uint8_t PowerUpGfxTable_data[] = {
+    static constexpr uint8_t PowerUpGfxTable_data[] = {
         0x76, 0x77, 0x78, 0x79, // regular mushroom
         0xd6, 0xd6, 0xd9, 0xd9, // fire flower
         0x8d, 0x8d, 0xe4, 0xe4, // star
@@ -2790,14 +2790,14 @@ void SMBEngine::loadConstantData()
 
     // PowerUpAttributes
     //
-    const uint8_t PowerUpAttributes_data[] = {
+    static constexpr uint8_t PowerUpAttributes_data[] = {
         0x02, 0x01, 0x02, 0x01
     };
     writeData(PowerUpAttributes, PowerUpAttributes_data, sizeof(PowerUpAttributes_data));
 
     // EnemyGraphicsTable
     //
-    const uint8_t EnemyGraphicsTable_data[] = {
+    static constexpr uint8_t EnemyGraphicsTable_data[] = {
         0xfc, 0xfc, 0xaa, 0xab, 0xac, 0xad, // buzzy beetle frame 1
         0xfc, 0xfc, 0xae, 0xaf, 0xb0, 0xb1, //              frame 2
         0xfc, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9, // koopa troopa frame 1
@@ -2846,7 +2846,7 @@ void SMBEngine::loadConstantData()
 
     // EnemyGfxTableOffsets
     //
-    const uint8_t EnemyGfxTableOffsets_data[] = {
+    static constexpr uint8_t EnemyGfxTableOffsets_data[] = {
         0x0c, 0x0c, 0x00, 0x0c, 0x0c, 0xa8, 0x54, 0x3c,
         0xea, 0x18, 0x48, 0x48, 0xcc, 0xc0, 0x18, 0x18,
         0x18, 0x90, 0x24, 0xff, 0x48, 0x9c, 0xd2, 0xd8,
@@ -2856,7 +2856,7 @@ void SMBEngine::loadConstantData()
 
     // EnemyAttributeData
     //
-    const uint8_t EnemyAttributeData_data[] = {
+    static constexpr uint8_t EnemyAttributeData_data[] = {
         0x01, 0x02, 0x03, 0x02, 0x01, 0x01, 0x03, 0x03,
         0x03, 0x01, 0x01, 0x02, 0x02, 0x21, 0x01, 0x02,
         0x01, 0x01, 0x02, 0xff, 0x02, 0x02, 0x01, 0x01,
@@ -2866,35 +2866,35 @@ void SMBEngine::loadConstantData()
 
     // EnemyAnimTimingBMask
     //
-    const uint8_t EnemyAnimTimingBMask_data[] = {
+    static constexpr uint8_t EnemyAnimTimingBMask_data[] = {
         0x08, 0x18
     };
     writeData(EnemyAnimTimingBMask, EnemyAnimTimingBMask_data, sizeof(EnemyAnimTimingBMask_data));
 
     // JumpspringFrameOffsets
     //
-    const uint8_t JumpspringFrameOffsets_data[] = {
+    static constexpr uint8_t JumpspringFrameOffsets_data[] = {
         0x18, 0x19, 0x1a, 0x19, 0x18
     };
     writeData(JumpspringFrameOffsets, JumpspringFrameOffsets_data, sizeof(JumpspringFrameOffsets_data));
 
     // DefaultBlockObjTiles
     //
-    const uint8_t DefaultBlockObjTiles_data[] = {
+    static constexpr uint8_t DefaultBlockObjTiles_data[] = {
         0x85, 0x85, 0x86, 0x86 // brick w/ line (these are sprite tiles, not BG!)
     };
     writeData(DefaultBlockObjTiles, DefaultBlockObjTiles_data, sizeof(DefaultBlockObjTiles_data));
 
     // ExplosionTiles
     //
-    const uint8_t ExplosionTiles_data[] = {
+    static constexpr uint8_t ExplosionTiles_data[] = {
         0x68, 0x67, 0x66
     };
     writeData(ExplosionTiles, ExplosionTiles_data, sizeof(ExplosionTiles_data));
 
     // PlayerGfxTblOffsets
     //
-    const uint8_t PlayerGfxTblOffsets_data[] = {
+    static constexpr uint8_t PlayerGfxTblOffsets_data[] = {
         0x20, 0x28, 0xc8, 0x18, 0x00, 0x40, 0x50, 0x58,
         0x80, 0x88, 0xb8, 0x78, 0x60, 0xa0, 0xb0, 0xb8
     };
@@ -2902,7 +2902,7 @@ void SMBEngine::loadConstantData()
 
     // PlayerGraphicsTable
     //
-    const uint8_t PlayerGraphicsTable_data[] = {
+    static constexpr uint8_t PlayerGraphicsTable_data[] = {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, // walking frame 1
         0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, //         frame 2
         0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, //         frame 3
@@ -2934,21 +2934,21 @@ void SMBEngine::loadConstantData()
 
     // SwimKickTileNum
     //
-    const uint8_t SwimKickTileNum_data[] = {
+    static constexpr uint8_t SwimKickTileNum_data[] = {
         0x31, 0x46
     };
     writeData(SwimKickTileNum, SwimKickTileNum_data, sizeof(SwimKickTileNum_data));
 
     // IntermediatePlayerData
     //
-    const uint8_t IntermediatePlayerData_data[] = {
+    static constexpr uint8_t IntermediatePlayerData_data[] = {
         0x58, 0x01, 0x00, 0x60, 0xff, 0x04
     };
     writeData(IntermediatePlayerData, IntermediatePlayerData_data, sizeof(IntermediatePlayerData_data));
 
     // ChangeSizeOffsetAdder
     //
-    const uint8_t ChangeSizeOffsetAdder_data[] = {
+    static constexpr uint8_t ChangeSizeOffsetAdder_data[] = {
         0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x02, 0x00, 0x01, 0x02,
         0x02, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x00
     };
@@ -2956,14 +2956,14 @@ void SMBEngine::loadConstantData()
 
     // ObjOffsetData
     //
-    const uint8_t ObjOffsetData_data[] = {
+    static constexpr uint8_t ObjOffsetData_data[] = {
         0x07, 0x16, 0x0d
     };
     writeData(ObjOffsetData, ObjOffsetData_data, sizeof(ObjOffsetData_data));
 
     // XOffscreenBitsData
     //
-    const uint8_t XOffscreenBitsData_data[] = {
+    static constexpr uint8_t XOffscreenBitsData_data[] = {
         0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01, 0x00,
         0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe, 0xff
     };
@@ -2971,14 +2971,14 @@ void SMBEngine::loadConstantData()
 
     // DefaultXOnscreenOfs
     //
-    const uint8_t DefaultXOnscreenOfs_data[] = {
+    static constexpr uint8_t DefaultXOnscreenOfs_data[] = {
         0x07, 0x0f, 0x07
     };
     writeData(DefaultXOnscreenOfs, DefaultXOnscreenOfs_data, sizeof(DefaultXOnscreenOfs_data));
 
     // YOffscreenBitsData
     //
-    const uint8_t YOffscreenBitsData_data[] = {
+    static constexpr uint8_t YOffscreenBitsData_data[] = {
         0x00, 0x08, 0x0c, 0x0e,
         0x0f, 0x07, 0x03, 0x01,
         0x00
@@ -2987,21 +2987,21 @@ void SMBEngine::loadConstantData()
 
     // DefaultYOnscreenOfs
     //
-    const uint8_t DefaultYOnscreenOfs_data[] = {
+    static constexpr uint8_t DefaultYOnscreenOfs_data[] = {
         0x04, 0x00, 0x04
     };
     writeData(DefaultYOnscreenOfs, DefaultYOnscreenOfs_data, sizeof(DefaultYOnscreenOfs_data));
 
     // HighPosUnitData
     //
-    const uint8_t HighPosUnitData_data[] = {
+    static constexpr uint8_t HighPosUnitData_data[] = {
         0xff, 0x00
     };
     writeData(HighPosUnitData, HighPosUnitData_data, sizeof(HighPosUnitData_data));
 
     // SwimStompEnvelopeData
     //
-    const uint8_t SwimStompEnvelopeData_data[] = {
+    static constexpr uint8_t SwimStompEnvelopeData_data[] = {
         0x9f, 0x9b, 0x98, 0x96, 0x95, 0x94, 0x92, 0x90,
         0x90, 0x9a, 0x97, 0x95, 0x93, 0x92
     };
@@ -3009,14 +3009,14 @@ void SMBEngine::loadConstantData()
 
     // ExtraLifeFreqData
     //
-    const uint8_t ExtraLifeFreqData_data[] = {
+    static constexpr uint8_t ExtraLifeFreqData_data[] = {
         0x58, 0x02, 0x54, 0x56, 0x4e, 0x44
     };
     writeData(ExtraLifeFreqData, ExtraLifeFreqData_data, sizeof(ExtraLifeFreqData_data));
 
     // PowerUpGrabFreqData
     //
-    const uint8_t PowerUpGrabFreqData_data[] = {
+    static constexpr uint8_t PowerUpGrabFreqData_data[] = {
         0x4c, 0x52, 0x4c, 0x48, 0x3e, 0x36, 0x3e, 0x36, 0x30,
         0x28, 0x4a, 0x50, 0x4a, 0x64, 0x3c, 0x32, 0x3c, 0x32,
         0x2c, 0x24, 0x3a, 0x64, 0x3a, 0x34, 0x2c, 0x22, 0x2c,
@@ -3026,7 +3026,7 @@ void SMBEngine::loadConstantData()
 
     // PUp_VGrow_FreqData
     //
-    const uint8_t PUp_VGrow_FreqData_data[] = {
+    static constexpr uint8_t PUp_VGrow_FreqData_data[] = {
         0x14, 0x04, 0x22, 0x24, 0x16, 0x04, 0x24, 0x26, // used by both
         0x18, 0x04, 0x26, 0x28, 0x1a, 0x04, 0x28, 0x2a,
         0x1c, 0x04, 0x2a, 0x2c, 0x1e, 0x04, 0x2c, 0x2e, // used by vinegrow
@@ -3036,7 +3036,7 @@ void SMBEngine::loadConstantData()
 
     // BrickShatterFreqData
     //
-    const uint8_t BrickShatterFreqData_data[] = {
+    static constexpr uint8_t BrickShatterFreqData_data[] = {
         0x01, 0x0e, 0x0e, 0x0d, 0x0b, 0x06, 0x0c, 0x0f,
         0x0a, 0x09, 0x03, 0x0d, 0x08, 0x0d, 0x06, 0x0c
     };
@@ -3044,7 +3044,7 @@ void SMBEngine::loadConstantData()
 
     // MusicHeaderData
     //
-    const uint8_t MusicHeaderData_data[] = {
+    static constexpr uint8_t MusicHeaderData_data[] = {
         DeathMusHdr - MHD, // event music
         GameOverMusHdr - MHD,
         VictoryMusHdr - MHD,
@@ -3076,161 +3076,161 @@ void SMBEngine::loadConstantData()
 
     // TimeRunningOutHdr
     //
-    const uint8_t TimeRunningOutHdr_data[] = {
-        0x08, LOBYTE(TimeRunOutMusData), HIBYTE(TimeRunOutMusData), 0x27, 0x18
+    static constexpr uint8_t TimeRunningOutHdr_data[] = {
+        0x08, lowByte(TimeRunOutMusData), highByte(TimeRunOutMusData), 0x27, 0x18
     };
     writeData(TimeRunningOutHdr, TimeRunningOutHdr_data, sizeof(TimeRunningOutHdr_data));
 
     // Star_CloudHdr
     //
-    const uint8_t Star_CloudHdr_data[] = {
-        0x20, LOBYTE(Star_CloudMData), HIBYTE(Star_CloudMData), 0x2e, 0x1a, 0x40
+    static constexpr uint8_t Star_CloudHdr_data[] = {
+        0x20, lowByte(Star_CloudMData), highByte(Star_CloudMData), 0x2e, 0x1a, 0x40
     };
     writeData(Star_CloudHdr, Star_CloudHdr_data, sizeof(Star_CloudHdr_data));
 
     // EndOfLevelMusHdr
     //
-    const uint8_t EndOfLevelMusHdr_data[] = {
-        0x20, LOBYTE(WinLevelMusData), HIBYTE(WinLevelMusData), 0x3d, 0x21
+    static constexpr uint8_t EndOfLevelMusHdr_data[] = {
+        0x20, lowByte(WinLevelMusData), highByte(WinLevelMusData), 0x3d, 0x21
     };
     writeData(EndOfLevelMusHdr, EndOfLevelMusHdr_data, sizeof(EndOfLevelMusHdr_data));
 
     // ResidualHeaderData
     //
-    const uint8_t ResidualHeaderData_data[] = {
+    static constexpr uint8_t ResidualHeaderData_data[] = {
         0x20, 0xc4, 0xfc, 0x3f, 0x1d
     };
     writeData(ResidualHeaderData, ResidualHeaderData_data, sizeof(ResidualHeaderData_data));
 
     // UndergroundMusHdr
     //
-    const uint8_t UndergroundMusHdr_data[] = {
-        0x18, LOBYTE(UndergroundMusData), HIBYTE(UndergroundMusData), 0x00, 0x00
+    static constexpr uint8_t UndergroundMusHdr_data[] = {
+        0x18, lowByte(UndergroundMusData), highByte(UndergroundMusData), 0x00, 0x00
     };
     writeData(UndergroundMusHdr, UndergroundMusHdr_data, sizeof(UndergroundMusHdr_data));
 
     // SilenceHdr
     //
-    const uint8_t SilenceHdr_data[] = {
-        0x08, LOBYTE(SilenceData), HIBYTE(SilenceData), 0x00
+    static constexpr uint8_t SilenceHdr_data[] = {
+        0x08, lowByte(SilenceData), highByte(SilenceData), 0x00
     };
     writeData(SilenceHdr, SilenceHdr_data, sizeof(SilenceHdr_data));
 
     // CastleMusHdr
     //
-    const uint8_t CastleMusHdr_data[] = {
-        0x00, LOBYTE(CastleMusData), HIBYTE(CastleMusData), 0x93, 0x62
+    static constexpr uint8_t CastleMusHdr_data[] = {
+        0x00, lowByte(CastleMusData), highByte(CastleMusData), 0x93, 0x62
     };
     writeData(CastleMusHdr, CastleMusHdr_data, sizeof(CastleMusHdr_data));
 
     // VictoryMusHdr
     //
-    const uint8_t VictoryMusHdr_data[] = {
-        0x10, LOBYTE(VictoryMusData), HIBYTE(VictoryMusData), 0x24, 0x14
+    static constexpr uint8_t VictoryMusHdr_data[] = {
+        0x10, lowByte(VictoryMusData), highByte(VictoryMusData), 0x24, 0x14
     };
     writeData(VictoryMusHdr, VictoryMusHdr_data, sizeof(VictoryMusHdr_data));
 
     // GameOverMusHdr
     //
-    const uint8_t GameOverMusHdr_data[] = {
-        0x18, LOBYTE(GameOverMusData), HIBYTE(GameOverMusData), 0x1e, 0x14
+    static constexpr uint8_t GameOverMusHdr_data[] = {
+        0x18, lowByte(GameOverMusData), highByte(GameOverMusData), 0x1e, 0x14
     };
     writeData(GameOverMusHdr, GameOverMusHdr_data, sizeof(GameOverMusHdr_data));
 
     // WaterMusHdr
     //
-    const uint8_t WaterMusHdr_data[] = {
-        0x08, LOBYTE(WaterMusData), HIBYTE(WaterMusData), 0xa0, 0x70, 0x68
+    static constexpr uint8_t WaterMusHdr_data[] = {
+        0x08, lowByte(WaterMusData), highByte(WaterMusData), 0xa0, 0x70, 0x68
     };
     writeData(WaterMusHdr, WaterMusHdr_data, sizeof(WaterMusHdr_data));
 
     // WinCastleMusHdr
     //
-    const uint8_t WinCastleMusHdr_data[] = {
-        0x08, LOBYTE(EndOfCastleMusData), HIBYTE(EndOfCastleMusData), 0x4c, 0x24
+    static constexpr uint8_t WinCastleMusHdr_data[] = {
+        0x08, lowByte(EndOfCastleMusData), highByte(EndOfCastleMusData), 0x4c, 0x24
     };
     writeData(WinCastleMusHdr, WinCastleMusHdr_data, sizeof(WinCastleMusHdr_data));
 
     // GroundLevelPart1Hdr
     //
-    const uint8_t GroundLevelPart1Hdr_data[] = {
-        0x18, LOBYTE(GroundM_P1Data), HIBYTE(GroundM_P1Data), 0x2d, 0x1c, 0xb8
+    static constexpr uint8_t GroundLevelPart1Hdr_data[] = {
+        0x18, lowByte(GroundM_P1Data), highByte(GroundM_P1Data), 0x2d, 0x1c, 0xb8
     };
     writeData(GroundLevelPart1Hdr, GroundLevelPart1Hdr_data, sizeof(GroundLevelPart1Hdr_data));
 
     // GroundLevelPart2AHdr
     //
-    const uint8_t GroundLevelPart2AHdr_data[] = {
-        0x18, LOBYTE(GroundM_P2AData), HIBYTE(GroundM_P2AData), 0x20, 0x12, 0x70
+    static constexpr uint8_t GroundLevelPart2AHdr_data[] = {
+        0x18, lowByte(GroundM_P2AData), highByte(GroundM_P2AData), 0x20, 0x12, 0x70
     };
     writeData(GroundLevelPart2AHdr, GroundLevelPart2AHdr_data, sizeof(GroundLevelPart2AHdr_data));
 
     // GroundLevelPart2BHdr
     //
-    const uint8_t GroundLevelPart2BHdr_data[] = {
-        0x18, LOBYTE(GroundM_P2BData), HIBYTE(GroundM_P2BData), 0x1b, 0x10, 0x44
+    static constexpr uint8_t GroundLevelPart2BHdr_data[] = {
+        0x18, lowByte(GroundM_P2BData), highByte(GroundM_P2BData), 0x1b, 0x10, 0x44
     };
     writeData(GroundLevelPart2BHdr, GroundLevelPart2BHdr_data, sizeof(GroundLevelPart2BHdr_data));
 
     // GroundLevelPart2CHdr
     //
-    const uint8_t GroundLevelPart2CHdr_data[] = {
-        0x18, LOBYTE(GroundM_P2CData), HIBYTE(GroundM_P2CData), 0x11, 0x0a, 0x1c
+    static constexpr uint8_t GroundLevelPart2CHdr_data[] = {
+        0x18, lowByte(GroundM_P2CData), highByte(GroundM_P2CData), 0x11, 0x0a, 0x1c
     };
     writeData(GroundLevelPart2CHdr, GroundLevelPart2CHdr_data, sizeof(GroundLevelPart2CHdr_data));
 
     // GroundLevelPart3AHdr
     //
-    const uint8_t GroundLevelPart3AHdr_data[] = {
-        0x18, LOBYTE(GroundM_P3AData), HIBYTE(GroundM_P3AData), 0x2d, 0x10, 0x58
+    static constexpr uint8_t GroundLevelPart3AHdr_data[] = {
+        0x18, lowByte(GroundM_P3AData), highByte(GroundM_P3AData), 0x2d, 0x10, 0x58
     };
     writeData(GroundLevelPart3AHdr, GroundLevelPart3AHdr_data, sizeof(GroundLevelPart3AHdr_data));
 
     // GroundLevelPart3BHdr
     //
-    const uint8_t GroundLevelPart3BHdr_data[] = {
-        0x18, LOBYTE(GroundM_P3BData), HIBYTE(GroundM_P3BData), 0x14, 0x0d, 0x3f
+    static constexpr uint8_t GroundLevelPart3BHdr_data[] = {
+        0x18, lowByte(GroundM_P3BData), highByte(GroundM_P3BData), 0x14, 0x0d, 0x3f
     };
     writeData(GroundLevelPart3BHdr, GroundLevelPart3BHdr_data, sizeof(GroundLevelPart3BHdr_data));
 
     // GroundLevelLeadInHdr
     //
-    const uint8_t GroundLevelLeadInHdr_data[] = {
-        0x18, LOBYTE(GroundMLdInData), HIBYTE(GroundMLdInData), 0x15, 0x0d, 0x21
+    static constexpr uint8_t GroundLevelLeadInHdr_data[] = {
+        0x18, lowByte(GroundMLdInData), highByte(GroundMLdInData), 0x15, 0x0d, 0x21
     };
     writeData(GroundLevelLeadInHdr, GroundLevelLeadInHdr_data, sizeof(GroundLevelLeadInHdr_data));
 
     // GroundLevelPart4AHdr
     //
-    const uint8_t GroundLevelPart4AHdr_data[] = {
-        0x18, LOBYTE(GroundM_P4AData), HIBYTE(GroundM_P4AData), 0x18, 0x10, 0x7a
+    static constexpr uint8_t GroundLevelPart4AHdr_data[] = {
+        0x18, lowByte(GroundM_P4AData), highByte(GroundM_P4AData), 0x18, 0x10, 0x7a
     };
     writeData(GroundLevelPart4AHdr, GroundLevelPart4AHdr_data, sizeof(GroundLevelPart4AHdr_data));
 
     // GroundLevelPart4BHdr
     //
-    const uint8_t GroundLevelPart4BHdr_data[] = {
-        0x18, LOBYTE(GroundM_P4BData), HIBYTE(GroundM_P4BData), 0x19, 0x0f, 0x54
+    static constexpr uint8_t GroundLevelPart4BHdr_data[] = {
+        0x18, lowByte(GroundM_P4BData), highByte(GroundM_P4BData), 0x19, 0x0f, 0x54
     };
     writeData(GroundLevelPart4BHdr, GroundLevelPart4BHdr_data, sizeof(GroundLevelPart4BHdr_data));
 
     // GroundLevelPart4CHdr
     //
-    const uint8_t GroundLevelPart4CHdr_data[] = {
-        0x18, LOBYTE(GroundM_P4CData), HIBYTE(GroundM_P4CData), 0x1e, 0x12, 0x2b
+    static constexpr uint8_t GroundLevelPart4CHdr_data[] = {
+        0x18, lowByte(GroundM_P4CData), highByte(GroundM_P4CData), 0x1e, 0x12, 0x2b
     };
     writeData(GroundLevelPart4CHdr, GroundLevelPart4CHdr_data, sizeof(GroundLevelPart4CHdr_data));
 
     // DeathMusHdr
     //
-    const uint8_t DeathMusHdr_data[] = {
-        0x18, LOBYTE(DeathMusData), HIBYTE(DeathMusData), 0x1e, 0x0f, 0x2d
+    static constexpr uint8_t DeathMusHdr_data[] = {
+        0x18, lowByte(DeathMusData), highByte(DeathMusData), 0x1e, 0x0f, 0x2d
     };
     writeData(DeathMusHdr, DeathMusHdr_data, sizeof(DeathMusHdr_data));
 
     // Star_CloudMData
     //
-    const uint8_t Star_CloudMData_data[] = {
+    static constexpr uint8_t Star_CloudMData_data[] = {
         0x84, 0x2c, 0x2c, 0x2c, 0x82, 0x04, 0x2c, 0x04, 0x85, 0x2c, 0x84, 0x2c, 0x2c,
         0x2a, 0x2a, 0x2a, 0x82, 0x04, 0x2a, 0x04, 0x85, 0x2a, 0x84, 0x2a, 0x2a, 0x00,
         0x1f, 0x1f, 0x1f, 0x98, 0x1f, 0x1f, 0x98, 0x9e, 0x98, 0x1f,
@@ -3243,7 +3243,7 @@ void SMBEngine::loadConstantData()
 
     // GroundM_P1Data
     //
-    const uint8_t GroundM_P1Data_data[] = {
+    static constexpr uint8_t GroundM_P1Data_data[] = {
         0x85, 0x2c, 0x22, 0x1c, 0x84, 0x26, 0x2a, 0x82, 0x28, 0x26, 0x04,
         0x87, 0x22, 0x34, 0x3a, 0x82, 0x40, 0x04, 0x36, 0x84, 0x3a, 0x34,
         0x82, 0x2c, 0x30, 0x85, 0x2a
@@ -3252,7 +3252,7 @@ void SMBEngine::loadConstantData()
 
     // SilenceData
     //
-    const uint8_t SilenceData_data[] = {
+    static constexpr uint8_t SilenceData_data[] = {
         0x00,
         0x5d, 0x55, 0x4d, 0x15, 0x19, 0x96, 0x15, 0xd5, 0xe3, 0xeb,
         0x2d, 0xa6, 0x2b, 0x27, 0x9c, 0x9e, 0x59,
@@ -3264,7 +3264,7 @@ void SMBEngine::loadConstantData()
 
     // GroundM_P2AData
     //
-    const uint8_t GroundM_P2AData_data[] = {
+    static constexpr uint8_t GroundM_P2AData_data[] = {
         0x84, 0x04, 0x82, 0x3a, 0x38, 0x36, 0x32, 0x04, 0x34,
         0x04, 0x24, 0x26, 0x2c, 0x04, 0x26, 0x2c, 0x30, 0x00,
         0x05, 0xb4, 0xb2, 0xb0, 0x2b, 0xac, 0x84,
@@ -3276,7 +3276,7 @@ void SMBEngine::loadConstantData()
 
     // GroundM_P2BData
     //
-    const uint8_t GroundM_P2BData_data[] = {
+    static constexpr uint8_t GroundM_P2BData_data[] = {
         0x84, 0x04, 0x82, 0x3a, 0x38, 0x36, 0x32, 0x04, 0x34,
         0x04, 0x64, 0x04, 0x64, 0x86, 0x64, 0x00,
         0x05, 0xb4, 0xb2, 0xb0, 0x2b, 0xac, 0x84,
@@ -3288,7 +3288,7 @@ void SMBEngine::loadConstantData()
 
     // GroundM_P2CData
     //
-    const uint8_t GroundM_P2CData_data[] = {
+    static constexpr uint8_t GroundM_P2CData_data[] = {
         0x84, 0x04, 0x85, 0x32, 0x85, 0x30, 0x86, 0x2c, 0x04, 0x00,
         0x05, 0xa4, 0x05, 0x9e, 0x05, 0x9d, 0x85,
         0x84, 0x14, 0x85, 0x24, 0x28, 0x2c, 0x82,
@@ -3299,7 +3299,7 @@ void SMBEngine::loadConstantData()
 
     // GroundM_P3AData
     //
-    const uint8_t GroundM_P3AData_data[] = {
+    static constexpr uint8_t GroundM_P3AData_data[] = {
         0x82, 0x2c, 0x84, 0x2c, 0x2c, 0x82, 0x2c, 0x30,
         0x04, 0x34, 0x2c, 0x04, 0x26, 0x86, 0x22, 0x00,
         0xa4, 0x25, 0x25, 0xa4, 0x29, 0xa2, 0x1d, 0x9c, 0x95
@@ -3308,7 +3308,7 @@ void SMBEngine::loadConstantData()
 
     // GroundM_P3BData
     //
-    const uint8_t GroundM_P3BData_data[] = {
+    static constexpr uint8_t GroundM_P3BData_data[] = {
         0x82, 0x2c, 0x2c, 0x04, 0x2c, 0x04, 0x2c, 0x30, 0x85, 0x34, 0x04, 0x04, 0x00,
         0xa4, 0x25, 0x25, 0xa4, 0xa8, 0x63, 0x04,
         0x85, 0x0e, 0x1a, 0x84, 0x24, 0x85, 0x22, 0x14, 0x84, 0x0c
@@ -3317,7 +3317,7 @@ void SMBEngine::loadConstantData()
 
     // GroundMLdInData
     //
-    const uint8_t GroundMLdInData_data[] = {
+    static constexpr uint8_t GroundMLdInData_data[] = {
         0x82, 0x34, 0x84, 0x34, 0x34, 0x82, 0x2c, 0x84, 0x34, 0x86, 0x3a, 0x04, 0x00,
         0xa0, 0x21, 0x21, 0xa0, 0x21, 0x2b, 0x05, 0xa3,
         0x82, 0x18, 0x84, 0x18, 0x18, 0x82, 0x18, 0x18, 0x04, 0x86, 0x3a, 0x22,
@@ -3327,7 +3327,7 @@ void SMBEngine::loadConstantData()
 
     // GroundM_P4AData
     //
-    const uint8_t GroundM_P4AData_data[] = {
+    static constexpr uint8_t GroundM_P4AData_data[] = {
         0x82, 0x34, 0x84, 0x2c, 0x85, 0x22, 0x84, 0x24,
         0x82, 0x26, 0x36, 0x04, 0x36, 0x86, 0x26, 0x00,
         0xac, 0x27, 0x5d, 0x1d, 0x9e, 0x2d, 0xac, 0x9f,
@@ -3338,7 +3338,7 @@ void SMBEngine::loadConstantData()
 
     // GroundM_P4BData
     //
-    const uint8_t GroundM_P4BData_data[] = {
+    static constexpr uint8_t GroundM_P4BData_data[] = {
         0x87, 0x2a, 0x40, 0x40, 0x40, 0x3a, 0x36,
         0x82, 0x34, 0x2c, 0x04, 0x26, 0x86, 0x22, 0x00,
         0xe3, 0xf7, 0xf7, 0xf7, 0xf5, 0xf1, 0xac, 0x27, 0x9e, 0x9d,
@@ -3349,14 +3349,14 @@ void SMBEngine::loadConstantData()
 
     // DeathMusData
     //
-    const uint8_t DeathMusData_data[] = {
+    static constexpr uint8_t DeathMusData_data[] = {
         0x86, 0x04 // death music share data with fourth part c of ground level music 
     };
     writeData(DeathMusData, DeathMusData_data, sizeof(DeathMusData_data));
 
     // GroundM_P4CData
     //
-    const uint8_t GroundM_P4CData_data[] = {
+    static constexpr uint8_t GroundM_P4CData_data[] = {
         0x82, 0x2a, 0x36, 0x04, 0x36, 0x87, 0x36, 0x34, 0x30, 0x86, 0x2c, 0x04, 0x00,
         0x00, 0x68, 0x6a, 0x6c, 0x45, // death music only
         0xa2, 0x31, 0xb0, 0xf1, 0xed, 0xeb, 0xa2, 0x1d, 0x9c, 0x95,
@@ -3368,7 +3368,7 @@ void SMBEngine::loadConstantData()
 
     // CastleMusData
     //
-    const uint8_t CastleMusData_data[] = {
+    static constexpr uint8_t CastleMusData_data[] = {
         0x80, 0x22, 0x28, 0x22, 0x26, 0x22, 0x24, 0x22, 0x26,
         0x22, 0x28, 0x22, 0x2a, 0x22, 0x28, 0x22, 0x26,
         0x22, 0x28, 0x22, 0x26, 0x22, 0x24, 0x22, 0x26,
@@ -3394,7 +3394,7 @@ void SMBEngine::loadConstantData()
 
     // GameOverMusData
     //
-    const uint8_t GameOverMusData_data[] = {
+    static constexpr uint8_t GameOverMusData_data[] = {
         0x82, 0x2c, 0x04, 0x04, 0x22, 0x04, 0x04, 0x84, 0x1c, 0x87,
         0x26, 0x2a, 0x26, 0x84, 0x24, 0x28, 0x24, 0x80, 0x22, 0x00,
         0x9c, 0x05, 0x94, 0x05, 0x0d, 0x9f, 0x1e, 0x9c, 0x98, 0x9d,
@@ -3405,7 +3405,7 @@ void SMBEngine::loadConstantData()
 
     // TimeRunOutMusData
     //
-    const uint8_t TimeRunOutMusData_data[] = {
+    static constexpr uint8_t TimeRunOutMusData_data[] = {
         0x81, 0x1c, 0x30, 0x04, 0x30, 0x30, 0x04, 0x1e, 0x32, 0x04, 0x32, 0x32,
         0x04, 0x20, 0x34, 0x04, 0x34, 0x34, 0x04, 0x36, 0x04, 0x84, 0x36, 0x00,
         0x46, 0xa4, 0x64, 0xa4, 0x48, 0xa6, 0x66, 0xa6, 0x4a, 0xa8, 0x68, 0xa8,
@@ -3417,7 +3417,7 @@ void SMBEngine::loadConstantData()
 
     // WinLevelMusData
     //
-    const uint8_t WinLevelMusData_data[] = {
+    static constexpr uint8_t WinLevelMusData_data[] = {
         0x87, 0x04, 0x06, 0x0c, 0x14, 0x1c, 0x22, 0x86, 0x2c, 0x22,
         0x87, 0x04, 0x60, 0x0e, 0x14, 0x1a, 0x24, 0x86, 0x2c, 0x24,
         0x87, 0x04, 0x08, 0x10, 0x18, 0x1e, 0x28, 0x86, 0x30, 0x30,
@@ -3435,7 +3435,7 @@ void SMBEngine::loadConstantData()
 
     // UndergroundMusData
     //
-    const uint8_t UndergroundMusData_data[] = {
+    static constexpr uint8_t UndergroundMusData_data[] = {
         0x82, 0x14, 0x2c, 0x62, 0x26, 0x10, 0x28, 0x80, 0x04,
         0x82, 0x14, 0x2c, 0x62, 0x26, 0x10, 0x28, 0x80, 0x04,
         0x82, 0x08, 0x1e, 0x5e, 0x18, 0x60, 0x1a, 0x80, 0x04,
@@ -3449,7 +3449,7 @@ void SMBEngine::loadConstantData()
 
     // WaterMusData
     //
-    const uint8_t WaterMusData_data[] = {
+    static constexpr uint8_t WaterMusData_data[] = {
         0x82, 0x18, 0x1c, 0x20, 0x22, 0x26, 0x28,
         0x81, 0x2a, 0x2a, 0x2a, 0x04, 0x2a, 0x04, 0x83, 0x2a, 0x82, 0x22,
         0x86, 0x34, 0x32, 0x34, 0x81, 0x04, 0x22, 0x26, 0x2a, 0x2c, 0x30,
@@ -3481,7 +3481,7 @@ void SMBEngine::loadConstantData()
 
     // EndOfCastleMusData
     //
-    const uint8_t EndOfCastleMusData_data[] = {
+    static constexpr uint8_t EndOfCastleMusData_data[] = {
         0x81, 0x2c, 0x22, 0x1c, 0x2c, 0x22, 0x1c, 0x85, 0x2c, 0x04,
         0x81, 0x2e, 0x24, 0x1e, 0x2e, 0x24, 0x1e, 0x85, 0x2e, 0x04,
         0x81, 0x32, 0x28, 0x22, 0x32, 0x28, 0x22, 0x85, 0x32,
@@ -3501,7 +3501,7 @@ void SMBEngine::loadConstantData()
 
     // VictoryMusData
     //
-    const uint8_t VictoryMusData_data[] = {
+    static constexpr uint8_t VictoryMusData_data[] = {
         0x83, 0x04, 0x84, 0x0c, 0x83, 0x62, 0x10, 0x84, 0x12,
         0x83, 0x1c, 0x22, 0x1e, 0x22, 0x26, 0x18, 0x1e, 0x04, 0x1c, 0x00,
         0xe3, 0xe1, 0xe3, 0x1d, 0xde, 0xe0, 0x23,
@@ -3514,7 +3514,7 @@ void SMBEngine::loadConstantData()
 
     // FreqRegLookupTbl
     //
-    const uint8_t FreqRegLookupTbl_data[] = {
+    static constexpr uint8_t FreqRegLookupTbl_data[] = {
         0x00, 0x88, 0x00, 0x2f, 0x00, 0x00,
         0x02, 0xa6, 0x02, 0x80, 0x02, 0x5c, 0x02, 0x3a,
         0x02, 0x1a, 0x01, 0xdf, 0x01, 0xc4, 0x01, 0xab,
@@ -3533,7 +3533,7 @@ void SMBEngine::loadConstantData()
 
     // MusicLengthLookupTbl
     //
-    const uint8_t MusicLengthLookupTbl_data[] = {
+    static constexpr uint8_t MusicLengthLookupTbl_data[] = {
         0x05, 0x0a, 0x14, 0x28, 0x50, 0x1e, 0x3c, 0x02,
         0x04, 0x08, 0x10, 0x20, 0x40, 0x18, 0x30, 0x0c,
         0x03, 0x06, 0x0c, 0x18, 0x30, 0x12, 0x24, 0x08,
@@ -3545,21 +3545,21 @@ void SMBEngine::loadConstantData()
 
     // EndOfCastleMusicEnvData
     //
-    const uint8_t EndOfCastleMusicEnvData_data[] = {
+    static constexpr uint8_t EndOfCastleMusicEnvData_data[] = {
         0x98, 0x99, 0x9a, 0x9b
     };
     writeData(EndOfCastleMusicEnvData, EndOfCastleMusicEnvData_data, sizeof(EndOfCastleMusicEnvData_data));
 
     // AreaMusicEnvData
     //
-    const uint8_t AreaMusicEnvData_data[] = {
+    static constexpr uint8_t AreaMusicEnvData_data[] = {
         0x90, 0x94, 0x94, 0x95, 0x95, 0x96, 0x97, 0x98
     };
     writeData(AreaMusicEnvData, AreaMusicEnvData_data, sizeof(AreaMusicEnvData_data));
 
     // WaterEventMusEnvData
     //
-    const uint8_t WaterEventMusEnvData_data[] = {
+    static constexpr uint8_t WaterEventMusEnvData_data[] = {
         0x90, 0x91, 0x92, 0x92, 0x93, 0x93, 0x93, 0x94,
         0x94, 0x94, 0x94, 0x94, 0x94, 0x95, 0x95, 0x95,
         0x95, 0x95, 0x95, 0x96, 0x96, 0x96, 0x96, 0x96,
@@ -3570,7 +3570,7 @@ void SMBEngine::loadConstantData()
 
     // BowserFlameEnvData
     //
-    const uint8_t BowserFlameEnvData_data[] = {
+    static constexpr uint8_t BowserFlameEnvData_data[] = {
         0x15, 0x16, 0x16, 0x17, 0x17, 0x18, 0x19, 0x19,
         0x1a, 0x1a, 0x1c, 0x1d, 0x1d, 0x1e, 0x1e, 0x1f,
         0x1f, 0x1f, 0x1f, 0x1e, 0x1d, 0x1c, 0x1e, 0x1f,
@@ -3580,11 +3580,10 @@ void SMBEngine::loadConstantData()
 
     // BrickShatterEnvData
     //
-    const uint8_t BrickShatterEnvData_data[] = {
+    static constexpr uint8_t BrickShatterEnvData_data[] = {
         0x15, 0x16, 0x16, 0x17, 0x17, 0x18, 0x19, 0x19,
         0x1a, 0x1a, 0x1c, 0x1d, 0x1d, 0x1e, 0x1e, 0x1f
     };
     writeData(BrickShatterEnvData, BrickShatterEnvData_data, sizeof(BrickShatterEnvData_data));
 
 }
-

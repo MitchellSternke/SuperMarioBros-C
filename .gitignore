@@ -1,4 +1,11 @@
+# Build output
 build/
+build-*/
+out/
+.cache/
+compile_commands.json
+
+# User files
 *.nes
 *.pal
 smbc.conf

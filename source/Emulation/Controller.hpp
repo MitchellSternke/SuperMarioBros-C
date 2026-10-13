@@ -1,50 +1,52 @@
+/**
+ * @file
+ * @brief NES controller emulation.
+ */
 #ifndef CONTROLLER_HPP
 #define CONTROLLER_HPP
 
 #include <cstdint>
 
 /**
- * Buttons found on a standard controller.
+ * Buttons of a standard controller, in the order the hardware reports them.
  */
-enum ControllerButton
+enum class Button : uint8_t
 {
-    BUTTON_A      = 0,
-    BUTTON_B      = 1,
-    BUTTON_SELECT = 2,
-    BUTTON_START  = 3,
-    BUTTON_UP     = 4,
-    BUTTON_DOWN   = 5,
-    BUTTON_LEFT   = 6,
-    BUTTON_RIGHT  = 7
+    A,
+    B,
+    Select,
+    Start,
+    Up,
+    Down,
+    Left,
+    Right
 };
 
 /**
- * Emulates an NES game controller device.
+ * Emulates an NES game controller: a shift register that reports one button per read.
  */
 class Controller
 {
 public:
-    Controller();
+    /**
+     * Set whether a button is held down.
+     */
+    void setButtonState(Button button, bool pressed);
 
     /**
-     * Read from the controller register.
+     * Read the controller register ($4016/$4017).
      */
     uint8_t readByte();
 
     /**
-     * Set the state of a button on the controller.
+     * Write the strobe register ($4016).
      */
-    void setButtonState( ControllerButton button, bool state );
-
-    /**
-     * Write a byte to the controller register.
-     */
-    void writeByte( uint8_t value );
+    void writeByte(uint8_t value);
 
 private:
-    bool    buttonStates[8];
-    uint8_t buttonIndex;
-    uint8_t strobe;
+    uint8_t buttonStates = 0; /**< One bit per button. */
+    uint8_t buttonIndex = 0;  /**< Next button reported by a read. */
+    uint8_t strobe = 1;
 };
 
 #endif // CONTROLLER_HPP

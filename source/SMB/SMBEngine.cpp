@@ -1,232 +1,115 @@
 #include <cstring>
 
-#include "../Configuration.hpp"
-
 #include "../Emulation/APU.hpp"
-#include "../Emulation/Controller.hpp"
 #include "../Emulation/PPU.hpp"
 
 #include "SMBEngine.hpp"
 
-#define DATA_STORAGE_OFFSET 0x8000 // Starting address for storing constant data
-
-//---------------------------------------------------------------------
-// Public interface
-//---------------------------------------------------------------------
-
-SMBEngine::SMBEngine(uint8_t* romImage) :
-    a(*this, &registerA),
-    x(*this, &registerX),
-    y(*this, &registerY),
-    s(*this, &registerS)
+SMBEngine::SMBEngine(const uint8_t* chr, int audioSampleRate, int frameRate) :
+    apu(std::make_unique<APU>(audioSampleRate, frameRate)),
+    ppu(std::make_unique<PPU>(chr)),
+    audioEnabled(audioSampleRate > 0)
 {
-    apu = new APU();
-    ppu = new PPU(*this);
-    controller1 = new Controller();
-    controller2 = new Controller();
-
-    // CHR Location in ROM: Header (16 bytes) + 2 PRG pages (16k each)
-    chr = (romImage + 16 + (16384 * 2));
-
-    returnIndexStackTop = 0;
 }
 
-SMBEngine::~SMBEngine()
+SMBEngine::~SMBEngine() = default;
+
+Controller& SMBEngine::getController(int player)
 {
-    delete apu;
-    delete ppu;
-    delete controller1;
-    delete controller2;
+    return controllers.at(player);
 }
 
-void SMBEngine::audioCallback(uint8_t* stream, int length)
+const std::vector<int16_t>& SMBEngine::getAudioSamples() const
 {
-    apu->output(stream, length);
+    return apu->getSamples();
 }
 
-Controller& SMBEngine::getController1()
+const std::array<uint8_t, 0x800>& SMBEngine::getRam() const
 {
-    return *controller1;
+    return ram;
 }
 
-Controller& SMBEngine::getController2()
+void SMBEngine::render(uint32_t* buffer) const
 {
-    return *controller2;
-}
-
-void SMBEngine::render(uint32_t* buffer)
-{
-    ppu->render(buffer);
+    ppu->render(buffer, palette);
 }
 
 void SMBEngine::reset()
 {
-    // Run the decompiled code for initialization
+    // Run the translated code for initialization
     code(0);
+}
+
+void SMBEngine::setPalette(const Palette& newPalette)
+{
+    palette = newPalette;
 }
 
 void SMBEngine::update()
 {
-    // Run the decompiled code for the NMI handler
+    // Run the translated code for the NMI handler
     code(1);
 
-    // Update the APU
-    if (Configuration::getAudioEnabled())
+    if (audioEnabled)
     {
         apu->stepFrame();
     }
 }
 
-//---------------------------------------------------------------------
-// Private methods
-//---------------------------------------------------------------------
-
-void SMBEngine::compare(uint8_t value1, uint8_t value2)
+uint8_t SMBEngine::readIO(uint16_t address)
 {
-    uint8_t result = value1 - value2;
-    c = (value1 >= value2);
-    setZN(result);
-}
-
-void SMBEngine::bit(uint8_t value)
-{
-    n = (value & (1 << 7)) != 0;
-    z = (registerA & value) == 0;
-}
-
-uint8_t* SMBEngine::getCHR()
-{
-    return chr;
-}
-
-uint8_t* SMBEngine::getDataPointer(uint16_t address)
-{
-    // Constant data
-    if( address >= DATA_STORAGE_OFFSET )
-    {
-        return dataStorage + (address - DATA_STORAGE_OFFSET);
-    }
-    // RAM and Mirrors
-    else if( address < 0x2000 )
-    {
-        return ram + (address & 0x7ff);
-    }
-
-    return nullptr;
-}
-
-MemoryAccess SMBEngine::getMemory(uint16_t address)
-{
-    uint8_t* dataPointer = getDataPointer(address);
-    if( dataPointer != nullptr )
-    {
-        return MemoryAccess(*this, dataPointer);
-    }
-    else
-    {
-        return MemoryAccess(*this, readData(address));
-    }
-}
-
-uint16_t SMBEngine::getMemoryWord(uint8_t address)
-{
-    return (uint16_t)readData(address) + ((uint16_t)(readData(address + 1)) << 8);
-}
-
-void SMBEngine::pha()
-{
-    writeData(0x100 | (uint16_t)registerS, registerA);
-    registerS--;
-}
-
-void SMBEngine::pla()
-{
-    registerS++;
-    a = readData(0x100 | (uint16_t)registerS);
-}
-
-int SMBEngine::popReturnIndex()
-{
-    return returnIndexStack[returnIndexStackTop--];
-}
-
-void SMBEngine::pushReturnIndex(int index)
-{
-    returnIndexStack[++returnIndexStackTop] = index;
-}
-
-uint8_t SMBEngine::readData(uint16_t address)
-{
-    // Constant data
-    if( address >= DATA_STORAGE_OFFSET )
-    {
-        return dataStorage[address - DATA_STORAGE_OFFSET];
-    }
-    // RAM and Mirrors
-    else if( address < 0x2000 )
-    {
-        return ram[address & 0x7ff];
-    }
-    // PPU Registers and Mirrors
-    else if( address < 0x4000 )
+    // PPU registers are mirrored every 8 bytes
+    if (address < 0x4000)
     {
         return ppu->readRegister(0x2000 + (address & 0x7));
     }
-    // IO registers
-    else if( address < 0x4020 )
-    {
-        switch (address)
-        {
-        case 0x4016:
-            return controller1->readByte();
-        case 0x4017:
-            return controller2->readByte();
-        }
-    }
 
-    return 0;
+    switch (address)
+    {
+    case 0x4016:
+        return controllers[0].readByte();
+    case 0x4017:
+        return controllers[1].readByte();
+    default:
+        return 0;
+    }
 }
 
-void SMBEngine::setZN(uint8_t value)
+void SMBEngine::writeIO(uint16_t address, uint8_t value)
 {
-    z = (value == 0);
-    n = (value & (1 << 7)) != 0;
-}
-
-void SMBEngine::writeData(uint16_t address, uint8_t value)
-{
-    // RAM and Mirrors
-    if( address < 0x2000 )
-    {
-        ram[address & 0x7ff] = value;
-    }
-    // PPU Registers and Mirrors
-    else if( address < 0x4000 )
+    // PPU registers are mirrored every 8 bytes
+    if (address < 0x4000)
     {
         ppu->writeRegister(0x2000 + (address & 0x7), value);
+        return;
     }
-    // IO registers
-    else if( address < 0x4020 )
+
+    switch (address)
     {
-        switch( address )
+    case 0x4014: // OAM DMA
+    {
+        uint8_t page[256];
+        for (int i = 0; i < 256; i++)
         {
-        case 0x4014:
-            ppu->writeDMA(value);
-            break;
-        case 0x4016:
-            controller1->writeByte(value);
-            controller2->writeByte(value);
-            break;
-        default:
-            apu->writeRegister(address, value);
-            break;
+            page[i] = readData(static_cast<uint16_t>((value << 8) + i));
         }
+        ppu->writeDMA(page);
+        break;
+    }
+    case 0x4016:
+        controllers[0].writeByte(value);
+        controllers[1].writeByte(value);
+        break;
+    default:
+        if (address < 0x4020)
+        {
+            apu->writeRegister(address, value);
+        }
+        break;
     }
 }
 
-void SMBEngine::writeData(uint16_t address, const uint8_t* data, size_t length)
+void SMBEngine::writeData(uint16_t address, const uint8_t* data, std::size_t length)
 {
-    address -= DATA_STORAGE_OFFSET;
-
-    memcpy(dataStorage + (std::ptrdiff_t)address, data, length);
+    std::memcpy(&dataStorage[address - 0x8000], data, length);
 }

@@ -1,147 +1,157 @@
+#include <algorithm>
+#include <cctype>
 #include <fstream>
+#include <functional>
+#include <iostream>
+#include <map>
 
 #include "Configuration.hpp"
 
-/**
- * List of all supported configuration options.
- */
-std::list<ConfigurationOption*> Configuration::configurationOptions = {
-    &Configuration::audioEnabled,
-    &Configuration::audioFrequency,
-    &Configuration::frameRate,
-    &Configuration::paletteFileName,
-    &Configuration::renderScale,
-    &Configuration::romFileName,
-    &Configuration::scanlinesEnabled,
-    &Configuration::vsyncEnabled
-};
-
-/**
- * Whether audio is enabled or not.
- */
-BasicConfigurationOption<bool> Configuration::audioEnabled(
-    "audio.enabled", true
-);
-
-/**
- * Audio frequency, in Hz
- */
-BasicConfigurationOption<int> Configuration::audioFrequency(
-    "audio.frequency", 48000
-);
-
-/**
- * Frame rate (per second).
- */
-BasicConfigurationOption<int> Configuration::frameRate(
-    "game.frame_rate", 60
-);
-
-/**
- * The filename for a custom palette to use for rendering.
- */
-BasicConfigurationOption<std::string> Configuration::paletteFileName(
-    "video.palette_file", ""
-);
-
-/**
- * Scaling factor for rendering.
- */
-BasicConfigurationOption<int> Configuration::renderScale(
-    "video.scale", 3
-);
-
-/**
- * Filename for the SMB ROM image.
- */
-BasicConfigurationOption<std::string> Configuration::romFileName(
-    "game.rom_file", "Super Mario Bros. (JU) (PRG0) [!].nes"
-);
-
-/**
- * Whether scanlines are enabled or not.
- */
-BasicConfigurationOption<bool> Configuration::scanlinesEnabled(
-    "video.scanlines", true
-);
-
-/**
- * Whether vsync is enabled for video.
- */
-BasicConfigurationOption<bool> Configuration::vsyncEnabled(
-    "video.vsync", true
-);
-
-ConfigurationOption::ConfigurationOption(
-    const std::string& path) :
-    path(path)
+namespace
 {
+
+std::string trim(const std::string& text)
+{
+    const auto isSpace = [](unsigned char c) { return std::isspace(c) != 0; };
+    const auto begin = std::find_if_not(text.begin(), text.end(), isSpace);
+    const auto end = std::find_if_not(text.rbegin(), text.rend(), isSpace).base();
+    return begin < end ? std::string(begin, end) : std::string();
 }
 
-const std::string& ConfigurationOption::getPath() const
+std::string toLower(std::string text)
 {
-    return path;
+    std::transform(text.begin(), text.end(), text.begin(), [](unsigned char c) { return std::tolower(c); });
+    return text;
 }
 
-void Configuration::initialize(const std::string& fileName)
+bool parse(const std::string& text, bool& value)
 {
-    // Check that the configuration file exists.
-    // If it does not exist, we will fall back to default values.
-    //
-    std::ifstream configFile(fileName.c_str());
-
-    if (configFile.good())
+    const std::string lower = toLower(text);
+    if (lower == "1" || lower == "true" || lower == "yes" || lower == "on")
     {
-        // Load the configuration file into a property tree to parse it
-        //
-        boost::property_tree::ptree propertyTree;
-        boost::property_tree::ini_parser::read_ini(configFile, propertyTree);
+        value = true;
+        return true;
+    }
+    if (lower == "0" || lower == "false" || lower == "no" || lower == "off")
+    {
+        value = false;
+        return true;
+    }
+    return false;
+}
 
-        // Try to load the value for all known config options
-        //
-        for (auto option : configurationOptions)
+bool parse(const std::string& text, int& value, int minimum, int maximum)
+{
+    try
+    {
+        std::size_t length = 0;
+        const int parsed = std::stoi(text, &length);
+        if (length != text.size() || parsed < minimum || parsed > maximum)
         {
-            option->initializeValue(propertyTree);
+            return false;
         }
+        value = parsed;
+        return true;
+    }
+    catch (const std::exception&)
+    {
+        return false;
     }
 }
 
-bool Configuration::getAudioEnabled()
+bool parse(const std::string& text, std::string& value)
 {
-    return audioEnabled.getValue();
+    // Allow (but do not require) quotes around strings
+    if (text.size() >= 2 && text.front() == '"' && text.back() == '"')
+    {
+        value = text.substr(1, text.size() - 2);
+    }
+    else
+    {
+        value = text;
+    }
+    return true;
 }
 
-int Configuration::getAudioFrequency()
+using Option = std::function<bool(const std::string&)>;
+
+template <typename T>
+Option bind(T& field)
 {
-    return audioFrequency.getValue();
+    return [&field](const std::string& text) { return parse(text, field); };
 }
 
-int Configuration::getFrameRate()
+Option bind(int& field, int minimum, int maximum)
 {
-    return frameRate.getValue();
+    return [&field, minimum, maximum](const std::string& text) { return parse(text, field, minimum, maximum); };
 }
 
-const std::string& Configuration::getPaletteFileName()
-{
-    return paletteFileName.getValue();
-}
+} // namespace
 
-int Configuration::getRenderScale()
+Configuration Configuration::load(const std::string& fileName)
 {
-    return renderScale.getValue();
-}
+    Configuration config;
 
-const std::string& Configuration::getRomFileName()
-{
-    return romFileName.getValue();
-}
+    std::ifstream file(fileName);
+    if (!file)
+    {
+        // No configuration file: use the defaults
+        return config;
+    }
 
-bool Configuration::getScanlinesEnabled()
-{
-    return scanlinesEnabled.getValue();
-}
+    const std::map<std::string, Option> options = {
+        {"audio.enabled", bind(config.audioEnabled)},
+        {"audio.frequency", bind(config.audioFrequency, 8000, 192000)},
+        {"audio.volume", bind(config.audioVolume, 0, 100)},
+        {"game.frame_rate", bind(config.frameRate, 1, 1000)},
+        {"game.rom_file", bind(config.romFile)},
+        {"video.fullscreen", bind(config.fullscreen)},
+        {"video.integer_scaling", bind(config.integerScaling)},
+        {"video.palette_file", bind(config.paletteFile)},
+        {"video.scale", bind(config.scale, 1, 16)},
+        {"video.scanlines", bind(config.scanlines)},
+        {"video.vsync", bind(config.vsync)},
+    };
 
-bool Configuration::getVsyncEnabled()
-{
-    return vsyncEnabled.getValue();
+    std::string section;
+    std::string line;
+    for (int lineNumber = 1; std::getline(file, line); lineNumber++)
+    {
+        line = trim(line);
+        if (line.empty() || line[0] == ';' || line[0] == '#')
+        {
+            continue;
+        }
+
+        if (line.front() == '[' && line.back() == ']')
+        {
+            section = toLower(trim(line.substr(1, line.size() - 2)));
+            continue;
+        }
+
+        const std::size_t equals = line.find('=');
+        if (equals == std::string::npos)
+        {
+            std::cerr << fileName << ":" << lineNumber << ": expected \"key = value\"\n";
+            continue;
+        }
+
+        const std::string key = section + "." + toLower(trim(line.substr(0, equals)));
+        const std::string value = trim(line.substr(equals + 1));
+        const auto option = options.find(key);
+        if (option == options.end())
+        {
+            std::cerr << fileName << ":" << lineNumber << ": unknown option \"" << key << "\"\n";
+        }
+        else if (!option->second(value))
+        {
+            std::cerr << fileName << ":" << lineNumber << ": invalid value \"" << value << "\" for \"" << key << "\"\n";
+        }
+        else
+        {
+            std::cout << "Configuration: " << key << " = " << value << "\n";
+        }
+    }
+
+    return config;
 }

@@ -1,335 +1,60 @@
-%option noyywrap
-%option yylineno
+%option noyywrap nounput noinput nounistd never-interactive yylineno
 
 %{
-#include <string.h>
-#include "ast.hpp"
-#include "util.hpp"
+#include <cstdio>
+
 #include "parser.hpp"
 
 #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
 
-void yyerror(const char *);
-%}
-
-%%
-[ \t\r\n]+ {
-    ;
-}
-
-;.* {
-    mapComment(yylineno, yytext);
-}
-
-\.db {
-    return DATABYTES;
-}
-
-\.dw {
-    return DATAWORDS;
-}
-
-\.[a-z]+ {
-    yylval.str = DUP_YYTEXT;
-    return DIRECTIVE;
-}
-
-[a-zA-Z]+[a-zA-Z0-9_]*: {
-    yylval.str = DUP_YYTEXT;
-    return LABEL;
-}
-
-x {
-    return *yytext;
-}
-
-y {
-    return *yytext;
-}
-
-lda {
-    return LDA;
-}
-
-ldx {
-    return LDX;
-}
-
-ldy {
-    return LDY;
-}
-
-sta {
-    return STA;
-}
-
-stx {
-    return STX;
-}
-
-sty {
-    return STY;
-}
-
-tax {
-    return TAX;
-}
-
-tay {
-    return TAY;
-}
-
-txa {
-    return TXA;
-}
-
-tya {
-    return TYA;
-}
-
-tsx {
-    return TSX;
-}
-
-txs {
-    return TXS;
-}
-
-pha {
-    return PHA;
-}
-
-php {
-    return PHP;
-}
-
-pla {
-    return PLA;
-}
-
-plp {
-    return PLP;
-}
-
-and {
-    return AND;
-}
-
-eor {
-    return EOR;
-}
-
-ora {
-    return ORA;
-}
-
-bit {
-    return BIT;
-}
-
-adc {
-    return ADC;
-}
-
-sbc {
-    return SBC;
-}
-
-cmp {
-    return CMP;
-}
-
-cpx {
-    return CPX;
-}
-
-cpy {
-    return CPY;
-}
-
-inc {
-    return INC;
-}
-
-inx {
-    return INX;
-}
-
-iny {
-    return INY;
-}
-
-dec {
-    return DEC;
-}
-
-dex {
-    return DEX;
-}
-
-dey {
-    return DEY;
-}
-
-asl {
-    return ASL;
-}
-
-lsr {
-    return LSR;
-}
-
-rol {
-    return ROL;
-}
-
-ror {
-    return ROR;
-}
-
-jmp {
-    return JMP;
-}
-
-jsr {
-    return JSR;
-}
-
-rts {
-    return RTS;
-}
-
-bcc {
-    return BCC;
-}
-
-bcs {
-    return BCS;
-}
-
-beq {
-    return BEQ;
-}
-
-bmi {
-    return BMI;
-}
-
-bne {
-    return BNE;
-}
-
-bpl {
-    return BPL;
-}
-
-bvc {
-    return BVC;
-}
-
-bvs {
-    return BVS;
-}
-
-clc {
-    return CLC;
-}
-
-cld {
-    return CLD;
-}
-
-cli {
-    return CLI;
-}
-
-clv {
-    return CLV;
-}
-
-sec {
-    return SEC;
-}
-
-sed {
-    return SED;
-}
-
-sei {
-    return SEI;
-}
-
-brk {
-    return BRK;
-}
-
-nop {
-    return NOP;
-}
-
-rti {
-    return RTI;
-}
-
-[a-zA-Z]+[a-zA-Z0-9_]* {
-    yylval.str = DUP_YYTEXT;
+static std::string* copyText()
+{
+    return new std::string(yytext, yyleng);
+}
+
+// Instructions are recognised as identifiers first, then classified by
+// the shape of their operand so the grammar stays small.
+//
+static int identifierToken()
+{
+    const OpcodeInfo* info = findOpcode(yytext);
+    if (info == nullptr)
+    {
+        yylval.text = copyText();
+        return NAME;
+    }
+
+    yylval.opcode = info->opcode;
+    switch (info->operandSyntax)
+    {
+    case OperandSyntax::None:     return OP_IMPLIED;
+    case OperandSyntax::Required: return OP_REQUIRED;
+    case OperandSyntax::Optional: return OP_OPTIONAL;
+    case OperandSyntax::Label:    return OP_LABEL;
+    }
     return NAME;
 }
+%}
 
-\$[0-9A-Fa-f]+ {
-    yylval.str = DUP_YYTEXT;
-    return HEXCONST;
-}
+IDENTIFIER [a-zA-Z][a-zA-Z0-9_]*
 
-%[0|1]+ {
-    yylval.str = DUP_YYTEXT;
-    return BINCONST;
-}
+%%
 
-[0-9]+ {
-    yylval.str = DUP_YYTEXT;
-    return DECCONST;
-}
-
-= {
-    return *yytext;
-}
-
-\+ {
-    return *yytext;
-}
-
-\- {
-    return *yytext;
-}
-
-\< {
-    return *yytext;
-}
-
-\> {
-    return *yytext;
-}
-
-# {
-    return *yytext;
-}
-
-, {
-    return *yytext;
-}
-
-\( {
-    return *yytext;
-}
-
-\) {
-    return *yytext;
-}
-
-. {
-    printf("invalid token (line %d): %s\n", yylineno, yytext);
-    yyerror(yytext);
-}
+[ \t\r\n]+          ;
+;[^\r\n]*           parsedProgram->comments[yylineno] = yytext + 1;
+\.db                return DATABYTES;
+\.dw                return DATAWORDS;
+\.[a-z]+            { yylval.text = copyText(); return DIRECTIVE; }
+{IDENTIFIER}:       { yylval.text = new std::string(yytext, yyleng - 1); return LABEL; }
+[xy]                return *yytext;
+{IDENTIFIER}        return identifierToken();
+\$[0-9A-Fa-f]+      { yylval.text = copyText(); return HEXCONST; }
+%[01]+              { yylval.text = copyText(); return BINCONST; }
+[0-9]+              { yylval.text = copyText(); return DECCONST; }
+[-=+<>#,()]         return *yytext;
+.                   {
+                        std::fprintf(stderr, "line %d: invalid token '%s'\n", yylineno, yytext);
+                        yyerror("invalid token");
+                    }
 
 %%

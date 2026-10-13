@@ -1,300 +1,74 @@
-#include <cstdlib>
-#include <cstdio>
+#include <cstring>
 
 #include "ast.hpp"
 
-AstNode::AstNode(AstType type)
-{
-    this->type = type;
-    this->value.s = NULL;
-    this->parent = NULL;
-    this->lineNumber = 0;
-}
+static const OpcodeInfo opcodeTable[] = {
+    {"adc", Opcode::ADC, OperandSyntax::Required},
+    {"and", Opcode::AND, OperandSyntax::Required},
+    {"asl", Opcode::ASL, OperandSyntax::Optional},
+    {"bcc", Opcode::BCC, OperandSyntax::Label},
+    {"bcs", Opcode::BCS, OperandSyntax::Label},
+    {"beq", Opcode::BEQ, OperandSyntax::Label},
+    {"bit", Opcode::BIT, OperandSyntax::Required},
+    {"bmi", Opcode::BMI, OperandSyntax::Label},
+    {"bne", Opcode::BNE, OperandSyntax::Label},
+    {"bpl", Opcode::BPL, OperandSyntax::Label},
+    {"brk", Opcode::BRK, OperandSyntax::None},
+    {"bvc", Opcode::BVC, OperandSyntax::Label},
+    {"bvs", Opcode::BVS, OperandSyntax::Label},
+    {"clc", Opcode::CLC, OperandSyntax::None},
+    {"cld", Opcode::CLD, OperandSyntax::None},
+    {"cli", Opcode::CLI, OperandSyntax::None},
+    {"clv", Opcode::CLV, OperandSyntax::None},
+    {"cmp", Opcode::CMP, OperandSyntax::Required},
+    {"cpx", Opcode::CPX, OperandSyntax::Required},
+    {"cpy", Opcode::CPY, OperandSyntax::Required},
+    {"dec", Opcode::DEC, OperandSyntax::Required},
+    {"dex", Opcode::DEX, OperandSyntax::None},
+    {"dey", Opcode::DEY, OperandSyntax::None},
+    {"eor", Opcode::EOR, OperandSyntax::Required},
+    {"inc", Opcode::INC, OperandSyntax::Required},
+    {"inx", Opcode::INX, OperandSyntax::None},
+    {"iny", Opcode::INY, OperandSyntax::None},
+    {"jmp", Opcode::JMP, OperandSyntax::Required},
+    {"jsr", Opcode::JSR, OperandSyntax::Label},
+    {"lda", Opcode::LDA, OperandSyntax::Required},
+    {"ldx", Opcode::LDX, OperandSyntax::Required},
+    {"ldy", Opcode::LDY, OperandSyntax::Required},
+    {"lsr", Opcode::LSR, OperandSyntax::Optional},
+    {"nop", Opcode::NOP, OperandSyntax::None},
+    {"ora", Opcode::ORA, OperandSyntax::Required},
+    {"pha", Opcode::PHA, OperandSyntax::None},
+    {"php", Opcode::PHP, OperandSyntax::None},
+    {"pla", Opcode::PLA, OperandSyntax::None},
+    {"plp", Opcode::PLP, OperandSyntax::None},
+    {"rol", Opcode::ROL, OperandSyntax::Optional},
+    {"ror", Opcode::ROR, OperandSyntax::Optional},
+    {"rti", Opcode::RTI, OperandSyntax::None},
+    {"rts", Opcode::RTS, OperandSyntax::None},
+    {"sbc", Opcode::SBC, OperandSyntax::Required},
+    {"sec", Opcode::SEC, OperandSyntax::None},
+    {"sed", Opcode::SED, OperandSyntax::None},
+    {"sei", Opcode::SEI, OperandSyntax::None},
+    {"sta", Opcode::STA, OperandSyntax::Required},
+    {"stx", Opcode::STX, OperandSyntax::Required},
+    {"sty", Opcode::STY, OperandSyntax::Required},
+    {"tax", Opcode::TAX, OperandSyntax::None},
+    {"tay", Opcode::TAY, OperandSyntax::None},
+    {"tsx", Opcode::TSX, OperandSyntax::None},
+    {"txa", Opcode::TXA, OperandSyntax::None},
+    {"txs", Opcode::TXS, OperandSyntax::None},
+    {"tya", Opcode::TYA, OperandSyntax::None},
+};
 
-AstNode::AstNode(AstType type, const char* value)
+const OpcodeInfo* findOpcode(const char* mnemonic)
 {
-    this->type = type;
-    this->value.s = value;
-    this->parent = NULL;
-    this->lineNumber = 0;
-}
-
-UnaryNode::UnaryNode(AstType type, AstNode* child) :
-    AstNode(type)
-{
-    this->child = child;
-}
-
-BinaryNode::BinaryNode(AstType type, AstNode* lhs, AstNode* rhs) :
-    AstNode(type)
-{
-    this->lhs = lhs;
-    this->rhs = rhs;
-}
-
-RootNode::RootNode() :
-    AstNode(AST_ROOT)
-{
-}
-
-ListNode::ListNode() :
-    AstNode(AST_LIST)
-{
-    this->next = NULL;
-}
-
-DeclNode::DeclNode(const char* name, AstNode* expression) :
-    AstNode(AST_DECL)
-{
-    this->value.s = name;
-    this->expression = expression;
-}
-
-LabelNode::LabelNode(const char* name, AstNode* child) :
-    AstNode(AST_LABEL)
-{
-    this->labelType = LABEL_NONE;
-    this->value.s = name;
-    this->child = child;
-}
-
-InstructionNode::InstructionNode(int code) :
-    AstNode(AST_INSTRUCTION)
-{
-    this->code = code;
-}
-
-InstructionNode::InstructionNode(int code, const void* operand) :
-    AstNode(AST_INSTRUCTION)
-{
-    this->code = code;
-    this->value.ptr = operand;
-}
-
-static ListNode* reverseList(ListNode* prev, ListNode* node)
-{
-    // Swap next links until we hit the tail, then return it
-    //
-    ListNode* tail = NULL;
-    if (node->next == NULL)
+    for (const OpcodeInfo& info : opcodeTable)
     {
-        // We're done
-        //
-        node->next = prev;
-        tail = node;
-    }
-    else
-    {
-        ListNode* next = node->next;
-        
-        // Switch directions of the pointers on this node and the next one
-        //
-        node->next = prev;
-        tail = reverseList(node, next);
-    }
-    
-    return tail;
-}
-
-static void cleanupNode(AstNode** node);
-
-static void cleanupList(ListNode* node)
-{
-    if (node != NULL)
-    {
-        cleanupNode(&(node->value.node));
-        cleanupList(node->next);
-    }
-}
-
-void cleanupNode(AstNode** node)
-{
-    if (*node != NULL)
-    {
-        switch ((*node)->type)
+        if (std::strcmp(info.mnemonic, mnemonic) == 0)
         {
-        case AST_LIST:
-            {
-                ListNode* n = static_cast<ListNode*>(*node);
-                *node = reverseList(NULL, n);
-                
-                cleanupList(static_cast<ListNode*>(*node));
-            }
-            break;
-        case AST_DATA8:
-            {
-                cleanupNode(&((*node)->value.node));
-            }
-            break;
-        case AST_DATA16:
-            {
-                cleanupNode(&((*node)->value.node));
-            }
-            break;
-        case AST_DECL:
-            {
-                DeclNode* d = static_cast<DeclNode*>(*node);
-                cleanupNode(&(d->expression));
-            }
-            break;
-        case AST_LABEL:
-            {
-                LabelNode* n = static_cast<LabelNode*>(*node);
-                cleanupNode(&(n->child));
-            }
-            break;
-        default:
-            break;
+            return &info;
         }
     }
-}
-
-void cleanupAst(RootNode* root)
-{
-    for (std::list<AstNode*>::iterator it = root->children.begin(); it != root->children.end(); ++it)
-    {
-        AstNode* node = (*it);
-        cleanupNode(&node);
-    }
-}
-
-static void printIndent(int indent)
-{
-    for (int i = 0; i < indent; i++)
-    {
-        printf(" ");
-    }
-}
-
-void printNode(AstNode* node, int indent)
-{
-    if (node != NULL)
-    {
-        switch (node->type)
-        {
-        case AST_LIST:
-            {
-                ListNode* n = static_cast<ListNode*>(node);
-                printIndent(indent);
-                printf("list element:\n");
-                printNode(n->value.node, indent + 4);
-                printNode(n->next, indent);
-            }
-            break;
-        case AST_DATA8:
-            {
-                printIndent(indent);
-                printf("data:\n");
-                printNode(node->value.node, indent + 4);
-            }
-            break;
-        case AST_DATA16:
-            {
-                printIndent(indent);
-                printf("data (16 bit):\n");
-                printNode(node->value.node, indent + 4);
-            }
-            break;
-        case AST_DECL:
-            {
-                DeclNode* d = static_cast<DeclNode*>(node);
-                printIndent(indent);
-                printf("decl: %s = \n", d->value.s);
-                printNode(d->expression, indent + 4);
-            }
-            break;
-        case AST_LABEL:
-            {
-                LabelNode* n = static_cast<LabelNode*>(node);
-                printIndent(indent);
-                printf("label: %s\n", n->value.s);
-                printNode(n->child, indent + 4);
-            }
-            break;
-        case AST_NAME:
-            printIndent(indent);
-            printf("name: %s\n", node->value.s);
-            break;
-        case AST_CONST:
-            printIndent(indent);
-            printf("constant: %s\n", node->value.s);
-            break;
-        case AST_IMMEDIATE:
-            {
-                UnaryNode* n = static_cast<UnaryNode*>(node);
-                printIndent(indent);
-                printf("immediate:\n");
-                printNode(n->child, indent + 4);
-            }
-            break;
-        case AST_INDIRECT:
-            {
-                UnaryNode* n = static_cast<UnaryNode*>(node);
-                printIndent(indent);
-                printf("indirect:\n");
-                printNode(n->child, indent + 4);
-            }
-            break;
-        case AST_INDEXED_X:
-            {
-                UnaryNode* n = static_cast<UnaryNode*>(node);
-                printIndent(indent);
-                printf("indexed x:\n");
-                printNode(n->child, indent + 4);
-            }
-            break;
-        case AST_INDEXED_Y:
-            {
-                UnaryNode* n = static_cast<UnaryNode*>(node);
-                printIndent(indent);
-                printf("indexed y:\n");
-                printNode(n->child, indent + 4);
-            }
-            break;
-        case AST_LOBYTE:
-            {
-                UnaryNode* n = static_cast<UnaryNode*>(node);
-                printIndent(indent);
-                printf("low byte:\n");
-                printNode(n->child, indent + 4);
-            }
-            break;
-        case AST_HIBYTE:
-            {
-                UnaryNode* n = static_cast<UnaryNode*>(node);
-                printIndent(indent);
-                printf("high byte:\n");
-                printNode(n->child, indent + 4);
-            }
-            break;
-        case AST_ADD:
-            {
-                BinaryNode* n = static_cast<BinaryNode*>(node);
-                printIndent(indent);
-                printf("add:\n");
-                printNode(n->lhs, indent + 4);
-                printNode(n->rhs, indent + 4);
-            }
-            break;
-        case AST_SUBTRACT:
-            {
-                BinaryNode* n = static_cast<BinaryNode*>(node);
-                printIndent(indent);
-                printf("subtract:\n");
-                printNode(n->lhs, indent + 4);
-                printNode(n->rhs, indent + 4);
-            }
-            break;
-        case AST_INSTRUCTION:
-            {
-                InstructionNode* n = static_cast<InstructionNode*>(node);
-                printIndent(indent);
-                printf("instruction (line %d) %d:\n", n->lineNumber, n->code);
-                printNode(n->value.node, indent + 4);
-            }
-            break;
-        default:
-            break;
-        }
-    }
+    return nullptr;
 }

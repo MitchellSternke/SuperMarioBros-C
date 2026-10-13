@@ -1,469 +1,69 @@
-#include "../SMB/SMBEngine.hpp"
-#include "../Util/Video.hpp"
+#include "../Constants.hpp"
 
 #include "PPU.hpp"
 
-static const uint8_t nametableMirrorLookup[][4] = {
-    {0, 0, 1, 1}, // Vertical
-    {0, 1, 0, 1}  // Horizontal
-};
-
-/**
- * Default hardcoded palette.
- */
-static constexpr const uint32_t defaultPaletteRGB[64] = {
-    0x7c7c7c,
-    0x0000fc,
-    0x0000bc,
-    0x4428bc,
-    0x940084,
-    0xa80020,
-    0xa81000,
-    0x881400,
-    0x503000,
-    0x007800,
-    0x006800,
-    0x005800,
-    0x004058,
-    0x000000,
-    0x000000,
-    0x000000,
-    0xbcbcbc,
-    0x0078f8,
-    0x0058f8,
-    0x6844fc,
-    0xd800cc,
-    0xe40058,
-    0xf83800,
-    0xe45c10,
-    0xac7c00,
-    0x00b800,
-    0x00a800,
-    0x00a844,
-    0x008888,
-    0x000000,
-    0x000000,
-    0x000000,
-    0xf8f8f8,
-    0x3cbcfc,
-    0x6888fc,
-    0x9878f8,
-    0xf878f8,
-    0xf85898,
-    0xf87858,
-    0xfca044,
-    0xf8b800,
-    0xb8f818,
-    0x58d854,
-    0x58f898,
-    0x00e8d8,
-    0x787878,
-    0x000000,
-    0x000000,
-    0xfcfcfc,
-    0xa4e4fc,
-    0xb8b8f8,
-    0xd8b8f8,
-    0xf8b8f8,
-    0xf8a4c0,
-    0xf0d0b0,
-    0xfce0a8,
-    0xf8d878,
-    0xd8f878,
-    0xb8f8b8,
-    0xb8f8d8,
-    0x00fcfc,
-    0xf8d8f8,
-    0x000000,
-    0x000000
-};
-
-/**
- * RGB representation of the NES palette.
- */
-const uint32_t* paletteRGB = defaultPaletteRGB;
-
-PPU::PPU(SMBEngine& engine) :
-    engine(engine)
+namespace
 {
-    currentAddress = 0;
-    writeToggle = false;
+
+constexpr uint32_t OPAQUE = 0xff000000;
+
+/**
+ * Super Mario Bros. uses vertical mirroring: $2000/$2800 share the first kilobyte of nametable
+ * memory, and $2400/$2C00 the second.
+ */
+constexpr uint16_t getNametableIndex(uint16_t address)
+{
+    return address & 0x07ff;
 }
 
-uint8_t PPU::getAttributeTableValue(uint16_t nametableAddress)
+} // namespace
+
+PPU::PPU(const uint8_t* chr) :
+    chr(chr)
+{
+}
+
+uint8_t PPU::getAttributeTableValue(uint16_t nametableAddress) const
 {
     nametableAddress = getNametableIndex(nametableAddress);
 
     // Determine the 32x32 attribute table address
-    int row = ((nametableAddress & 0x3e0) >> 5) / 4;
-    int col = (nametableAddress & 0x1f) / 4;
+    const int row = ((nametableAddress & 0x3e0) >> 5) / 4;
+    const int col = (nametableAddress & 0x1f) / 4;
 
     // Determine the 16x16 metatile for the 8x8 tile addressed
-    int shift = ((nametableAddress & (1 << 6)) ? 4 : 0) + ((nametableAddress & (1 << 1)) ? 2 : 0);
+    const int shift = ((nametableAddress & (1 << 6)) ? 4 : 0) + ((nametableAddress & (1 << 1)) ? 2 : 0);
 
     // Determine the offset into the attribute table
-    int offset = (nametableAddress & 0xc00) + 0x400 - 64 + (row * 8 + col);
+    const int offset = (nametableAddress & 0xc00) + 0x400 - 64 + (row * 8 + col);
 
-    // Determine the attribute table value
-    return (nametable[offset] & (0x3 << shift)) >> shift;
+    return (nametable[offset] >> shift) & 0x3;
 }
 
-uint16_t PPU::getNametableIndex(uint16_t address)
-{
-    address = (address - 0x2000) % 0x1000;
-    int table = address / 0x400;
-    int offset = address % 0x400;
-    int mode = 1; // Mirroring mode for Super Mario Bros.
-    return (nametableMirrorLookup[mode][table] * 0x400 + offset) % 2048;
-}
-
-uint8_t PPU::readByte(uint16_t address)
+uint8_t PPU::readByte(uint16_t address) const
 {
     // Mirror all addresses above $3fff
     address &= 0x3fff;
 
     if (address < 0x2000)
     {
-        // CHR
-        return engine.getCHR()[address];
+        return chr[address];
     }
-    else if (address < 0x3f00)
+    if (address < 0x3f00)
     {
-        // Nametable
         return nametable[getNametableIndex(address)];
     }
-
     return 0;
-}
-
-uint8_t PPU::readCHR(int index)
-{
-    if (index < 0x2000)
-    {
-        return engine.getCHR()[index];
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-uint8_t PPU::readDataRegister()
-{
-    uint8_t value = vramBuffer;
-    vramBuffer = readByte(currentAddress);
-
-    if (!(ppuCtrl & (1 << 2)))
-    {
-        currentAddress++;
-    }
-    else
-    {
-        currentAddress += 32;
-    }
-
-    return value;
-}
-
-uint8_t PPU::readRegister(uint16_t address)
-{
-    static int cycle = 0;
-    switch(address)
-    {
-    // PPUSTATUS
-    case 0x2002:
-        writeToggle = false;
-        return (cycle++ % 2 == 0 ? 0xc0 : 0);
-    // OAMDATA
-    case 0x2004:
-        return oam[oamAddress];
-    // PPUDATA
-    case 0x2007:
-        return readDataRegister();
-    default:
-        break;
-    }
-
-    return 0;
-}
-
-void PPU::renderTile(uint32_t* buffer, int index, int xOffset, int yOffset)
-{
-    // Lookup the pattern table entry
-    uint16_t tile = readByte(index) + (ppuCtrl & (1 << 4) ? 256 : 0);
-    uint8_t attribute = getAttributeTableValue(index);
-
-    // Read the pixels of the tile
-    for( int row = 0; row < 8; row++ )
-    {
-        uint8_t plane1 = readCHR(tile * 16 + row);
-        uint8_t plane2 = readCHR(tile * 16 + row + 8);
-
-        for( int column = 0; column < 8; column++ )
-        {
-            uint8_t paletteIndex = (((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0));
-            uint8_t colorIndex = palette[attribute * 4 + paletteIndex];
-            if( paletteIndex == 0 )
-            {
-                // skip transparent pixels
-                //colorIndex = palette[0];
-                continue;
-            }
-            uint32_t pixel = 0xff000000 | paletteRGB[colorIndex];
-
-            int x = (xOffset + (7 - column));
-            int y = (yOffset + row);
-            if (x < 0 || x >= 256 || y < 0 || y >= 240)
-            {
-                continue;
-            }
-            buffer[y * 256 + x] = pixel;
-        }
-    }
-
-}
-
-void PPU::render(uint32_t* buffer)
-{
-    // Clear the buffer with the background color
-    for (int index = 0; index < 256 * 240; index++)
-    {
-        buffer[index] = paletteRGB[palette[0]];
-    }
-
-    // Draw sprites behind the backround
-    if (ppuMask & (1 << 4)) // Are sprites enabled?
-    {
-        // Sprites with the lowest index in OAM take priority.
-        // Therefore, render the array of sprites in reverse order.
-        //
-        for (int i = 63; i >= 0; i--)
-        {
-            // Read OAM for the sprite
-            uint8_t y          = oam[i * 4];
-            uint8_t index      = oam[i * 4 + 1];
-            uint8_t attributes = oam[i * 4 + 2];
-            uint8_t x          = oam[i * 4 + 3];
-
-            // Check if the sprite has the correct priority
-            if (!(attributes & (1 << 5)))
-            {
-                continue;
-            }
-
-            // Check if the sprite is visible
-            if( y >= 0xef || x >= 0xf9 )
-            {
-                continue;
-            }
-
-            // Increment y by one since sprite data is delayed by one scanline
-            //
-            y++;
-
-            // Determine the tile to use
-            uint16_t tile = index + (ppuCtrl & (1 << 3) ? 256 : 0);
-            bool flipX = attributes & (1 << 6);
-            bool flipY = attributes & (1 << 7);
-
-            // Copy pixels to the framebuffer
-            for( int row = 0; row < 8; row++ )
-            {
-                uint8_t plane1 = readCHR(tile * 16 + row);
-                uint8_t plane2 = readCHR(tile * 16 + row + 8);
-
-                for( int column = 0; column < 8; column++ )
-                {
-                    uint8_t paletteIndex = (((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0));
-                    uint8_t colorIndex = palette[0x10 + (attributes & 0x03) * 4 + paletteIndex];
-                    if( paletteIndex == 0 )
-                    {
-                        // Skip transparent pixels
-                        continue;
-                    }
-                    uint32_t pixel = 0xff000000 | paletteRGB[colorIndex];
-
-                    int xOffset = 7 - column;
-                    if( flipX )
-                    {
-                        xOffset = column;
-                    }
-                    int yOffset = row;
-                    if( flipY )
-                    {
-                        yOffset = 7 - row;
-                    }
-
-                    int xPixel = (int)x + xOffset;
-                    int yPixel = (int)y + yOffset;
-                    if (xPixel < 0 || xPixel >= 256 || yPixel < 0 || yPixel >= 240)
-                    {
-                        continue;
-                    }
-
-                    buffer[yPixel * 256 + xPixel] = pixel;
-                }
-            }
-        }
-    }
-
-    // Draw the background (nametable)
-    if (ppuMask & (1 << 3)) // Is the background enabled?
-    {
-        int scrollX = (int)ppuScrollX + ((ppuCtrl & (1 << 0)) ? 256 : 0);
-        int xMin = scrollX / 8;
-        int xMax = ((int)scrollX + 256) / 8;
-        for (int x = 0; x < 32; x++)
-        {
-            for (int y = 0; y < 4; y++)
-            {
-                // Render the status bar in the same position (it doesn't scroll)
-                renderTile(buffer, 0x2000 + 32 * y + x, x * 8, y * 8);
-            }
-        }
-        for (int x = xMin; x <= xMax; x++)
-        {
-            for (int y = 4; y < 30; y++)
-            {
-                // Determine the index of the tile to render
-                int index;
-                if (x < 32)
-                {
-                    index = 0x2000 + 32 * y + x;
-                }
-                else if (x < 64)
-                {
-                    index = 0x2400 + 32 * y + (x - 32);
-                }
-                else
-                {
-                    index = 0x2800 + 32 * y + (x - 64);
-                }
-
-                // Render the tile
-                renderTile(buffer, index, (x * 8) - (int)scrollX, (y * 8));
-            }
-        }
-    }
-
-    // Draw sprites in front of the background
-    if (ppuMask & (1 << 4))
-    {
-        // Sprites with the lowest index in OAM take priority.
-        // Therefore, render the array of sprites in reverse order.
-        //
-        // We render sprite 0 first as a special case (coin indicator).
-        //
-        for (int j = 64; j > 0; j--)
-        {
-            // Start at 0, then 63, 62, 61, ..., 1
-            //
-            int i = j % 64;
-
-            // Read OAM for the sprite
-            uint8_t y          = oam[i * 4];
-            uint8_t index      = oam[i * 4 + 1];
-            uint8_t attributes = oam[i * 4 + 2];
-            uint8_t x          = oam[i * 4 + 3];
-
-            // Check if the sprite has the correct priority
-            //
-            // Special case for sprite 0, tile 0xff in Super Mario Bros.
-            // (part of the pixels for the coin indicator)
-            //
-            if (attributes & (1 << 5) && !(i == 0 && index == 0xff))
-            {
-                continue;
-            }
-
-            // Check if the sprite is visible
-            if( y >= 0xef || x >= 0xf9 )
-            {
-                continue;
-            }
-
-            // Increment y by one since sprite data is delayed by one scanline
-            //
-            y++;
-
-            // Determine the tile to use
-            uint16_t tile = index + (ppuCtrl & (1 << 3) ? 256 : 0);
-            bool flipX = attributes & (1 << 6);
-            bool flipY = attributes & (1 << 7);
-
-            // Copy pixels to the framebuffer
-            for( int row = 0; row < 8; row++ )
-            {
-                uint8_t plane1 = readCHR(tile * 16 + row);
-                uint8_t plane2 = readCHR(tile * 16 + row + 8);
-
-                for( int column = 0; column < 8; column++ )
-                {
-                    uint8_t paletteIndex = (((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0));
-                    uint8_t colorIndex = palette[0x10 + (attributes & 0x03) * 4 + paletteIndex];
-                    if( paletteIndex == 0 )
-                    {
-                        // Skip transparent pixels
-                        continue;
-                    }
-                    uint32_t pixel = 0xff000000 | paletteRGB[colorIndex];
-
-                    int xOffset = 7 - column;
-                    if( flipX )
-                    {
-                        xOffset = column;
-                    }
-                    int yOffset = row;
-                    if( flipY )
-                    {
-                        yOffset = 7 - row;
-                    }
-
-                    int xPixel = (int)x + xOffset;
-                    int yPixel = (int)y + yOffset;
-                    if (xPixel < 0 || xPixel >= 256 || yPixel < 0 || yPixel >= 240)
-                    {
-                        continue;
-                    }
-
-                    // Special case for sprite 0, tile 0xff in Super Mario Bros.
-                    // (part of the pixels for the coin indicator)
-                    //
-                    if (i == 0 && index == 0xff && row == 5 && column > 3 && column < 6)
-                    {
-                        continue;
-                    }
-
-                    buffer[yPixel * 256 + xPixel] = pixel;
-                }
-            }
-        }
-    }
-}
-
-void PPU::writeAddressRegister(uint8_t value)
-{
-    if (!writeToggle)
-    {
-        // Upper byte
-        currentAddress = (currentAddress & 0xff) | (((uint16_t)value << 8) & 0xff00);
-    }
-    else
-    {
-        // Lower byte
-        currentAddress = (currentAddress & 0xff00) | (uint16_t)value;
-    }
-    writeToggle = !writeToggle;
 }
 
 void PPU::writeByte(uint16_t address, uint8_t value)
 {
-    // Mirror all addrsses above $3fff
+    // Mirror all addresses above $3fff
     address &= 0x3fff;
 
     if (address < 0x2000)
     {
-        // CHR (no-op)
+        // CHR is read-only
     }
     else if (address < 0x3f00)
     {
@@ -471,83 +71,231 @@ void PPU::writeByte(uint16_t address, uint8_t value)
     }
     else if (address < 0x3f20)
     {
-        // Palette data
-        palette[address - 0x3f00] = value;
+        paletteRam[address - 0x3f00] = value;
 
-        // Mirroring
-        if (address == 0x3f10 || address == 0x3f14 || address == 0x3f18 || address == 0x3f1c)
+        // Entry 0 of each sprite palette ($3f10/$3f14/$3f18/$3f1c) mirrors the background palettes
+        if (address >= 0x3f10 && (address & 0x03) == 0)
         {
-            palette[address - 0x3f10] = value;
+            paletteRam[address - 0x3f10] = value;
         }
     }
 }
 
-void PPU::writeDataRegister(uint8_t value)
+void PPU::advanceAddress()
 {
-    writeByte(currentAddress, value);
-    if (!(ppuCtrl & (1 << 2)))
-    {
-        currentAddress++;
-    }
-    else
-    {
-        currentAddress += 32;
-    }
+    currentAddress += (ppuCtrl & (1 << 2)) ? 32 : 1;
 }
 
-void PPU::writeDMA(uint8_t page)
+uint8_t PPU::readRegister(uint16_t address)
 {
-    uint16_t address = (uint16_t)page << 8;
-    for (int i = 0; i < 256; i++)
+    switch (address)
     {
-        oam[oamAddress] = engine.readData(address);
-        address++;
-        oamAddress++;
+    case 0x2002: // PPUSTATUS
+    {
+        writeToggle = false;
+        const uint8_t status = vblankToggle ? 0 : 0xc0;
+        vblankToggle = !vblankToggle;
+        return status;
+    }
+    case 0x2004: // OAMDATA
+        return oam[oamAddress];
+    case 0x2007: // PPUDATA
+    {
+        const uint8_t value = vramBuffer;
+        vramBuffer = readByte(currentAddress);
+        advanceAddress();
+        return value;
+    }
+    default:
+        return 0;
     }
 }
 
 void PPU::writeRegister(uint16_t address, uint8_t value)
 {
-    switch(address)
+    switch (address)
     {
-    // PPUCTRL
-    case 0x2000:
+    case 0x2000: // PPUCTRL
         ppuCtrl = value;
         break;
-    // PPUMASK
-    case 0x2001:
+    case 0x2001: // PPUMASK
         ppuMask = value;
         break;
-    // OAMADDR
-    case 0x2003:
+    case 0x2003: // OAMADDR
         oamAddress = value;
         break;
-    // OAMDATA
-    case 0x2004:
-        oam[oamAddress] = value;
-        oamAddress++;
+    case 0x2004: // OAMDATA
+        oam[oamAddress++] = value;
         break;
-    // PPUSCROLL
-    case 0x2005:
+    case 0x2005: // PPUSCROLL
         if (!writeToggle)
         {
             ppuScrollX = value;
         }
+        writeToggle = !writeToggle;
+        break;
+    case 0x2006: // PPUADDR
+        if (!writeToggle)
+        {
+            currentAddress = static_cast<uint16_t>((currentAddress & 0x00ff) | (value << 8));
+        }
         else
         {
-            ppuScrollY = value;
+            currentAddress = static_cast<uint16_t>((currentAddress & 0xff00) | value);
         }
         writeToggle = !writeToggle;
         break;
-    // PPUADDR
-    case 0x2006:
-        writeAddressRegister(value);
-        break;
-    // PPUDATA
-    case 0x2007:
-        writeDataRegister(value);
+    case 0x2007: // PPUDATA
+        writeByte(currentAddress, value);
+        advanceAddress();
         break;
     default:
         break;
+    }
+}
+
+void PPU::writeDMA(const uint8_t* page)
+{
+    for (int i = 0; i < 256; i++)
+    {
+        oam[oamAddress++] = page[i];
+    }
+}
+
+void PPU::drawTile(uint32_t* buffer, const Palette& colors, int tile, int paletteOffset,
+                   int x, int y, bool flipX, bool flipY, bool coinHole) const
+{
+    const uint8_t* pattern = chr + tile * 16;
+    for (int row = 0; row < 8; row++)
+    {
+        const int yPixel = y + (flipY ? 7 - row : row);
+        if (yPixel < 0 || yPixel >= RENDER_HEIGHT)
+        {
+            continue;
+        }
+
+        for (int column = 0; column < 8; column++)
+        {
+            // Two bit planes give each pixel a 2-bit color; bit 0 is the rightmost pixel
+            const int colorIndex = ((pattern[row] >> column) & 1) | (((pattern[row + 8] >> column) & 1) << 1);
+            if (colorIndex == 0)
+            {
+                continue; // Transparent
+            }
+
+            const int xPixel = x + (flipX ? column : 7 - column);
+            if (xPixel < 0 || xPixel >= RENDER_WIDTH)
+            {
+                continue;
+            }
+
+            // Sprite 0 (tile $ff) forms part of the coin indicator in the status bar,
+            // but a few of its pixels must stay hidden behind it
+            if (coinHole && row == 5 && column > 3 && column < 6)
+            {
+                continue;
+            }
+
+            buffer[yPixel * RENDER_WIDTH + xPixel] = OPAQUE | colors[paletteRam[paletteOffset + colorIndex]];
+        }
+    }
+}
+
+void PPU::renderBackground(uint32_t* buffer, const Palette& colors) const
+{
+    const int patternTable = (ppuCtrl & (1 << 4)) ? 256 : 0;
+    const auto renderNametableTile = [&](uint16_t address, int x, int y) {
+        drawTile(buffer, colors, readByte(address) + patternTable, getAttributeTableValue(address) * 4, x, y);
+    };
+
+    // The status bar (the top four rows) does not scroll
+    for (int x = 0; x < 32; x++)
+    {
+        for (int y = 0; y < 4; y++)
+        {
+            renderNametableTile(static_cast<uint16_t>(0x2000 + 32 * y + x), x * 8, y * 8);
+        }
+    }
+
+    const int scrollX = ppuScrollX + ((ppuCtrl & (1 << 0)) ? 256 : 0);
+    for (int x = scrollX / 8; x <= (scrollX + RENDER_WIDTH) / 8; x++)
+    {
+        for (int y = 4; y < 30; y++)
+        {
+            // Columns continue from one nametable into the next
+            const uint16_t address = static_cast<uint16_t>(0x2000 + 0x400 * (x / 32) + 32 * y + (x % 32));
+            renderNametableTile(address, x * 8 - scrollX, y * 8);
+        }
+    }
+}
+
+void PPU::renderSprite(uint32_t* buffer, const Palette& colors, int index, bool coinHole) const
+{
+    const uint8_t y = oam[index * 4];
+    const uint8_t tile = oam[index * 4 + 1];
+    const uint8_t attributes = oam[index * 4 + 2];
+    const uint8_t x = oam[index * 4 + 3];
+
+    // Hidden sprites are moved off the bottom of the screen
+    if (y >= 0xef || x >= 0xf9)
+    {
+        return;
+    }
+
+    drawTile(buffer, colors,
+             tile + ((ppuCtrl & (1 << 3)) ? 256 : 0),
+             0x10 + (attributes & 0x03) * 4,
+             x,
+             y + 1, // Sprite data is delayed by one scanline
+             (attributes & (1 << 6)) != 0,
+             (attributes & (1 << 7)) != 0,
+             coinHole);
+}
+
+void PPU::render(uint32_t* buffer, const Palette& colors) const
+{
+    const uint32_t backgroundColor = OPAQUE | colors[paletteRam[0]];
+    for (int i = 0; i < RENDER_WIDTH * RENDER_HEIGHT; i++)
+    {
+        buffer[i] = backgroundColor;
+    }
+
+    const bool spritesEnabled = (ppuMask & (1 << 4)) != 0;
+    const bool backgroundEnabled = (ppuMask & (1 << 3)) != 0;
+    const auto isBehindBackground = [this](int index) {
+        return (oam[index * 4 + 2] & (1 << 5)) != 0;
+    };
+    const auto isCoinIndicator = [this](int index) {
+        return index == 0 && oam[1] == 0xff;
+    };
+
+    // Sprites with the lowest index in OAM take priority, so sprites are drawn in reverse order
+    if (spritesEnabled)
+    {
+        for (int i = 63; i >= 0; i--)
+        {
+            if (isBehindBackground(i))
+            {
+                renderSprite(buffer, colors, i, false);
+            }
+        }
+    }
+
+    if (backgroundEnabled)
+    {
+        renderBackground(buffer, colors);
+    }
+
+    if (spritesEnabled)
+    {
+        // Sprite 0 is drawn first as a special case (the coin indicator), then 63 down to 1
+        for (int j = 64; j > 0; j--)
+        {
+            const int i = j % 64;
+            if (!isBehindBackground(i) || isCoinIndicator(i))
+            {
+                renderSprite(buffer, colors, i, isCoinIndicator(i));
+            }
+        }
     }
 }

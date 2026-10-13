@@ -1,543 +1,545 @@
-// This is an automatically generated file.
-// Do not edit directly.
+// This file is generated from docs/smbdis.asm by codegen.
+// Do not edit directly: build the 'regenerate' target instead.
 //
 #ifndef SMBCONSTANTS_HPP
 #define SMBCONSTANTS_HPP
 
-#define PPU_CTRL_REG1 0x2000
-#define PPU_CTRL_REG2 0x2001
-#define PPU_STATUS 0x2002
-#define PPU_SPR_ADDR 0x2003
-#define PPU_SPR_DATA 0x2004
-#define PPU_SCROLL_REG 0x2005
-#define PPU_ADDRESS 0x2006
-#define PPU_DATA 0x2007
-#define SND_REGISTER 0x4000
-#define SND_SQUARE1_REG 0x4000
-#define SND_SQUARE2_REG 0x4004
-#define SND_TRIANGLE_REG 0x4008
-#define SND_NOISE_REG 0x400c
-#define SND_DELTA_REG 0x4010
-#define SND_MASTERCTRL_REG 0x4015
-#define SPR_DMA 0x4014
-#define JOYPAD_PORT 0x4016
-#define JOYPAD_PORT1 0x4016
-#define JOYPAD_PORT2 0x4017
-#define ObjectOffset 0x08
-#define FrameCounter 0x09
-#define SavedJoypadBits 0x06fc
-#define SavedJoypad1Bits 0x06fc
-#define SavedJoypad2Bits 0x06fd
-#define JoypadBitMask 0x074a
-#define JoypadOverride 0x0758
-#define A_B_Buttons 0x0a
-#define PreviousA_B_Buttons 0x0d
-#define Up_Down_Buttons 0x0b
-#define Left_Right_Buttons 0x0c
-#define GameEngineSubroutine 0x0e
-#define Mirror_PPU_CTRL_REG1 0x0778
-#define Mirror_PPU_CTRL_REG2 0x0779
-#define OperMode 0x0770
-#define OperMode_Task 0x0772
-#define ScreenRoutineTask 0x073c
-#define GamePauseStatus 0x0776
-#define GamePauseTimer 0x0777
-#define DemoAction 0x0717
-#define DemoActionTimer 0x0718
-#define TimerControl 0x0747
-#define IntervalTimerControl 0x077f
-#define Timers 0x0780
-#define SelectTimer 0x0780
-#define PlayerAnimTimer 0x0781
-#define JumpSwimTimer 0x0782
-#define RunningTimer 0x0783
-#define BlockBounceTimer 0x0784
-#define SideCollisionTimer 0x0785
-#define JumpspringTimer 0x0786
-#define GameTimerCtrlTimer 0x0787
-#define ClimbSideTimer 0x0789
-#define EnemyFrameTimer 0x078a
-#define FrenzyEnemyTimer 0x078f
-#define BowserFireBreathTimer 0x0790
-#define StompTimer 0x0791
-#define AirBubbleTimer 0x0792
-#define ScrollIntervalTimer 0x0795
-#define EnemyIntervalTimer 0x0796
-#define BrickCoinTimer 0x079d
-#define InjuryTimer 0x079e
-#define StarInvincibleTimer 0x079f
-#define ScreenTimer 0x07a0
-#define WorldEndTimer 0x07a1
-#define DemoTimer 0x07a2
-#define Sprite_Data 0x0200
-#define Sprite_Y_Position 0x0200
-#define Sprite_Tilenumber 0x0201
-#define Sprite_Attributes 0x0202
-#define Sprite_X_Position 0x0203
-#define ScreenEdge_PageLoc 0x071a
-#define ScreenEdge_X_Pos 0x071c
-#define ScreenLeft_PageLoc 0x071a
-#define ScreenRight_PageLoc 0x071b
-#define ScreenLeft_X_Pos 0x071c
-#define ScreenRight_X_Pos 0x071d
-#define PlayerFacingDir 0x33
-#define DestinationPageLoc 0x34
-#define VictoryWalkControl 0x35
-#define ScrollFractional 0x0768
-#define PrimaryMsgCounter 0x0719
-#define SecondaryMsgCounter 0x0749
-#define HorizontalScroll 0x073f
-#define VerticalScroll 0x0740
-#define ScrollLock 0x0723
-#define ScrollThirtyTwo 0x073d
-#define Player_X_Scroll 0x06ff
-#define Player_Pos_ForScroll 0x0755
-#define ScrollAmount 0x0775
-#define AreaData 0xe7
-#define AreaDataLow 0xe7
-#define AreaDataHigh 0xe8
-#define EnemyData 0xe9
-#define EnemyDataLow 0xe9
-#define EnemyDataHigh 0xea
-#define AreaParserTaskNum 0x071f
-#define ColumnSets 0x071e
-#define CurrentPageLoc 0x0725
-#define CurrentColumnPos 0x0726
-#define BackloadingFlag 0x0728
-#define BehindAreaParserFlag 0x0729
-#define AreaObjectPageLoc 0x072a
-#define AreaObjectPageSel 0x072b
-#define AreaDataOffset 0x072c
-#define AreaObjOffsetBuffer 0x072d
-#define AreaObjectLength 0x0730
-#define StaircaseControl 0x0734
-#define AreaObjectHeight 0x0735
-#define MushroomLedgeHalfLen 0x0736
-#define EnemyDataOffset 0x0739
-#define EnemyObjectPageLoc 0x073a
-#define EnemyObjectPageSel 0x073b
-#define MetatileBuffer 0x06a1
-#define BlockBufferColumnPos 0x06a0
-#define CurrentNTAddr_Low 0x0721
-#define CurrentNTAddr_High 0x0720
-#define AttributeBuffer 0x03f9
-#define LoopCommand 0x0745
-#define DisplayDigits 0x07d7
-#define TopScoreDisplay 0x07d7
-#define ScoreAndCoinDisplay 0x07dd
-#define PlayerScoreDisplay 0x07dd
-#define GameTimerDisplay 0x07f8
-#define DigitModifier 0x0134
-#define VerticalFlipFlag 0x0109
-#define FloateyNum_Control 0x0110
-#define ShellChainCounter 0x0125
-#define FloateyNum_Timer 0x012c
-#define FloateyNum_X_Pos 0x0117
-#define FloateyNum_Y_Pos 0x011e
-#define FlagpoleFNum_Y_Pos 0x010d
-#define FlagpoleFNum_YMFDummy 0x010e
-#define FlagpoleScore 0x010f
-#define FlagpoleCollisionYPos 0x070f
-#define StompChainCounter 0x0484
-#define VRAM_Buffer1_Offset 0x0300
-#define VRAM_Buffer1 0x0301
-#define VRAM_Buffer2_Offset 0x0340
-#define VRAM_Buffer2 0x0341
-#define VRAM_Buffer_AddrCtrl 0x0773
-#define Sprite0HitDetectFlag 0x0722
-#define DisableScreenFlag 0x0774
-#define DisableIntermediate 0x0769
-#define ColorRotateOffset 0x06d4
-#define TerrainControl 0x0727
-#define AreaStyle 0x0733
-#define ForegroundScenery 0x0741
-#define BackgroundScenery 0x0742
-#define CloudTypeOverride 0x0743
-#define BackgroundColorCtrl 0x0744
-#define AreaType 0x074e
-#define AreaAddrsLOffset 0x074f
-#define AreaPointer 0x0750
-#define PlayerEntranceCtrl 0x0710
-#define GameTimerSetting 0x0715
-#define AltEntranceControl 0x0752
-#define EntrancePage 0x0751
-#define NumberOfPlayers 0x077a
-#define WarpZoneControl 0x06d6
-#define ChangeAreaTimer 0x06de
-#define MultiLoopCorrectCntr 0x06d9
-#define MultiLoopPassCntr 0x06da
-#define FetchNewGameTimerFlag 0x0757
-#define GameTimerExpiredFlag 0x0759
-#define PrimaryHardMode 0x076a
-#define SecondaryHardMode 0x06cc
-#define WorldSelectNumber 0x076b
-#define WorldSelectEnableFlag 0x07fc
-#define ContinueWorld 0x07fd
-#define CurrentPlayer 0x0753
-#define PlayerSize 0x0754
-#define PlayerStatus 0x0756
-#define OnscreenPlayerInfo 0x075a
-#define NumberofLives 0x075a // used by current player
-#define HalfwayPage 0x075b
-#define LevelNumber 0x075c // the actual dash number
-#define Hidden1UpFlag 0x075d
-#define CoinTally 0x075e
-#define WorldNumber 0x075f
-#define AreaNumber 0x0760 // internal number used to find areas
-#define CoinTallyFor1Ups 0x0748
-#define OffscreenPlayerInfo 0x0761
-#define OffScr_NumberofLives 0x0761 // used by offscreen player
-#define OffScr_HalfwayPage 0x0762
-#define OffScr_LevelNumber 0x0763
-#define OffScr_Hidden1UpFlag 0x0764
-#define OffScr_CoinTally 0x0765
-#define OffScr_WorldNumber 0x0766
-#define OffScr_AreaNumber 0x0767
-#define BalPlatformAlignment 0x03a0
-#define Platform_X_Scroll 0x03a1
-#define PlatformCollisionFlag 0x03a2
-#define YPlatformTopYPos 0x0401
-#define YPlatformCenterYPos 0x58
-#define BrickCoinTimerFlag 0x06bc
-#define StarFlagTaskControl 0x0746
-#define PseudoRandomBitReg 0x07a7
-#define WarmBootValidation 0x07ff
-#define SprShuffleAmtOffset 0x06e0
-#define SprShuffleAmt 0x06e1
-#define SprDataOffset 0x06e4
-#define Player_SprDataOffset 0x06e4
-#define Enemy_SprDataOffset 0x06e5
-#define Block_SprDataOffset 0x06ec
-#define Alt_SprDataOffset 0x06ec
-#define Bubble_SprDataOffset 0x06ee
-#define FBall_SprDataOffset 0x06f1
-#define Misc_SprDataOffset 0x06f3
-#define SprDataOffset_Ctrl 0x03ee
-#define Player_State 0x1d
-#define Enemy_State 0x1e
-#define Fireball_State 0x24
-#define Block_State 0x26
-#define Misc_State 0x2a
-#define Player_MovingDir 0x45
-#define Enemy_MovingDir 0x46
-#define SprObject_X_Speed 0x57
-#define Player_X_Speed 0x57
-#define Enemy_X_Speed 0x58
-#define Fireball_X_Speed 0x5e
-#define Block_X_Speed 0x60
-#define Misc_X_Speed 0x64
-#define Jumpspring_FixedYPos 0x58
-#define JumpspringAnimCtrl 0x070e
-#define JumpspringForce 0x06db
-#define SprObject_PageLoc 0x6d
-#define Player_PageLoc 0x6d
-#define Enemy_PageLoc 0x6e
-#define Fireball_PageLoc 0x74
-#define Block_PageLoc 0x76
-#define Misc_PageLoc 0x7a
-#define Bubble_PageLoc 0x83
-#define SprObject_X_Position 0x86
-#define Player_X_Position 0x86
-#define Enemy_X_Position 0x87
-#define Fireball_X_Position 0x8d
-#define Block_X_Position 0x8f
-#define Misc_X_Position 0x93
-#define Bubble_X_Position 0x9c
-#define SprObject_Y_Speed 0x9f
-#define Player_Y_Speed 0x9f
-#define Enemy_Y_Speed 0xa0
-#define Fireball_Y_Speed 0xa6
-#define Block_Y_Speed 0xa8
-#define Misc_Y_Speed 0xac
-#define SprObject_Y_HighPos 0xb5
-#define Player_Y_HighPos 0xb5
-#define Enemy_Y_HighPos 0xb6
-#define Fireball_Y_HighPos 0xbc
-#define Block_Y_HighPos 0xbe
-#define Misc_Y_HighPos 0xc2
-#define Bubble_Y_HighPos 0xcb
-#define SprObject_Y_Position 0xce
-#define Player_Y_Position 0xce
-#define Enemy_Y_Position 0xcf
-#define Fireball_Y_Position 0xd5
-#define Block_Y_Position 0xd7
-#define Misc_Y_Position 0xdb
-#define Bubble_Y_Position 0xe4
-#define SprObject_Rel_XPos 0x03ad
-#define Player_Rel_XPos 0x03ad
-#define Enemy_Rel_XPos 0x03ae
-#define Fireball_Rel_XPos 0x03af
-#define Bubble_Rel_XPos 0x03b0
-#define Block_Rel_XPos 0x03b1
-#define Misc_Rel_XPos 0x03b3
-#define SprObject_Rel_YPos 0x03b8
-#define Player_Rel_YPos 0x03b8
-#define Enemy_Rel_YPos 0x03b9
-#define Fireball_Rel_YPos 0x03ba
-#define Bubble_Rel_YPos 0x03bb
-#define Block_Rel_YPos 0x03bc
-#define Misc_Rel_YPos 0x03be
-#define SprObject_SprAttrib 0x03c4
-#define Player_SprAttrib 0x03c4
-#define Enemy_SprAttrib 0x03c5
-#define SprObject_X_MoveForce 0x0400
-#define Enemy_X_MoveForce 0x0401
-#define SprObject_YMF_Dummy 0x0416
-#define Player_YMF_Dummy 0x0416
-#define Enemy_YMF_Dummy 0x0417
-#define Bubble_YMF_Dummy 0x042c
-#define SprObject_Y_MoveForce 0x0433
-#define Player_Y_MoveForce 0x0433
-#define Enemy_Y_MoveForce 0x0434
-#define Block_Y_MoveForce 0x043c
-#define DisableCollisionDet 0x0716
-#define Player_CollisionBits 0x0490
-#define Enemy_CollisionBits 0x0491
-#define SprObj_BoundBoxCtrl 0x0499
-#define Player_BoundBoxCtrl 0x0499
-#define Enemy_BoundBoxCtrl 0x049a
-#define Fireball_BoundBoxCtrl 0x04a0
-#define Misc_BoundBoxCtrl 0x04a2
-#define EnemyFrenzyBuffer 0x06cb
-#define EnemyFrenzyQueue 0x06cd
-#define Enemy_Flag 0x0f
-#define Enemy_ID 0x16
-#define PlayerGfxOffset 0x06d5
-#define Player_XSpeedAbsolute 0x0700
-#define FrictionAdderHigh 0x0701
-#define FrictionAdderLow 0x0702
-#define RunningSpeed 0x0703
-#define SwimmingFlag 0x0704
-#define Player_X_MoveForce 0x0705
-#define DiffToHaltJump 0x0706
-#define JumpOrigin_Y_HighPos 0x0707
-#define JumpOrigin_Y_Position 0x0708
-#define VerticalForce 0x0709
-#define VerticalForceDown 0x070a
-#define PlayerChangeSizeFlag 0x070b
-#define PlayerAnimTimerSet 0x070c
-#define PlayerAnimCtrl 0x070d
-#define DeathMusicLoaded 0x0712
-#define FlagpoleSoundQueue 0x0713
-#define CrouchingFlag 0x0714
-#define MaximumLeftSpeed 0x0450
-#define MaximumRightSpeed 0x0456
-#define SprObject_OffscrBits 0x03d0
-#define Player_OffscreenBits 0x03d0
-#define Enemy_OffscreenBits 0x03d1
-#define FBall_OffscreenBits 0x03d2
-#define Bubble_OffscreenBits 0x03d3
-#define Block_OffscreenBits 0x03d4
-#define Misc_OffscreenBits 0x03d6
-#define EnemyOffscrBitsMasked 0x03d8
-#define Cannon_Offset 0x046a
-#define Cannon_PageLoc 0x046b
-#define Cannon_X_Position 0x0471
-#define Cannon_Y_Position 0x0477
-#define Cannon_Timer 0x047d
-#define Whirlpool_Offset 0x046a
-#define Whirlpool_PageLoc 0x046b
-#define Whirlpool_LeftExtent 0x0471
-#define Whirlpool_Length 0x0477
-#define Whirlpool_Flag 0x047d
-#define VineFlagOffset 0x0398
-#define VineHeight 0x0399
-#define VineObjOffset 0x039a
-#define VineStart_Y_Position 0x039d
-#define Block_Orig_YPos 0x03e4
-#define Block_BBuf_Low 0x03e6
-#define Block_Metatile 0x03e8
-#define Block_PageLoc2 0x03ea
-#define Block_RepFlag 0x03ec
-#define Block_ResidualCounter 0x03f0
-#define Block_Orig_XPos 0x03f1
-#define BoundingBox_UL_XPos 0x04ac
-#define BoundingBox_UL_YPos 0x04ad
-#define BoundingBox_DR_XPos 0x04ae
-#define BoundingBox_DR_YPos 0x04af
-#define BoundingBox_UL_Corner 0x04ac
-#define BoundingBox_LR_Corner 0x04ae
-#define EnemyBoundingBoxCoord 0x04b0
-#define PowerUpType 0x39
-#define FireballBouncingFlag 0x3a
-#define FireballCounter 0x06ce
-#define FireballThrowingTimer 0x0711
-#define HammerEnemyOffset 0x06ae
-#define JumpCoinMiscOffset 0x06b7
-#define Block_Buffer_1 0x0500
-#define Block_Buffer_2 0x05d0
-#define HammerThrowingTimer 0x03a2
-#define HammerBroJumpTimer 0x3c
-#define Misc_Collision_Flag 0x06be
-#define RedPTroopaOrigXPos 0x0401
-#define RedPTroopaCenterYPos 0x58
-#define XMovePrimaryCounter 0xa0
-#define XMoveSecondaryCounter 0x58
-#define CheepCheepMoveMFlag 0x58
-#define CheepCheepOrigYPos 0x0434
-#define BitMFilter 0x06dd
-#define LakituReappearTimer 0x06d1
-#define LakituMoveSpeed 0x58
-#define LakituMoveDirection 0xa0
-#define FirebarSpinState_Low 0x58
-#define FirebarSpinState_High 0xa0
-#define FirebarSpinSpeed 0x0388
-#define FirebarSpinDirection 0x34
-#define DuplicateObj_Offset 0x06cf
-#define NumberofGroupEnemies 0x06d3
-#define BlooperMoveCounter 0xa0
-#define BlooperMoveSpeed 0x58
-#define BowserBodyControls 0x0363
-#define BowserFeetCounter 0x0364
-#define BowserMovementSpeed 0x0365
-#define BowserOrigXPos 0x0366
-#define BowserFlameTimerCtrl 0x0367
-#define BowserFront_Offset 0x0368
-#define BridgeCollapseOffset 0x0369
-#define BowserGfxFlag 0x036a
-#define BowserHitPoints 0x0483
-#define MaxRangeFromOrigin 0x06dc
-#define BowserFlamePRandomOfs 0x0417
-#define PiranhaPlantUpYPos 0x0417
-#define PiranhaPlantDownYPos 0x0434
-#define PiranhaPlant_Y_Speed 0x58
-#define PiranhaPlant_MoveFlag 0xa0
-#define FireworksCounter 0x06d7
-#define ExplosionGfxCounter 0x58
-#define ExplosionTimerCounter 0xa0
-#define Squ2_NoteLenBuffer 0x07b3
-#define Squ2_NoteLenCounter 0x07b4
-#define Squ2_EnvelopeDataCtrl 0x07b5
-#define Squ1_NoteLenCounter 0x07b6
-#define Squ1_EnvelopeDataCtrl 0x07b7
-#define Tri_NoteLenBuffer 0x07b8
-#define Tri_NoteLenCounter 0x07b9
-#define Noise_BeatLenCounter 0x07ba
-#define Squ1_SfxLenCounter 0x07bb
-#define Squ2_SfxLenCounter 0x07bd
-#define Sfx_SecondaryCounter 0x07be
-#define Noise_SfxLenCounter 0x07bf
-#define PauseSoundQueue 0xfa
-#define Square1SoundQueue 0xff
-#define Square2SoundQueue 0xfe
-#define NoiseSoundQueue 0xfd
-#define AreaMusicQueue 0xfb
-#define EventMusicQueue 0xfc
-#define Square1SoundBuffer 0xf1
-#define Square2SoundBuffer 0xf2
-#define NoiseSoundBuffer 0xf3
-#define AreaMusicBuffer 0xf4
-#define EventMusicBuffer 0x07b1
-#define PauseSoundBuffer 0x07b2
-#define MusicData 0xf5
-#define MusicDataLow 0xf5
-#define MusicDataHigh 0xf6
-#define MusicOffset_Square2 0xf7
-#define MusicOffset_Square1 0xf8
-#define MusicOffset_Triangle 0xf9
-#define MusicOffset_Noise 0x07b0
-#define NoteLenLookupTblOfs 0xf0
-#define DAC_Counter 0x07c0
-#define NoiseDataLoopbackOfs 0x07c1
-#define NoteLengthTblAdder 0x07c4
-#define AreaMusicBuffer_Alt 0x07c5
-#define PauseModeFlag 0x07c6
-#define GroundMusicHeaderOfs 0x07c7
-#define AltRegContentFlag 0x07ca
-#define Sfx_SmallJump BOOST_BINARY(10000000)
-#define Sfx_Flagpole BOOST_BINARY(01000000)
-#define Sfx_Fireball BOOST_BINARY(00100000)
-#define Sfx_PipeDown_Injury BOOST_BINARY(00010000)
-#define Sfx_EnemySmack BOOST_BINARY(00001000)
-#define Sfx_EnemyStomp BOOST_BINARY(00000100)
-#define Sfx_Bump BOOST_BINARY(00000010)
-#define Sfx_BigJump BOOST_BINARY(00000001)
-#define Sfx_BowserFall BOOST_BINARY(10000000)
-#define Sfx_ExtraLife BOOST_BINARY(01000000)
-#define Sfx_PowerUpGrab BOOST_BINARY(00100000)
-#define Sfx_TimerTick BOOST_BINARY(00010000)
-#define Sfx_Blast BOOST_BINARY(00001000)
-#define Sfx_GrowVine BOOST_BINARY(00000100)
-#define Sfx_GrowPowerUp BOOST_BINARY(00000010)
-#define Sfx_CoinGrab BOOST_BINARY(00000001)
-#define Sfx_BowserFlame BOOST_BINARY(00000010)
-#define Sfx_BrickShatter BOOST_BINARY(00000001)
-#define Silence BOOST_BINARY(10000000)
-#define StarPowerMusic BOOST_BINARY(01000000)
-#define PipeIntroMusic BOOST_BINARY(00100000)
-#define CloudMusic BOOST_BINARY(00010000)
-#define CastleMusic BOOST_BINARY(00001000)
-#define UndergroundMusic BOOST_BINARY(00000100)
-#define WaterMusic BOOST_BINARY(00000010)
-#define GroundMusic BOOST_BINARY(00000001)
-#define TimeRunningOutMusic BOOST_BINARY(01000000)
-#define EndOfLevelMusic BOOST_BINARY(00100000)
-#define AltGameOverMusic BOOST_BINARY(00010000)
-#define EndOfCastleMusic BOOST_BINARY(00001000)
-#define VictoryMusic BOOST_BINARY(00000100)
-#define GameOverMusic BOOST_BINARY(00000010)
-#define DeathMusic BOOST_BINARY(00000001)
-#define GreenKoopa 0x00
-#define BuzzyBeetle 0x02
-#define RedKoopa 0x03
-#define HammerBro 0x05
-#define Goomba 0x06
-#define Bloober 0x07
-#define BulletBill_FrenzyVar 0x08
-#define GreyCheepCheep 0x0a
-#define RedCheepCheep 0x0b
-#define Podoboo 0x0c
-#define PiranhaPlant 0x0d
-#define GreenParatroopaJump 0x0e
-#define RedParatroopa 0x0f
-#define GreenParatroopaFly 0x10
-#define Lakitu 0x11
-#define Spiny 0x12
-#define FlyCheepCheepFrenzy 0x14
-#define FlyingCheepCheep 0x14
-#define BowserFlame 0x15
-#define Fireworks 0x16
-#define BBill_CCheep_Frenzy 0x17
-#define Stop_Frenzy 0x18
-#define Bowser 0x2d
-#define PowerUpObject 0x2e
-#define VineObject 0x2f
-#define FlagpoleFlagObject 0x30
-#define StarFlagObject 0x31
-#define JumpspringObject 0x32
-#define BulletBill_CannonVar 0x33
-#define RetainerObject 0x35
-#define TallEnemy 0x09
-#define World1 0
-#define World2 1
-#define World3 2
-#define World4 3
-#define World5 4
-#define World6 5
-#define World7 6
-#define World8 7
-#define Level1 0
-#define Level2 1
-#define Level3 2
-#define Level4 3
-#define WarmBootOffset LOBYTE(0x07d6)
-#define ColdBootOffset LOBYTE(0x07fe)
-#define TitleScreenDataOffset 0x1ec0
-#define SoundMemory 0x07b0
-#define SwimTileRepOffset PlayerGraphicsTable + 0x9e
-#define MusicHeaderOffsetData MusicHeaderData - 1
-#define MHD MusicHeaderData
-#define A_Button BOOST_BINARY(10000000)
-#define B_Button BOOST_BINARY(01000000)
-#define Select_Button BOOST_BINARY(00100000)
-#define Start_Button BOOST_BINARY(00010000)
-#define Up_Dir BOOST_BINARY(00001000)
-#define Down_Dir BOOST_BINARY(00000100)
-#define Left_Dir BOOST_BINARY(00000010)
-#define Right_Dir BOOST_BINARY(00000001)
-#define TitleScreenModeValue 0
-#define GameModeValue 1
-#define VictoryModeValue 2
-#define GameOverModeValue 3
+#include "SMBDataPointers.hpp"
+
+constexpr uint16_t PPU_CTRL_REG1 = 0x2000;
+constexpr uint16_t PPU_CTRL_REG2 = 0x2001;
+constexpr uint16_t PPU_STATUS = 0x2002;
+constexpr uint16_t PPU_SPR_ADDR = 0x2003;
+constexpr uint16_t PPU_SPR_DATA = 0x2004;
+constexpr uint16_t PPU_SCROLL_REG = 0x2005;
+constexpr uint16_t PPU_ADDRESS = 0x2006;
+constexpr uint16_t PPU_DATA = 0x2007;
+constexpr uint16_t SND_REGISTER = 0x4000;
+constexpr uint16_t SND_SQUARE1_REG = 0x4000;
+constexpr uint16_t SND_SQUARE2_REG = 0x4004;
+constexpr uint16_t SND_TRIANGLE_REG = 0x4008;
+constexpr uint16_t SND_NOISE_REG = 0x400c;
+constexpr uint16_t SND_DELTA_REG = 0x4010;
+constexpr uint16_t SND_MASTERCTRL_REG = 0x4015;
+constexpr uint16_t SPR_DMA = 0x4014;
+constexpr uint16_t JOYPAD_PORT = 0x4016;
+constexpr uint16_t JOYPAD_PORT1 = 0x4016;
+constexpr uint16_t JOYPAD_PORT2 = 0x4017;
+constexpr uint16_t ObjectOffset = 0x08;
+constexpr uint16_t FrameCounter = 0x09;
+constexpr uint16_t SavedJoypadBits = 0x06fc;
+constexpr uint16_t SavedJoypad1Bits = 0x06fc;
+constexpr uint16_t SavedJoypad2Bits = 0x06fd;
+constexpr uint16_t JoypadBitMask = 0x074a;
+constexpr uint16_t JoypadOverride = 0x0758;
+constexpr uint16_t A_B_Buttons = 0x0a;
+constexpr uint16_t PreviousA_B_Buttons = 0x0d;
+constexpr uint16_t Up_Down_Buttons = 0x0b;
+constexpr uint16_t Left_Right_Buttons = 0x0c;
+constexpr uint16_t GameEngineSubroutine = 0x0e;
+constexpr uint16_t Mirror_PPU_CTRL_REG1 = 0x0778;
+constexpr uint16_t Mirror_PPU_CTRL_REG2 = 0x0779;
+constexpr uint16_t OperMode = 0x0770;
+constexpr uint16_t OperMode_Task = 0x0772;
+constexpr uint16_t ScreenRoutineTask = 0x073c;
+constexpr uint16_t GamePauseStatus = 0x0776;
+constexpr uint16_t GamePauseTimer = 0x0777;
+constexpr uint16_t DemoAction = 0x0717;
+constexpr uint16_t DemoActionTimer = 0x0718;
+constexpr uint16_t TimerControl = 0x0747;
+constexpr uint16_t IntervalTimerControl = 0x077f;
+constexpr uint16_t Timers = 0x0780;
+constexpr uint16_t SelectTimer = 0x0780;
+constexpr uint16_t PlayerAnimTimer = 0x0781;
+constexpr uint16_t JumpSwimTimer = 0x0782;
+constexpr uint16_t RunningTimer = 0x0783;
+constexpr uint16_t BlockBounceTimer = 0x0784;
+constexpr uint16_t SideCollisionTimer = 0x0785;
+constexpr uint16_t JumpspringTimer = 0x0786;
+constexpr uint16_t GameTimerCtrlTimer = 0x0787;
+constexpr uint16_t ClimbSideTimer = 0x0789;
+constexpr uint16_t EnemyFrameTimer = 0x078a;
+constexpr uint16_t FrenzyEnemyTimer = 0x078f;
+constexpr uint16_t BowserFireBreathTimer = 0x0790;
+constexpr uint16_t StompTimer = 0x0791;
+constexpr uint16_t AirBubbleTimer = 0x0792;
+constexpr uint16_t ScrollIntervalTimer = 0x0795;
+constexpr uint16_t EnemyIntervalTimer = 0x0796;
+constexpr uint16_t BrickCoinTimer = 0x079d;
+constexpr uint16_t InjuryTimer = 0x079e;
+constexpr uint16_t StarInvincibleTimer = 0x079f;
+constexpr uint16_t ScreenTimer = 0x07a0;
+constexpr uint16_t WorldEndTimer = 0x07a1;
+constexpr uint16_t DemoTimer = 0x07a2;
+constexpr uint16_t Sprite_Data = 0x0200;
+constexpr uint16_t Sprite_Y_Position = 0x0200;
+constexpr uint16_t Sprite_Tilenumber = 0x0201;
+constexpr uint16_t Sprite_Attributes = 0x0202;
+constexpr uint16_t Sprite_X_Position = 0x0203;
+constexpr uint16_t ScreenEdge_PageLoc = 0x071a;
+constexpr uint16_t ScreenEdge_X_Pos = 0x071c;
+constexpr uint16_t ScreenLeft_PageLoc = 0x071a;
+constexpr uint16_t ScreenRight_PageLoc = 0x071b;
+constexpr uint16_t ScreenLeft_X_Pos = 0x071c;
+constexpr uint16_t ScreenRight_X_Pos = 0x071d;
+constexpr uint16_t PlayerFacingDir = 0x33;
+constexpr uint16_t DestinationPageLoc = 0x34;
+constexpr uint16_t VictoryWalkControl = 0x35;
+constexpr uint16_t ScrollFractional = 0x0768;
+constexpr uint16_t PrimaryMsgCounter = 0x0719;
+constexpr uint16_t SecondaryMsgCounter = 0x0749;
+constexpr uint16_t HorizontalScroll = 0x073f;
+constexpr uint16_t VerticalScroll = 0x0740;
+constexpr uint16_t ScrollLock = 0x0723;
+constexpr uint16_t ScrollThirtyTwo = 0x073d;
+constexpr uint16_t Player_X_Scroll = 0x06ff;
+constexpr uint16_t Player_Pos_ForScroll = 0x0755;
+constexpr uint16_t ScrollAmount = 0x0775;
+constexpr uint16_t AreaData = 0xe7;
+constexpr uint16_t AreaDataLow = 0xe7;
+constexpr uint16_t AreaDataHigh = 0xe8;
+constexpr uint16_t EnemyData = 0xe9;
+constexpr uint16_t EnemyDataLow = 0xe9;
+constexpr uint16_t EnemyDataHigh = 0xea;
+constexpr uint16_t AreaParserTaskNum = 0x071f;
+constexpr uint16_t ColumnSets = 0x071e;
+constexpr uint16_t CurrentPageLoc = 0x0725;
+constexpr uint16_t CurrentColumnPos = 0x0726;
+constexpr uint16_t BackloadingFlag = 0x0728;
+constexpr uint16_t BehindAreaParserFlag = 0x0729;
+constexpr uint16_t AreaObjectPageLoc = 0x072a;
+constexpr uint16_t AreaObjectPageSel = 0x072b;
+constexpr uint16_t AreaDataOffset = 0x072c;
+constexpr uint16_t AreaObjOffsetBuffer = 0x072d;
+constexpr uint16_t AreaObjectLength = 0x0730;
+constexpr uint16_t StaircaseControl = 0x0734;
+constexpr uint16_t AreaObjectHeight = 0x0735;
+constexpr uint16_t MushroomLedgeHalfLen = 0x0736;
+constexpr uint16_t EnemyDataOffset = 0x0739;
+constexpr uint16_t EnemyObjectPageLoc = 0x073a;
+constexpr uint16_t EnemyObjectPageSel = 0x073b;
+constexpr uint16_t MetatileBuffer = 0x06a1;
+constexpr uint16_t BlockBufferColumnPos = 0x06a0;
+constexpr uint16_t CurrentNTAddr_Low = 0x0721;
+constexpr uint16_t CurrentNTAddr_High = 0x0720;
+constexpr uint16_t AttributeBuffer = 0x03f9;
+constexpr uint16_t LoopCommand = 0x0745;
+constexpr uint16_t DisplayDigits = 0x07d7;
+constexpr uint16_t TopScoreDisplay = 0x07d7;
+constexpr uint16_t ScoreAndCoinDisplay = 0x07dd;
+constexpr uint16_t PlayerScoreDisplay = 0x07dd;
+constexpr uint16_t GameTimerDisplay = 0x07f8;
+constexpr uint16_t DigitModifier = 0x0134;
+constexpr uint16_t VerticalFlipFlag = 0x0109;
+constexpr uint16_t FloateyNum_Control = 0x0110;
+constexpr uint16_t ShellChainCounter = 0x0125;
+constexpr uint16_t FloateyNum_Timer = 0x012c;
+constexpr uint16_t FloateyNum_X_Pos = 0x0117;
+constexpr uint16_t FloateyNum_Y_Pos = 0x011e;
+constexpr uint16_t FlagpoleFNum_Y_Pos = 0x010d;
+constexpr uint16_t FlagpoleFNum_YMFDummy = 0x010e;
+constexpr uint16_t FlagpoleScore = 0x010f;
+constexpr uint16_t FlagpoleCollisionYPos = 0x070f;
+constexpr uint16_t StompChainCounter = 0x0484;
+constexpr uint16_t VRAM_Buffer1_Offset = 0x0300;
+constexpr uint16_t VRAM_Buffer1 = 0x0301;
+constexpr uint16_t VRAM_Buffer2_Offset = 0x0340;
+constexpr uint16_t VRAM_Buffer2 = 0x0341;
+constexpr uint16_t VRAM_Buffer_AddrCtrl = 0x0773;
+constexpr uint16_t Sprite0HitDetectFlag = 0x0722;
+constexpr uint16_t DisableScreenFlag = 0x0774;
+constexpr uint16_t DisableIntermediate = 0x0769;
+constexpr uint16_t ColorRotateOffset = 0x06d4;
+constexpr uint16_t TerrainControl = 0x0727;
+constexpr uint16_t AreaStyle = 0x0733;
+constexpr uint16_t ForegroundScenery = 0x0741;
+constexpr uint16_t BackgroundScenery = 0x0742;
+constexpr uint16_t CloudTypeOverride = 0x0743;
+constexpr uint16_t BackgroundColorCtrl = 0x0744;
+constexpr uint16_t AreaType = 0x074e;
+constexpr uint16_t AreaAddrsLOffset = 0x074f;
+constexpr uint16_t AreaPointer = 0x0750;
+constexpr uint16_t PlayerEntranceCtrl = 0x0710;
+constexpr uint16_t GameTimerSetting = 0x0715;
+constexpr uint16_t AltEntranceControl = 0x0752;
+constexpr uint16_t EntrancePage = 0x0751;
+constexpr uint16_t NumberOfPlayers = 0x077a;
+constexpr uint16_t WarpZoneControl = 0x06d6;
+constexpr uint16_t ChangeAreaTimer = 0x06de;
+constexpr uint16_t MultiLoopCorrectCntr = 0x06d9;
+constexpr uint16_t MultiLoopPassCntr = 0x06da;
+constexpr uint16_t FetchNewGameTimerFlag = 0x0757;
+constexpr uint16_t GameTimerExpiredFlag = 0x0759;
+constexpr uint16_t PrimaryHardMode = 0x076a;
+constexpr uint16_t SecondaryHardMode = 0x06cc;
+constexpr uint16_t WorldSelectNumber = 0x076b;
+constexpr uint16_t WorldSelectEnableFlag = 0x07fc;
+constexpr uint16_t ContinueWorld = 0x07fd;
+constexpr uint16_t CurrentPlayer = 0x0753;
+constexpr uint16_t PlayerSize = 0x0754;
+constexpr uint16_t PlayerStatus = 0x0756;
+constexpr uint16_t OnscreenPlayerInfo = 0x075a;
+constexpr uint16_t NumberofLives = 0x075a; // used by current player
+constexpr uint16_t HalfwayPage = 0x075b;
+constexpr uint16_t LevelNumber = 0x075c; // the actual dash number
+constexpr uint16_t Hidden1UpFlag = 0x075d;
+constexpr uint16_t CoinTally = 0x075e;
+constexpr uint16_t WorldNumber = 0x075f;
+constexpr uint16_t AreaNumber = 0x0760; // internal number used to find areas
+constexpr uint16_t CoinTallyFor1Ups = 0x0748;
+constexpr uint16_t OffscreenPlayerInfo = 0x0761;
+constexpr uint16_t OffScr_NumberofLives = 0x0761; // used by offscreen player
+constexpr uint16_t OffScr_HalfwayPage = 0x0762;
+constexpr uint16_t OffScr_LevelNumber = 0x0763;
+constexpr uint16_t OffScr_Hidden1UpFlag = 0x0764;
+constexpr uint16_t OffScr_CoinTally = 0x0765;
+constexpr uint16_t OffScr_WorldNumber = 0x0766;
+constexpr uint16_t OffScr_AreaNumber = 0x0767;
+constexpr uint16_t BalPlatformAlignment = 0x03a0;
+constexpr uint16_t Platform_X_Scroll = 0x03a1;
+constexpr uint16_t PlatformCollisionFlag = 0x03a2;
+constexpr uint16_t YPlatformTopYPos = 0x0401;
+constexpr uint16_t YPlatformCenterYPos = 0x58;
+constexpr uint16_t BrickCoinTimerFlag = 0x06bc;
+constexpr uint16_t StarFlagTaskControl = 0x0746;
+constexpr uint16_t PseudoRandomBitReg = 0x07a7;
+constexpr uint16_t WarmBootValidation = 0x07ff;
+constexpr uint16_t SprShuffleAmtOffset = 0x06e0;
+constexpr uint16_t SprShuffleAmt = 0x06e1;
+constexpr uint16_t SprDataOffset = 0x06e4;
+constexpr uint16_t Player_SprDataOffset = 0x06e4;
+constexpr uint16_t Enemy_SprDataOffset = 0x06e5;
+constexpr uint16_t Block_SprDataOffset = 0x06ec;
+constexpr uint16_t Alt_SprDataOffset = 0x06ec;
+constexpr uint16_t Bubble_SprDataOffset = 0x06ee;
+constexpr uint16_t FBall_SprDataOffset = 0x06f1;
+constexpr uint16_t Misc_SprDataOffset = 0x06f3;
+constexpr uint16_t SprDataOffset_Ctrl = 0x03ee;
+constexpr uint16_t Player_State = 0x1d;
+constexpr uint16_t Enemy_State = 0x1e;
+constexpr uint16_t Fireball_State = 0x24;
+constexpr uint16_t Block_State = 0x26;
+constexpr uint16_t Misc_State = 0x2a;
+constexpr uint16_t Player_MovingDir = 0x45;
+constexpr uint16_t Enemy_MovingDir = 0x46;
+constexpr uint16_t SprObject_X_Speed = 0x57;
+constexpr uint16_t Player_X_Speed = 0x57;
+constexpr uint16_t Enemy_X_Speed = 0x58;
+constexpr uint16_t Fireball_X_Speed = 0x5e;
+constexpr uint16_t Block_X_Speed = 0x60;
+constexpr uint16_t Misc_X_Speed = 0x64;
+constexpr uint16_t Jumpspring_FixedYPos = 0x58;
+constexpr uint16_t JumpspringAnimCtrl = 0x070e;
+constexpr uint16_t JumpspringForce = 0x06db;
+constexpr uint16_t SprObject_PageLoc = 0x6d;
+constexpr uint16_t Player_PageLoc = 0x6d;
+constexpr uint16_t Enemy_PageLoc = 0x6e;
+constexpr uint16_t Fireball_PageLoc = 0x74;
+constexpr uint16_t Block_PageLoc = 0x76;
+constexpr uint16_t Misc_PageLoc = 0x7a;
+constexpr uint16_t Bubble_PageLoc = 0x83;
+constexpr uint16_t SprObject_X_Position = 0x86;
+constexpr uint16_t Player_X_Position = 0x86;
+constexpr uint16_t Enemy_X_Position = 0x87;
+constexpr uint16_t Fireball_X_Position = 0x8d;
+constexpr uint16_t Block_X_Position = 0x8f;
+constexpr uint16_t Misc_X_Position = 0x93;
+constexpr uint16_t Bubble_X_Position = 0x9c;
+constexpr uint16_t SprObject_Y_Speed = 0x9f;
+constexpr uint16_t Player_Y_Speed = 0x9f;
+constexpr uint16_t Enemy_Y_Speed = 0xa0;
+constexpr uint16_t Fireball_Y_Speed = 0xa6;
+constexpr uint16_t Block_Y_Speed = 0xa8;
+constexpr uint16_t Misc_Y_Speed = 0xac;
+constexpr uint16_t SprObject_Y_HighPos = 0xb5;
+constexpr uint16_t Player_Y_HighPos = 0xb5;
+constexpr uint16_t Enemy_Y_HighPos = 0xb6;
+constexpr uint16_t Fireball_Y_HighPos = 0xbc;
+constexpr uint16_t Block_Y_HighPos = 0xbe;
+constexpr uint16_t Misc_Y_HighPos = 0xc2;
+constexpr uint16_t Bubble_Y_HighPos = 0xcb;
+constexpr uint16_t SprObject_Y_Position = 0xce;
+constexpr uint16_t Player_Y_Position = 0xce;
+constexpr uint16_t Enemy_Y_Position = 0xcf;
+constexpr uint16_t Fireball_Y_Position = 0xd5;
+constexpr uint16_t Block_Y_Position = 0xd7;
+constexpr uint16_t Misc_Y_Position = 0xdb;
+constexpr uint16_t Bubble_Y_Position = 0xe4;
+constexpr uint16_t SprObject_Rel_XPos = 0x03ad;
+constexpr uint16_t Player_Rel_XPos = 0x03ad;
+constexpr uint16_t Enemy_Rel_XPos = 0x03ae;
+constexpr uint16_t Fireball_Rel_XPos = 0x03af;
+constexpr uint16_t Bubble_Rel_XPos = 0x03b0;
+constexpr uint16_t Block_Rel_XPos = 0x03b1;
+constexpr uint16_t Misc_Rel_XPos = 0x03b3;
+constexpr uint16_t SprObject_Rel_YPos = 0x03b8;
+constexpr uint16_t Player_Rel_YPos = 0x03b8;
+constexpr uint16_t Enemy_Rel_YPos = 0x03b9;
+constexpr uint16_t Fireball_Rel_YPos = 0x03ba;
+constexpr uint16_t Bubble_Rel_YPos = 0x03bb;
+constexpr uint16_t Block_Rel_YPos = 0x03bc;
+constexpr uint16_t Misc_Rel_YPos = 0x03be;
+constexpr uint16_t SprObject_SprAttrib = 0x03c4;
+constexpr uint16_t Player_SprAttrib = 0x03c4;
+constexpr uint16_t Enemy_SprAttrib = 0x03c5;
+constexpr uint16_t SprObject_X_MoveForce = 0x0400;
+constexpr uint16_t Enemy_X_MoveForce = 0x0401;
+constexpr uint16_t SprObject_YMF_Dummy = 0x0416;
+constexpr uint16_t Player_YMF_Dummy = 0x0416;
+constexpr uint16_t Enemy_YMF_Dummy = 0x0417;
+constexpr uint16_t Bubble_YMF_Dummy = 0x042c;
+constexpr uint16_t SprObject_Y_MoveForce = 0x0433;
+constexpr uint16_t Player_Y_MoveForce = 0x0433;
+constexpr uint16_t Enemy_Y_MoveForce = 0x0434;
+constexpr uint16_t Block_Y_MoveForce = 0x043c;
+constexpr uint16_t DisableCollisionDet = 0x0716;
+constexpr uint16_t Player_CollisionBits = 0x0490;
+constexpr uint16_t Enemy_CollisionBits = 0x0491;
+constexpr uint16_t SprObj_BoundBoxCtrl = 0x0499;
+constexpr uint16_t Player_BoundBoxCtrl = 0x0499;
+constexpr uint16_t Enemy_BoundBoxCtrl = 0x049a;
+constexpr uint16_t Fireball_BoundBoxCtrl = 0x04a0;
+constexpr uint16_t Misc_BoundBoxCtrl = 0x04a2;
+constexpr uint16_t EnemyFrenzyBuffer = 0x06cb;
+constexpr uint16_t EnemyFrenzyQueue = 0x06cd;
+constexpr uint16_t Enemy_Flag = 0x0f;
+constexpr uint16_t Enemy_ID = 0x16;
+constexpr uint16_t PlayerGfxOffset = 0x06d5;
+constexpr uint16_t Player_XSpeedAbsolute = 0x0700;
+constexpr uint16_t FrictionAdderHigh = 0x0701;
+constexpr uint16_t FrictionAdderLow = 0x0702;
+constexpr uint16_t RunningSpeed = 0x0703;
+constexpr uint16_t SwimmingFlag = 0x0704;
+constexpr uint16_t Player_X_MoveForce = 0x0705;
+constexpr uint16_t DiffToHaltJump = 0x0706;
+constexpr uint16_t JumpOrigin_Y_HighPos = 0x0707;
+constexpr uint16_t JumpOrigin_Y_Position = 0x0708;
+constexpr uint16_t VerticalForce = 0x0709;
+constexpr uint16_t VerticalForceDown = 0x070a;
+constexpr uint16_t PlayerChangeSizeFlag = 0x070b;
+constexpr uint16_t PlayerAnimTimerSet = 0x070c;
+constexpr uint16_t PlayerAnimCtrl = 0x070d;
+constexpr uint16_t DeathMusicLoaded = 0x0712;
+constexpr uint16_t FlagpoleSoundQueue = 0x0713;
+constexpr uint16_t CrouchingFlag = 0x0714;
+constexpr uint16_t MaximumLeftSpeed = 0x0450;
+constexpr uint16_t MaximumRightSpeed = 0x0456;
+constexpr uint16_t SprObject_OffscrBits = 0x03d0;
+constexpr uint16_t Player_OffscreenBits = 0x03d0;
+constexpr uint16_t Enemy_OffscreenBits = 0x03d1;
+constexpr uint16_t FBall_OffscreenBits = 0x03d2;
+constexpr uint16_t Bubble_OffscreenBits = 0x03d3;
+constexpr uint16_t Block_OffscreenBits = 0x03d4;
+constexpr uint16_t Misc_OffscreenBits = 0x03d6;
+constexpr uint16_t EnemyOffscrBitsMasked = 0x03d8;
+constexpr uint16_t Cannon_Offset = 0x046a;
+constexpr uint16_t Cannon_PageLoc = 0x046b;
+constexpr uint16_t Cannon_X_Position = 0x0471;
+constexpr uint16_t Cannon_Y_Position = 0x0477;
+constexpr uint16_t Cannon_Timer = 0x047d;
+constexpr uint16_t Whirlpool_Offset = 0x046a;
+constexpr uint16_t Whirlpool_PageLoc = 0x046b;
+constexpr uint16_t Whirlpool_LeftExtent = 0x0471;
+constexpr uint16_t Whirlpool_Length = 0x0477;
+constexpr uint16_t Whirlpool_Flag = 0x047d;
+constexpr uint16_t VineFlagOffset = 0x0398;
+constexpr uint16_t VineHeight = 0x0399;
+constexpr uint16_t VineObjOffset = 0x039a;
+constexpr uint16_t VineStart_Y_Position = 0x039d;
+constexpr uint16_t Block_Orig_YPos = 0x03e4;
+constexpr uint16_t Block_BBuf_Low = 0x03e6;
+constexpr uint16_t Block_Metatile = 0x03e8;
+constexpr uint16_t Block_PageLoc2 = 0x03ea;
+constexpr uint16_t Block_RepFlag = 0x03ec;
+constexpr uint16_t Block_ResidualCounter = 0x03f0;
+constexpr uint16_t Block_Orig_XPos = 0x03f1;
+constexpr uint16_t BoundingBox_UL_XPos = 0x04ac;
+constexpr uint16_t BoundingBox_UL_YPos = 0x04ad;
+constexpr uint16_t BoundingBox_DR_XPos = 0x04ae;
+constexpr uint16_t BoundingBox_DR_YPos = 0x04af;
+constexpr uint16_t BoundingBox_UL_Corner = 0x04ac;
+constexpr uint16_t BoundingBox_LR_Corner = 0x04ae;
+constexpr uint16_t EnemyBoundingBoxCoord = 0x04b0;
+constexpr uint16_t PowerUpType = 0x39;
+constexpr uint16_t FireballBouncingFlag = 0x3a;
+constexpr uint16_t FireballCounter = 0x06ce;
+constexpr uint16_t FireballThrowingTimer = 0x0711;
+constexpr uint16_t HammerEnemyOffset = 0x06ae;
+constexpr uint16_t JumpCoinMiscOffset = 0x06b7;
+constexpr uint16_t Block_Buffer_1 = 0x0500;
+constexpr uint16_t Block_Buffer_2 = 0x05d0;
+constexpr uint16_t HammerThrowingTimer = 0x03a2;
+constexpr uint16_t HammerBroJumpTimer = 0x3c;
+constexpr uint16_t Misc_Collision_Flag = 0x06be;
+constexpr uint16_t RedPTroopaOrigXPos = 0x0401;
+constexpr uint16_t RedPTroopaCenterYPos = 0x58;
+constexpr uint16_t XMovePrimaryCounter = 0xa0;
+constexpr uint16_t XMoveSecondaryCounter = 0x58;
+constexpr uint16_t CheepCheepMoveMFlag = 0x58;
+constexpr uint16_t CheepCheepOrigYPos = 0x0434;
+constexpr uint16_t BitMFilter = 0x06dd;
+constexpr uint16_t LakituReappearTimer = 0x06d1;
+constexpr uint16_t LakituMoveSpeed = 0x58;
+constexpr uint16_t LakituMoveDirection = 0xa0;
+constexpr uint16_t FirebarSpinState_Low = 0x58;
+constexpr uint16_t FirebarSpinState_High = 0xa0;
+constexpr uint16_t FirebarSpinSpeed = 0x0388;
+constexpr uint16_t FirebarSpinDirection = 0x34;
+constexpr uint16_t DuplicateObj_Offset = 0x06cf;
+constexpr uint16_t NumberofGroupEnemies = 0x06d3;
+constexpr uint16_t BlooperMoveCounter = 0xa0;
+constexpr uint16_t BlooperMoveSpeed = 0x58;
+constexpr uint16_t BowserBodyControls = 0x0363;
+constexpr uint16_t BowserFeetCounter = 0x0364;
+constexpr uint16_t BowserMovementSpeed = 0x0365;
+constexpr uint16_t BowserOrigXPos = 0x0366;
+constexpr uint16_t BowserFlameTimerCtrl = 0x0367;
+constexpr uint16_t BowserFront_Offset = 0x0368;
+constexpr uint16_t BridgeCollapseOffset = 0x0369;
+constexpr uint16_t BowserGfxFlag = 0x036a;
+constexpr uint16_t BowserHitPoints = 0x0483;
+constexpr uint16_t MaxRangeFromOrigin = 0x06dc;
+constexpr uint16_t BowserFlamePRandomOfs = 0x0417;
+constexpr uint16_t PiranhaPlantUpYPos = 0x0417;
+constexpr uint16_t PiranhaPlantDownYPos = 0x0434;
+constexpr uint16_t PiranhaPlant_Y_Speed = 0x58;
+constexpr uint16_t PiranhaPlant_MoveFlag = 0xa0;
+constexpr uint16_t FireworksCounter = 0x06d7;
+constexpr uint16_t ExplosionGfxCounter = 0x58;
+constexpr uint16_t ExplosionTimerCounter = 0xa0;
+constexpr uint16_t Squ2_NoteLenBuffer = 0x07b3;
+constexpr uint16_t Squ2_NoteLenCounter = 0x07b4;
+constexpr uint16_t Squ2_EnvelopeDataCtrl = 0x07b5;
+constexpr uint16_t Squ1_NoteLenCounter = 0x07b6;
+constexpr uint16_t Squ1_EnvelopeDataCtrl = 0x07b7;
+constexpr uint16_t Tri_NoteLenBuffer = 0x07b8;
+constexpr uint16_t Tri_NoteLenCounter = 0x07b9;
+constexpr uint16_t Noise_BeatLenCounter = 0x07ba;
+constexpr uint16_t Squ1_SfxLenCounter = 0x07bb;
+constexpr uint16_t Squ2_SfxLenCounter = 0x07bd;
+constexpr uint16_t Sfx_SecondaryCounter = 0x07be;
+constexpr uint16_t Noise_SfxLenCounter = 0x07bf;
+constexpr uint16_t PauseSoundQueue = 0xfa;
+constexpr uint16_t Square1SoundQueue = 0xff;
+constexpr uint16_t Square2SoundQueue = 0xfe;
+constexpr uint16_t NoiseSoundQueue = 0xfd;
+constexpr uint16_t AreaMusicQueue = 0xfb;
+constexpr uint16_t EventMusicQueue = 0xfc;
+constexpr uint16_t Square1SoundBuffer = 0xf1;
+constexpr uint16_t Square2SoundBuffer = 0xf2;
+constexpr uint16_t NoiseSoundBuffer = 0xf3;
+constexpr uint16_t AreaMusicBuffer = 0xf4;
+constexpr uint16_t EventMusicBuffer = 0x07b1;
+constexpr uint16_t PauseSoundBuffer = 0x07b2;
+constexpr uint16_t MusicData = 0xf5;
+constexpr uint16_t MusicDataLow = 0xf5;
+constexpr uint16_t MusicDataHigh = 0xf6;
+constexpr uint16_t MusicOffset_Square2 = 0xf7;
+constexpr uint16_t MusicOffset_Square1 = 0xf8;
+constexpr uint16_t MusicOffset_Triangle = 0xf9;
+constexpr uint16_t MusicOffset_Noise = 0x07b0;
+constexpr uint16_t NoteLenLookupTblOfs = 0xf0;
+constexpr uint16_t DAC_Counter = 0x07c0;
+constexpr uint16_t NoiseDataLoopbackOfs = 0x07c1;
+constexpr uint16_t NoteLengthTblAdder = 0x07c4;
+constexpr uint16_t AreaMusicBuffer_Alt = 0x07c5;
+constexpr uint16_t PauseModeFlag = 0x07c6;
+constexpr uint16_t GroundMusicHeaderOfs = 0x07c7;
+constexpr uint16_t AltRegContentFlag = 0x07ca;
+constexpr uint16_t Sfx_SmallJump = 0b10000000;
+constexpr uint16_t Sfx_Flagpole = 0b01000000;
+constexpr uint16_t Sfx_Fireball = 0b00100000;
+constexpr uint16_t Sfx_PipeDown_Injury = 0b00010000;
+constexpr uint16_t Sfx_EnemySmack = 0b00001000;
+constexpr uint16_t Sfx_EnemyStomp = 0b00000100;
+constexpr uint16_t Sfx_Bump = 0b00000010;
+constexpr uint16_t Sfx_BigJump = 0b00000001;
+constexpr uint16_t Sfx_BowserFall = 0b10000000;
+constexpr uint16_t Sfx_ExtraLife = 0b01000000;
+constexpr uint16_t Sfx_PowerUpGrab = 0b00100000;
+constexpr uint16_t Sfx_TimerTick = 0b00010000;
+constexpr uint16_t Sfx_Blast = 0b00001000;
+constexpr uint16_t Sfx_GrowVine = 0b00000100;
+constexpr uint16_t Sfx_GrowPowerUp = 0b00000010;
+constexpr uint16_t Sfx_CoinGrab = 0b00000001;
+constexpr uint16_t Sfx_BowserFlame = 0b00000010;
+constexpr uint16_t Sfx_BrickShatter = 0b00000001;
+constexpr uint16_t Silence = 0b10000000;
+constexpr uint16_t StarPowerMusic = 0b01000000;
+constexpr uint16_t PipeIntroMusic = 0b00100000;
+constexpr uint16_t CloudMusic = 0b00010000;
+constexpr uint16_t CastleMusic = 0b00001000;
+constexpr uint16_t UndergroundMusic = 0b00000100;
+constexpr uint16_t WaterMusic = 0b00000010;
+constexpr uint16_t GroundMusic = 0b00000001;
+constexpr uint16_t TimeRunningOutMusic = 0b01000000;
+constexpr uint16_t EndOfLevelMusic = 0b00100000;
+constexpr uint16_t AltGameOverMusic = 0b00010000;
+constexpr uint16_t EndOfCastleMusic = 0b00001000;
+constexpr uint16_t VictoryMusic = 0b00000100;
+constexpr uint16_t GameOverMusic = 0b00000010;
+constexpr uint16_t DeathMusic = 0b00000001;
+constexpr uint16_t GreenKoopa = 0x00;
+constexpr uint16_t BuzzyBeetle = 0x02;
+constexpr uint16_t RedKoopa = 0x03;
+constexpr uint16_t HammerBro = 0x05;
+constexpr uint16_t Goomba = 0x06;
+constexpr uint16_t Bloober = 0x07;
+constexpr uint16_t BulletBill_FrenzyVar = 0x08;
+constexpr uint16_t GreyCheepCheep = 0x0a;
+constexpr uint16_t RedCheepCheep = 0x0b;
+constexpr uint16_t Podoboo = 0x0c;
+constexpr uint16_t PiranhaPlant = 0x0d;
+constexpr uint16_t GreenParatroopaJump = 0x0e;
+constexpr uint16_t RedParatroopa = 0x0f;
+constexpr uint16_t GreenParatroopaFly = 0x10;
+constexpr uint16_t Lakitu = 0x11;
+constexpr uint16_t Spiny = 0x12;
+constexpr uint16_t FlyCheepCheepFrenzy = 0x14;
+constexpr uint16_t FlyingCheepCheep = 0x14;
+constexpr uint16_t BowserFlame = 0x15;
+constexpr uint16_t Fireworks = 0x16;
+constexpr uint16_t BBill_CCheep_Frenzy = 0x17;
+constexpr uint16_t Stop_Frenzy = 0x18;
+constexpr uint16_t Bowser = 0x2d;
+constexpr uint16_t PowerUpObject = 0x2e;
+constexpr uint16_t VineObject = 0x2f;
+constexpr uint16_t FlagpoleFlagObject = 0x30;
+constexpr uint16_t StarFlagObject = 0x31;
+constexpr uint16_t JumpspringObject = 0x32;
+constexpr uint16_t BulletBill_CannonVar = 0x33;
+constexpr uint16_t RetainerObject = 0x35;
+constexpr uint16_t TallEnemy = 0x09;
+constexpr uint16_t World1 = 0;
+constexpr uint16_t World2 = 1;
+constexpr uint16_t World3 = 2;
+constexpr uint16_t World4 = 3;
+constexpr uint16_t World5 = 4;
+constexpr uint16_t World6 = 5;
+constexpr uint16_t World7 = 6;
+constexpr uint16_t World8 = 7;
+constexpr uint16_t Level1 = 0;
+constexpr uint16_t Level2 = 1;
+constexpr uint16_t Level3 = 2;
+constexpr uint16_t Level4 = 3;
+constexpr uint16_t WarmBootOffset = lowByte(0x07d6);
+constexpr uint16_t ColdBootOffset = lowByte(0x07fe);
+constexpr uint16_t TitleScreenDataOffset = 0x1ec0;
+constexpr uint16_t SoundMemory = 0x07b0;
+constexpr uint16_t SwimTileRepOffset = PlayerGraphicsTable + 0x9e;
+constexpr uint16_t MusicHeaderOffsetData = MusicHeaderData - 1;
+constexpr uint16_t MHD = MusicHeaderData;
+constexpr uint16_t A_Button = 0b10000000;
+constexpr uint16_t B_Button = 0b01000000;
+constexpr uint16_t Select_Button = 0b00100000;
+constexpr uint16_t Start_Button = 0b00010000;
+constexpr uint16_t Up_Dir = 0b00001000;
+constexpr uint16_t Down_Dir = 0b00000100;
+constexpr uint16_t Left_Dir = 0b00000010;
+constexpr uint16_t Right_Dir = 0b00000001;
+constexpr uint16_t TitleScreenModeValue = 0;
+constexpr uint16_t GameModeValue = 1;
+constexpr uint16_t VictoryModeValue = 2;
+constexpr uint16_t GameOverModeValue = 3;
 
 #endif // SMBCONSTANTS_HPP

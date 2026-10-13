@@ -1,119 +1,204 @@
-SuperMarioBros-C
-================
+<div align="center">
 
-An attempt to translate the original Super Mario Bros. for the NES to readable C/C++.
+# Super Mario Bros. — C++
 
-I've taken the `smbdis.asm` disassembly of Super Mario Bros. and successfully converted it to C++ using an automated codegen program I wrote (which you can be found in the `codegen/` subdirectory of the repo). Right now, it looks very similar to the original disassembly and is fairly dense code, but it works! Check out `source/SMB/SMB.cpp` if you're curious.
+**The original NES *Super Mario Bros.*, translated from 6502 assembly into portable C++17.**
 
-Many thanks to doppelganger (doppelheathen@gmail.com), who wrote the original comprehensive Super Mario Bros. disassembly. This can be found in the `docs/` folder of the repo.
+[![CI](https://github.com/anas1996/SuperMarioBros-C/actions/workflows/ci.yml/badge.svg)](https://github.com/anas1996/SuperMarioBros-C/actions/workflows/ci.yml)
+![C++17](https://img.shields.io/badge/C%2B%2B-17-blue)
+![SDL2](https://img.shields.io/badge/SDL-2-blue)
 
-![Demo gif](https://github.com/MitchellSternke/SuperMarioBros-C/raw/master/demo.gif)
+![Demo](demo.gif)
 
-*looks and plays just like the original*
+*Looks and plays just like the original.*
 
-Building
---------
+</div>
 
-**Dependencies**
-- C++11 compiler
-- Boost
-- SDL2
-- Flex
-- Bison
-- CMake
+## About
 
-From the root of the repo, execute:
+This is a static recompilation of *Super Mario Bros.* The `smbdis.asm` disassembly of the game
+is converted to C++ by a code generator (in [`codegen/`](codegen)), so the game logic runs as
+native code: the NES CPU is not emulated at all. Only the hardware the game talks to (the picture
+and audio processors, and the controllers) is emulated.
+
+The translated code mirrors the disassembly line for line, comments included. For example:
+
+```cpp
+WBootCheck: // check each score digit in the top score
+    a = M(TopScoreDisplay + x);
+    compare(a, 10); // to see if we have a valid digit
+    if (c)
+        goto ColdBoot; // if not, give up and proceed with cold boot
+    --x;
+    if (!n)
+        goto WBootCheck;
 ```
-mkdir build
-cd build
-cmake ..
-make
+
+Take a look at [`source/SMB/SMB.cpp`](source/SMB/SMB.cpp) if you're curious.
+
+### Features
+
+- **Faithful** — game behavior is verified frame by frame by a regression test.
+- **Crisp at any size** — resizable window and fullscreen. Pixels stay uniform at every scale
+  ("sharp bilinear" scaling), with optional integer-only scaling.
+- **CRT effect** — scanlines and phosphor stripes, rendered at your screen's native resolution.
+- **Authentic sound** — the NES's nonlinear mixer and analog output filters, in 16-bit audio.
+- **Gamepads** — plug-and-play support for one or two controllers.
+- **Quality of life** — pause screen, automatic pause in the background, mute, and volume control.
+
+## Getting started
+
+### Requirements
+
+- A C++17 compiler (GCC, Clang or MSVC)
+- [CMake](https://cmake.org) 3.16 or newer
+- [SDL2](https://libsdl.org)
+- *Optional:* Bison 3+ and Flex, only needed to regenerate the translated code
+
+| Platform      | Install the dependencies                                                      |
+| ------------- | ----------------------------------------------------------------------------- |
+| Debian/Ubuntu | `sudo apt install build-essential cmake libsdl2-dev`                          |
+| Fedora        | `sudo dnf install gcc-c++ cmake SDL2-devel`                                   |
+| Arch          | `sudo pacman -S base-devel cmake sdl2`                                        |
+| macOS         | `brew install cmake sdl2`                                                     |
+| Windows       | [vcpkg](https://vcpkg.io) installs SDL2 from `vcpkg.json` (see below)          |
+
+### Building
+
+```sh
+cmake -B build
+cmake --build build --parallel
 ```
 
-This should create the executable `smbc` in the `build` directory.
+On Windows, pass vcpkg's toolchain file and build the Release configuration:
 
-Running
--------
-
-This requires an *unmodified* copy of the `Super Mario Bros. (JU) (PRG0) [!].nes` ROM to run. Without this, the game won't have any graphics, since the CHR data is used for rendering. By default, the program will look for this file in the current working directory, but this can also be configured in `smbc.conf`.
-
-Configuration
--------------
-
-Optionally, the program can be configured with a file named `smbc.conf` in the working directory. This file has an INI format. For example, the following would configure the option `audio.frequency` to be `22050`:
-
+```sh
+cmake -B build -DCMAKE_TOOLCHAIN_FILE=<vcpkg root>/scripts/buildsystems/vcpkg.cmake
+cmake --build build --config Release
 ```
+
+This produces the `smbc` executable in `build/` (`build/Release/` on Windows).
+
+### Running
+
+The game needs an *unmodified* copy of the `Super Mario Bros. (JU) (PRG0) [!].nes` ROM image,
+whose graphics data it uses. Pass its path on the command line:
+
+```sh
+./build/smbc "path/to/Super Mario Bros. (JU) (PRG0) [!].nes"
+```
+
+Without an argument, the ROM image is loaded from the path set in the [configuration](#configuration)
+(by default `Super Mario Bros. (JU) (PRG0) [!].nes` in the working directory).
+
+## Controls
+
+| NES controller | Keyboard   | Gamepad                     |
+| -------------- | ---------- | --------------------------- |
+| D-pad          | Arrow keys | D-pad or left stick         |
+| A (jump)       | X          | B or Y (right/top button)   |
+| B (run, fire)  | Z          | A or X (bottom/left button) |
+| Start          | Enter      | Start                       |
+| Select         | Backspace  | Back                        |
+
+The first gamepad controls player 1 (along with the keyboard); a second gamepad controls player 2.
+
+| Hotkey              | Action                                  |
+| ------------------- | --------------------------------------- |
+| P or Pause          | Pause / resume                          |
+| F11, Alt+Enter or F | Toggle fullscreen                       |
+| F2                  | Toggle the CRT effect                   |
+| M                   | Mute / unmute                           |
+| R                   | Reset (like the console's reset button) |
+| Esc                 | Quit                                    |
+
+## Configuration
+
+Settings are read from `smbc.conf` in the working directory, an INI file. Every setting is
+optional. For example:
+
+```ini
 [audio]
-frequency = 22050
+volume = 80
+
+[game]
+rom_file = roms/smb.nes
+
+[video]
+scale = 4
+scanlines = 0
 ```
 
-The following is a list of all configurable options:
+| Setting                 | Default                                 | Description |
+| ----------------------- | --------------------------------------- | ----------- |
+| `audio.enabled`         | `1`                                     | Enable sound. |
+| `audio.frequency`       | `48000`                                 | Sample rate in Hz. |
+| `audio.volume`          | `100`                                   | Volume, from 0 to 100. |
+| `game.frame_rate`       | `60`                                    | Frames per second. Higher values speed the game up; with vsync enabled, the display's refresh rate may limit it. |
+| `game.rom_file`         | `Super Mario Bros. (JU) (PRG0) [!].nes` | Path to the ROM image, relative to the working directory or absolute. |
+| `video.fullscreen`      | `0`                                     | Start in fullscreen. |
+| `video.integer_scaling` | `0`                                     | Only enlarge the picture by whole numbers, for perfectly square pixels. |
+| `video.palette_file`    | *(none)*                                | A custom [`.pal` palette file](https://www.nesdev.org/wiki/.pal): 64 RGB triples (192 bytes). 1536-byte files are accepted too; their emphasis variants are ignored, since the game doesn't use them. |
+| `video.scale`           | `3`                                     | Initial window size, as a multiple of 256×240. |
+| `video.scanlines`       | `1`                                     | Enable the CRT effect. |
+| `video.vsync`           | `1`                                     | Synchronize with the display's refresh rate. |
 
-### [audio] options
+Booleans accept `1`/`0`, `true`/`false`, `yes`/`no` or `on`/`off`.
 
-#### enabled
+## How it works
 
-- Allows audio to be enabled (if set to 1) or disabled (if set to 0).
-- Default: 1
+```
+docs/smbdis.asm ──► codegen ──► source/SMB/SMB.cpp, SMBData.cpp   (the game, as C++)
+ (disassembly)     (Flex/Bison)              │ run by
+                                             ▼
+                                         SMBEngine ──► Emulation: PPU (video), APU (audio), controllers
+                                             │
+                                             ▼
+                                   Frontend (SDL2): window, CRT effect, audio output, input
+```
 
-#### frequency
+| Directory          | Contents |
+| ------------------ | -------- |
+| `codegen/`         | The translator: a Flex/Bison 6502 assembly parser and a C++ code generator. |
+| `docs/`            | `smbdis.asm`, the disassembly the game is generated from. |
+| `source/SMB/`      | The generated game code and data, plus `SMBEngine`, which runs it. |
+| `source/Emulation/`| Emulation of the NES hardware the game relies on: the picture processing unit (PPU), audio processing unit (APU) and controllers. |
+| `source/Frontend/` | The SDL2 frontend: display, audio output and input. |
+| `tests/`           | Regression tests. |
 
-- Controls the frequency of sampled audio output, in Hz.
-- Default: 48000
+Each 6502 instruction becomes a line of C++. Registers and memory are wrapped in a
+`MemoryAccess` type whose operators update the processor's carry, zero and negative flags, so
+branches translate directly into `if (...) goto`. Subroutine calls push a return index and jump
+to a label; `RTS` dispatches through a generated table of return points.
 
-### [game] options
+The long-term goal is to replace the remaining emulation with plain C++ and refactor the
+translated code, making the game easy to modify and extend.
 
-#### frame_rate
+## Development
 
-- The desired frame rate, in frames per second. Note that on some systems it may be necessary to disable vsync (see video.vsync) in order to achieve a frame rate higher than 60 fps.
-- Default: 60
+```sh
+ctest --test-dir build --output-on-failure
+```
 
-#### rom_file
+The tests need no ROM image. `regression` plays a scripted game and compares hashes of the RAM,
+rendered frames and audio against known-good values, so any change in the game's behavior is
+caught. Run `build/smbc_regression --print` to output new values after an intentional change.
+`generated_sources_up_to_date` checks that `source/SMB` matches the code generator's output.
 
-- The path to the Super Mario Bros. ROM file. Can be either relative to the working directory or absolute.
-- Default: "Super Mario Bros. (JU) (PRG0) [!].nes"
+To regenerate `source/SMB` after changing the code generator (requires Bison 3+ and Flex):
 
-### [video] options
+```sh
+cmake --build build --target regenerate
+```
 
-#### palette_file
+## Credits
 
-- Relative or absolute path to a custom palette file to use for rendering. The following formats are supported:
-  - 192-byte palette file: contains 64 (R,G,B) triples with one byte per color channel. Byte order must be (R,G,B). This is the standard *.pal file format used by many NES emulators. For more documentation see https://wiki.nesdev.com/w/index.php/.pal
-  - 1536-byte palette file: similar to the 192-byte palette file format described above. Only the first 192 bytes are used, as the rest are used by emphasis bits which are not supported by Super Mario Bros.
-- Default: ""
+- The original [SuperMarioBros-C](https://github.com/MitchellSternke/SuperMarioBros-C) project
+  by Mitchell Sternke, including the code generator.
+- doppelganger (doppelheathen@gmail.com), who wrote the comprehensive Super Mario Bros.
+  disassembly in [`docs/smbdis.asm`](docs/smbdis.asm).
+- The [NESdev Wiki](https://www.nesdev.org/wiki/), for documentation of the NES hardware.
 
-#### scale
-
-- Controls the scale factor for rendered video.
-- Default: 3
-
-#### scanlines
-
-- Allows rendering scanlines to be enabled (if set to 1) or disabled (if set to 0)
-- Default: 1
-
-#### vsync
-
-- Allows vsync to be enabled (if set to 1) or disabled (if set to 0).
-- Default: 1
-
-Architecture
-------------
-
-The game consists of a few parts:
-- The decompiled original Super Mario Bros. source code in C++
-- An emulation layer, consisting of
-  - Core NES CPU functionality (RAM, CPU registers, call stack, and emulation of unique 6502 instructions that don't have C++ equivalents)
-  - Picture Processing Unit (PPU) emulation (for video)
-  - Audio Processing Unit (APU) emulation (for sound/music)
-  - Controller emulation
-- SDL2 library for cross-platform video/audio/input
-
-Essentially, the game is a statically recompiled version of Super Mario Bros. for modern platforms. The only part of the NES that doesn't have to be emulated is the CPU, since most instructions are now native C++ code.
-
-The plan is to eventually ditch all of the emulation layer and convert code that relies upon it. Once that's done, this will be a true cross-platform version of Super Mario Bros. which behaves identically to the original. It could then be easily modified and extended with new features!
-
-License
--------
+## License
 
 TODO

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief defines program constants
+ * @brief Program-wide constants.
  */
 #ifndef CONSTANTS_HPP
 #define CONSTANTS_HPP
@@ -8,26 +8,21 @@
 /**
  * Application title.
  */
-#define APP_TITLE "Super Mario Bros."
+constexpr const char* APP_TITLE = "Super Mario Bros.";
 
 /**
  * Configuration file name.
  */
-#define CONFIG_FILE_NAME "smbc.conf"
+constexpr const char* CONFIG_FILE_NAME = "smbc.conf";
 
 /**
- * Width of the virtual screen.
+ * Width of the NES screen, in pixels.
  */
-#define RENDER_WIDTH 256
+constexpr int RENDER_WIDTH = 256;
 
 /**
- * Height of the virtual screen.
+ * Height of the NES screen, in pixels.
  */
-#define RENDER_HEIGHT 240
-
-/**
- * MilliSeconds per second
- */
-#define MS_PER_SEC 1000
+constexpr int RENDER_HEIGHT = 240;
 
 #endif // CONSTANTS_HPP
